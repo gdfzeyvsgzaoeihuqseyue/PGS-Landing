@@ -1,0 +1,5 @@
+
+User-agent: *
+Disallow:
+
+Sitemap: https://pgs-site.netlify.app/sitemap_index.xml

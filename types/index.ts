@@ -1,0 +1,194 @@
+// ===============================================
+// APPLICATIONS
+// ===============================================
+export interface Solution {
+  id: string;
+  slug: string;
+  name: string;
+  category: string;
+  description: string;
+  content: string;
+  logo: string;
+  logoDesk?: string;
+  disabled: boolean;
+  ctaText: string;
+  ctaLink: string;
+  features?: string[];
+  docs?: { name: string; link: string }[];
+  faq?: { question: string; answer: string }[];
+  tutorials?: { title: string; description: string; time: string; link: string; thumbnail?: string; }[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface Platform {
+  id: string;
+  name: string;
+  logo: string;
+  logoDesk?: string;
+  category: string;
+  description?: string;
+}
+
+// ===============================================
+// LIENS UTILES
+// ===============================================
+export interface UsefulLink {
+  id: string;
+  name: string;
+  description: string;
+  platformId: string;
+  url: string;
+  slug: string;
+  additionalInfo?: string;
+}
+
+export interface UsefulLinksState {
+  links: UsefulLink[]
+  loading: boolean
+  error: string | null
+}
+
+export type EnrichedLink = UsefulLink & {
+  order: number;
+  platform: string;
+  platformLogo: string;
+  platformCategory?: string;
+};
+
+
+// ===============================================
+// BLOG
+// ===============================================
+export interface Author {
+  id: string; 
+  slug: string;
+  name: string;
+  avatar?: string;
+  role?: string;
+  bio?: string;
+  social?: {
+    twitter?: string;
+    linkedin?: string;
+  };
+  createdAt?: string; 
+  updatedAt?: string; 
+  articleCount?: number; 
+}
+
+export interface Category {
+  id: string; 
+  name: string;
+  slug: string;
+  createdAt?: string; 
+  updatedAt?: string; 
+  articleCount?: number; 
+}
+
+export interface Article {
+  id: string; 
+  slug: string;
+  title: string;
+  excerpt: string;
+  content: string;
+  imageUrl: string;
+  tags: string[];
+  views: number; 
+  createdAt: string; 
+  updatedAt: string; 
+  author: Author; 
+  category: Category; 
+}
+
+
+// ===============================================
+// EVENEMENT
+// ===============================================
+export interface Event {
+  id: string;
+  type: 'event' | 'webinar';
+  title: string;
+  description: string;
+  format: 'hybride' | 'présential' | 'online'; 
+  date: string; 
+  time: string; 
+  location?: string;
+  link?: string;
+  ctaText: string;
+  ctaLink: string;
+  agenda?: string[]; 
+  createdAt: string;
+  updatedAt: string;
+}
+
+
+// ===============================================
+// PREFERENCE
+// ===============================================
+export interface PreferencesState {
+  email: string
+  maskedEmail: string
+  firstName: string
+  lastName: string
+  company: string
+  source: 'social' | 'search' | 'friend' | 'other' | ''
+  newsletter: boolean
+  currentStep: 'initial' | 'email_input' | 'totp_input' | 'preferences_form'
+  isLoading: boolean
+  message: string
+  messageType: 'success' | 'error' | 'info' | ''
+  totpCode: string
+}
+
+export interface VerifyLinkResponse {
+  canUpdate: boolean;
+  email: string;
+  maskedEmail: string;
+  message: string;
+  data?: {
+    firstName: string;
+    lastName: string;
+    company: string;
+    source: 'social' | 'search' | 'friend' | 'other' | '';
+    newsletter: boolean;
+  };
+}
+
+export interface TotpRequestResponse {
+  maskedEmail: string;
+  email: string;
+  message: string;
+}
+
+export interface UpdatePreferencesResponse {
+  message: string;
+  data: {
+    firstName: string;
+    lastName: string;
+    company: string;
+    source: string;
+    newsletter: boolean;
+    email: string;
+    id: string;
+  };
+}
+
+// ===============================================
+// SOCIAL LINKS
+// ===============================================
+// Backend
+export interface SocialLinkApi {
+  id: string;
+  media: string;
+  link: string;
+  createdAt: number;
+  updatedAt: number;
+}
+
+// Frontend
+export interface SocialLink {
+  name: string;
+  href: string;
+  icon: any;
+  title?: string;
+}
