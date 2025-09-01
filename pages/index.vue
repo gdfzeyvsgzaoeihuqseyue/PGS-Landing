@@ -6,8 +6,7 @@
       <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
 
       <div class="absolute inset-0">
-        <img :src="sharedFiles.paths.page.indexHero" 
-          alt="Equipe PGS" class="w-full h-full object-cover opacity-50" />
+        <img :src="sharedFiles.paths.page.indexHero" alt="Equipe PGS" class="w-full h-full object-cover opacity-50" />
         <div class="absolute inset-0 bg-gradient-to-r from-blue-600/50 to-blue-800/50"></div>
       </div>
 
@@ -118,11 +117,11 @@
             </p>
 
             <div class="flex flex-col sm:flex-row gap-4">
-              <button
+              <a href="t.me/PGSUsers" target="_blank" rel="noopener noreferrer"
                 class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 transform hover:scale-105">
                 <IconUsers class="mr-2 h-5 w-5" />
                 Rejoindre la communauté
-              </button>
+              </a>
               <NuxtLink to="/about"
                 class="inline-flex items-center px-6 py-3 border border-gray-300 text-base font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200">
                 <IconFileText class="mr-2 h-5 w-5" />
@@ -134,8 +133,8 @@
           <div class="relative">
             <div
               class="aspect-w-4 aspect-h-3 bg-gradient-to-br from-blue-100 to-indigo-200 rounded-2xl overflow-hidden">
-              <img :src="sharedFiles.paths.page.indexAbout"
-                alt="Équipe PRO GESTION SOFT au travail" class="w-full h-full object-cover">
+              <img :src="sharedFiles.paths.page.indexAbout" alt="Équipe PRO GESTION SOFT au travail"
+                class="w-full h-full object-cover">
             </div>
 
             <!-- Badge flottant -->
