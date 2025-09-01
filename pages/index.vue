@@ -45,7 +45,7 @@
     <!-- Statistiques -->
     <section class="py-24 bg-white">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-12">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-12">
           <div
             class="text-center transform hover:scale-105 transition-all duration-300 p-8 rounded-2xl hover:shadow-xl">
             <div class="text-6xl font-bold text-primary mb-4 counter">15+</div>
@@ -82,7 +82,14 @@
         </p>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div v-if="solutionStore.loading" class="text-center py-10">
+        <IconLoader class="animate-spin h-10 w-10 text-primary mx-auto" />
+        <p class="mt-2 text-gray-600">Chargement des solutions...</p>
+      </div>
+      <div v-else-if="solutionStore.error" class="text-center py-10 text-red-500">
+        <p>Erreur: {{ solutionStore.error }}</p>
+      </div>
+      <div v-else class="grid grid-cols-1 md:grid-cols-3 gap-8">
         <SolutionCard />
       </div>
 
@@ -170,10 +177,17 @@
 </template>
 
 <script setup>
-import { IconRocket, IconEye, IconUsers, IconFileText, IconAward } from '@tabler/icons-vue';
+import { IconRocket, IconEye, IconUsers, IconFileText, IconAward, IconLoader } from '@tabler/icons-vue';
 import { useSharedFiles } from '~/stores/sharedFiles';
+import { useSolutionStore } from '~/stores/solutions'; // Import solution store
 
 const sharedFiles = useSharedFiles();
+const solutionStore = useSolutionStore(); // Initialize solution store
+
+// Fetch solutions on component mount to ensure data is available for SolutionCard
+onMounted(() => {
+  solutionStore.fetchSolutions(undefined, undefined, true);
+});
 
 useHead({
   title: 'Acceuil',

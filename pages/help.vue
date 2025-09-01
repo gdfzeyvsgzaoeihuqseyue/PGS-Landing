@@ -114,7 +114,7 @@
           </button>
 
           <!-- Section Documentation -->
-          <section class="mb-24">
+          <section class="mb-24" id="documentation-section">
             <div class="flex justify-between items-center mb-6">
               <h2 class="text-3xl font-bold">Documentation</h2>
             </div>
@@ -127,7 +127,7 @@
               <p>Erreur: {{ solutionStore.error }}</p>
             </div>
             <div v-else-if="filteredAndPagedDocs.length > 0"
-              class="relative grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch">
+              class="relative grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 items-stretch">
               <!-- Bouton de navigation gauche -->
               <button @click="scrollDocs(-1)" :disabled="docStartIndex === 0"
                 class="absolute left-0 top-1/2 -translate-y-1/2 bg-white p-2 rounded-full shadow-md z-10 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100 transition-colors">
@@ -210,7 +210,7 @@
           </section>
 
           <!-- Section Tutoriels Vidéo -->
-          <section>
+          <section id="tutorials-section">
             <div class="flex justify-between items-center mb-6">
               <h2 class="text-3xl font-bold">Tutoriels vidéo</h2>
             </div>
@@ -223,7 +223,7 @@
               <p>Erreur: {{ solutionStore.error }}</p>
             </div>
             <div v-else-if="filteredAndPagedTutorials.length > 0"
-              class="relative grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch">
+              class="relative grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 items-stretch">
               <!-- Bouton de navigation gauche -->
               <button @click="scrollTutorials(-1)" :disabled="tutorialStartIndex === 0"
                 class="absolute left-0 top-1/2 -translate-y-1/2 bg-white p-2 rounded-full shadow-md z-10 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100 transition-colors">
@@ -444,11 +444,12 @@ const filteredTutorials = computed(() => {
   const query = searchQueryTutorials.value.toLowerCase();
   let results = combinedTutorials.value;
 
-  if (!query) return combinedTutorials.value;
-  results = results.filter(tutorial =>
-    tutorial.title.toLowerCase().includes(query) ||
-    tutorial.description.toLowerCase().includes(query)
-  );
+  if (query) {
+    results = results.filter(tutorial =>
+      tutorial.title.toLowerCase().includes(query) ||
+      tutorial.description.toLowerCase().includes(query)
+    );
+  }
   if (selectedCategoryTutorials.value) {
     results = results.filter(tutorial => tutorial.category === selectedCategoryTutorials.value);
   }
