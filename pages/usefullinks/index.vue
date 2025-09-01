@@ -187,7 +187,7 @@
 import { ref, computed, onMounted, nextTick } from 'vue'
 import { storeToRefs } from 'pinia'
 import { IconGrid3x3, IconList } from '@tabler/icons-vue'
-import { useUsefulLinksStore } from '@/stores/usefullinks'
+import { useUsefulLinksStore } from '@/stores/usefulLinks'
 import LinkCard from '~/components/LinkCard.vue'
 import LinkListItem from '~/components/LinkListItem.vue'
 
