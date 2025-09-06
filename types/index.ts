@@ -30,6 +30,44 @@ export interface Platform {
   description?: string;
 }
 
+export interface PlatformInfo {
+  id: string;
+  name: string;
+  slug: string;
+  category?: string;
+  logo?: string;
+}
+
+export interface PlateformDoc {
+  id: string;
+  name: string;
+  link: string;
+  createdAt: string;
+  updatedAt: string;
+  platform: PlatformInfo;
+}
+
+export interface PlateformFaq {
+  id: string;
+  question: string;
+  answer: string;
+  createdAt: string;
+  updatedAt: string;
+  platform: PlatformInfo;
+}
+
+export interface PlateformTutorial {
+  id: string;
+  title: string;
+  description: string;
+  time: string;
+  link: string;
+  thumbnail?: string;
+  createdAt: string;
+  updatedAt: string;
+  platform: PlatformInfo;
+}
+
 // ===============================================
 // LIENS UTILES
 // ===============================================

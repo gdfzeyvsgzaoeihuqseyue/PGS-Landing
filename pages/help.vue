@@ -126,7 +126,7 @@
             <div v-else-if="solutionStore.error" class="text-center py-10 text-red-500">
               <p>Erreur: {{ solutionStore.error }}</p>
             </div>
-            <div v-else-if="filteredAndPagedDocs.length > 0"
+            <div v-else-if="filteredAndPagedDocsBySolution.length > 0"
               class="relative grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 items-stretch">
               <!-- Bouton de navigation gauche -->
               <button @click="scrollDocs(-1)" :disabled="docStartIndex === 0"
@@ -135,29 +135,38 @@
               </button>
 
               <!-- Conteneur des cards de documentation -->
-              <div v-for="docSolution in filteredAndPagedDocs" :key="docSolution.id"
+              <NuxtLink v-for="item in filteredAndPagedDocsBySolution" :key="item.solution.id"
+                :to="`/solutions/${item.solution.slug}`"
                 class="flex flex-col bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
-                <div class="flex items-center justify-center w-16 h-16 mb-6">
-                  <img :src="docSolution.logo" :alt="docSolution.name" class="h-[3em] w-auto scale-[1.5] mr-4"
-                    @error="(e) => handleImageError(e, docSolution.name)" />
+                <div class="flex items-center mb-6">
+                  <div class="w-16 h-16 mr-4 flex items-center justify-center">
+                    <img :src="item.solution.logo" :alt="item.solution.name" class="h-[3em] w-auto scale-[1.5]"
+                      @error="handleImageError" />
+                  </div>
+                  <div class="flex-grow">
+                    <h3 class="text-xl font-bold leading-tight">{{ item.solution.name }}</h3>
+                    <p class="text-gray-500 text-sm">{{ item.solution.category }}</p>
+                  </div>
                 </div>
-                <h3 class="text-xl font-bold mb-4">{{ docSolution.name }}</h3>
-                <ul class="space-y-4 flex-grow" v-if="docSolution.docs">
-                  <li v-for="(item, idx) in docSolution.docs.slice(0, 3)" :key="idx">
-                    <a :href="item.link"
-                      class="group flex items-center text-gray-600 hover:text-primary transition-colors">
-                      <span class="mr-2">{{ item.name }}</span>
+
+                <div v-if="!item.docs.length" class="text-center text-gray-500 italic flex-grow">
+                  Aucun document disponible
+                </div>
+                <ul v-else class="space-y-4 flex-grow">
+                  <li v-for="doc in item.docs" :key="doc.id">
+                    <a :href="doc.link" target="_blank"
+                      class="group flex items-center text-gray-600 hover:text-primary transition-colors" :title="doc.name">
+                      <span class="mr-2 overflow-hidden whitespace-nowrap text-ellipsis line-clamp-1">
+                        {{ doc.name }}
+                      </span>
                       <IconChevronRight class="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
                     </a>
                   </li>
-                  <li v-if="docSolution.docs.length > 3" class="text-sm text-gray-500">
-                    ... et {{ docSolution.docs.length - 3 }} autres documents
-                  </li>
                 </ul>
-              </div>
+              </NuxtLink>
 
               <!-- Bouton de navigation droite -->
-              <button @click="scrollDocs(1)" :disabled="docStartIndex + 3 >= filteredSolutionsWithDocs.length"
+              <button @click="scrollDocs(1)" :disabled="docStartIndex + 3 >= docsBySolution.length"
                 class="absolute right-0 top-1/2 -translate-y-1/2 bg-white p-2 rounded-full shadow-md z-10 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100 transition-colors">
                 <IconChevronRight class="w-6 h-6 text-gray-700" />
               </button>
@@ -189,7 +198,14 @@
             </div>
             <div v-else-if="displayedFaqs.length > 0" class="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div class="bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer"
-                v-for="(item, index) in displayedFaqs" :key="index" @click="toggleFaq(index)">
+                v-for="(item, index) in displayedFaqs" :key="item.id" @click="toggleFaq(index)">
+                <!-- Badge plateforme -->
+                <div class="mb-2 flex justify-between items-center text-xs font-semibold">
+                  <span class="bg-gray-200 text-gray-700 px-3 py-1 rounded-full">
+                    {{ item.platform.name }}
+                  </span>
+                </div>
+
                 <h3 class="text-xl font-bold mb-4 flex justify-between items-center">
                   {{ item.question }}
                   <IconChevronDown
@@ -199,7 +215,6 @@
                 <div class="overflow-hidden transition-all duration-300"
                   :class="openFaqs.includes(index) ? 'max-h-96 mt-4' : 'max-h-0'">
                   <p class="text-gray-600 leading-relaxed">{{ item.answer }}</p>
-                  <p class="text-gray-500 text-sm mt-2">Source: {{ item.solutionName }}</p>
                 </div>
               </div>
             </div>
@@ -219,39 +234,50 @@
               <IconLoader class="animate-spin h-10 w-10 text-primary mx-auto" />
               <p class="mt-2 text-gray-600">Chargement des tutoriels...</p>
             </div>
+
             <div v-else-if="solutionStore.error" class="text-center py-10 text-red-500">
               <p>Erreur: {{ solutionStore.error }}</p>
             </div>
+
             <div v-else-if="filteredAndPagedTutorials.length > 0"
               class="relative grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 items-stretch">
-              <!-- Bouton de navigation gauche -->
-              <button @click="scrollTutorials(-1)" :disabled="tutorialStartIndex === 0"
-                class="absolute left-0 top-1/2 -translate-y-1/2 bg-white p-2 rounded-full shadow-md z-10 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100 transition-colors">
+
+              <!-- Bouton gauche -->
+              <button @click="scrollTutorials(-1)" :disabled="tutorialStartIndex === 0" class="absolute left-0 top-1/2 -translate-y-1/2 bg-white p-2 rounded-full shadow-md z-10
+             disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100 transition-colors">
                 <IconChevronLeft class="w-6 h-6 text-gray-700" />
               </button>
 
-              <div
-                class="bg-white rounded-2xl shadow-lg overflow-hidden group hover:shadow-xl transition-all duration-300"
-                v-for="(tutorial, index) in filteredAndPagedTutorials" :key="index">
-                <a :href="tutorial.link" target="_blank" rel="noopener noreferrer"
-                  class="block aspect-w-16 aspect-h-9 bg-gray-100 group-hover:opacity-75 transition-opacity relative">
+              <!-- Card tutoriel -->
+              <div v-for="tutorial in filteredAndPagedTutorials" :key="tutorial.id" class="group relative bg-white rounded-xl shadow-lg overflow-hidden p-6 border-2 transition-all duration-300
+                hover:shadow-xl hover:scale-105 border-transparent hover:border-primary">
+                <!-- Badge plateforme -->
+                <div
+                  class="absolute top-4 right-4 px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800 shadow-sm z-50">
+                  {{ tutorial.platform.name }}
+                </div>
+                <!-- Thumbnail -->
+                <div
+                  class="flex items-center justify-center mb-4 relative aspect-w-16 aspect-h-9 bg-gray-100 rounded-lg overflow-hidden">
                   <img v-if="tutorial.thumbnail" :src="tutorial.thumbnail" :alt="tutorial.title"
                     class="absolute inset-0 w-full h-full object-cover" />
                   <div v-else class="flex items-center justify-center absolute inset-0">
                     <IconVideo class="w-16 h-16 text-primary opacity-50" />
                   </div>
-                </a>
-                <div class="p-6">
-                  <p class="text-gray-400 text-xs">Durée : {{ tutorial.time }}</p>
-                  <h3 class="font-bold mb-2 group-hover:text-primary transition-colors">{{ tutorial.title }}</h3>
-                  <p class="text-gray-600 text-sm">{{ tutorial.description }}</p>
-                  <p class="text-gray-500 text-sm mt-2">Source: {{ tutorial.solutionName }}</p>
+                </div>
+                <!-- Contenu -->
+                <div>
+                  <p class="text-gray-400 text-xs mb-1">Durée : {{ tutorial.time }}</p>
+                  <a :href="tutorial.link" target="_blank" rel="noopener noreferrer"
+                    class="font-bold mb-2 group-hover:text-primary transition-colors line-clamp-1 hover:underline"
+                    :title="tutorial.title">{{ tutorial.title }}</a>
+                  <p class="text-gray-600 text-sm line-clamp-2" :title="tutorial.description">{{ tutorial.description }}
+                  </p>
                 </div>
               </div>
-
-              <!-- Bouton de navigation droite -->
-              <button @click="scrollTutorials(1)" :disabled="tutorialStartIndex + 3 >= filteredTutorials.length"
-                class="absolute right-0 top-1/2 -translate-y-1/2 bg-white p-2 rounded-full shadow-md z-10 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100 transition-colors">
+              <!-- Bouton droit -->
+              <button @click="scrollTutorials(1)" :disabled="tutorialStartIndex + 3 >= filteredTutorials.length" class="absolute right-0 top-1/2 -translate-y-1/2 bg-white p-2 rounded-full shadow-md z-10
+             disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100 transition-colors">
                 <IconChevronRight class="w-6 h-6 text-gray-700" />
               </button>
             </div>
@@ -269,6 +295,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue';
 import { useSolutionStore } from '@/stores/solutions';
+import type { PlateformDoc, PlateformFaq, PlateformTutorial } from '@/types';
 
 import {
   IconChevronLeft, IconChevronRight, IconChevronDown, IconVideo, IconLoader,
@@ -277,9 +304,12 @@ import {
 
 const solutionStore = useSolutionStore();
 
-// Fetch all solutions on component mount
+// Fetch all solutions, docs, faqs, tutorials on component mount
 onMounted(() => {
   solutionStore.fetchSolutions(undefined, undefined, true);
+  solutionStore.fetchPlateformDocs(undefined, undefined, true);
+  solutionStore.fetchPlateformFaqs(undefined, undefined, true);
+  solutionStore.fetchPlateformTutorials(undefined, undefined, true);
 });
 
 // --- Sidebar and Filters ---
@@ -301,16 +331,16 @@ function shuffleArray<T>(array: T[]): T[] {
   return newArray;
 }
 
-const handleImageError = (e: Event, title: string) => {
-  const img = e.target as HTMLImageElement;
-  img.src = `https://placehold.co/400x400/E0F2FE/0284C7?text=${encodeURIComponent(title)}`;
-  img.alt = `Image de ${title} non disponible`;
-};
+const handleImageError = (event: Event) => {
+  const target = event.target as HTMLImageElement
+  const name = target.alt || 'Logo non disponible'
+  target.src = `https://api.dicebear.com/7.x/avataaars/svg?seed=${name}`
+}
 
 // --- Statistics ---
-const totalDocs = computed(() => solutionStore.solutions.reduce((sum, s) => sum + (s.docs?.length || 0), 0));
-const totalFaqs = computed(() => solutionStore.solutions.reduce((sum, s) => sum + (s.faq?.length || 0), 0));
-const totalTutorials = computed(() => solutionStore.solutions.reduce((sum, s) => sum + (s.tutorials?.length || 0), 0));
+const totalDocs = computed(() => solutionStore.allDocs.length);
+const totalFaqs = computed(() => solutionStore.allFaqs.length);
+const totalTutorials = computed(() => solutionStore.allTutorials.length);
 
 const uniqueCategories = computed(() => {
   const categories = new Set<string>();
@@ -321,38 +351,38 @@ const uniqueCategories = computed(() => {
 // --- SECTION DOCUMENTATION ---
 const docStartIndex = ref(0);
 
-const solutionsWithDocs = computed(() => {
-  const activeDocs = solutionStore.solutions.filter(s => !s.disabled && s.docs && s.docs.length > 0);
-  const disabledDocs = solutionStore.solutions.filter(s => s.disabled && s.docs && s.docs.length > 0);
-  const shuffledActive = shuffleArray(activeDocs);
-  const shuffledDisabled = shuffleArray(disabledDocs);
-  return [...shuffledActive, ...shuffledDisabled];
+const filteredSolutionsForDocs = computed(() => {
+  const query = searchQueryDocs.value.toLowerCase();
+  const category = selectedCategoryDocs.value;
+
+  return solutionStore.solutions.filter(solution =>
+    (solution.name.toLowerCase().includes(query) || solution.description.toLowerCase().includes(query)) &&
+    (category === '' || solution.category === category)
+  );
 });
 
-const filteredSolutionsWithDocs = computed(() => {
-  const query = searchQueryDocs.value.toLowerCase();
-  let results = solutionsWithDocs.value;
-
-  if (query) {
-    results = results.filter(solution =>
-      solution.name.toLowerCase().includes(query) ||
-      solution.docs?.some(doc => doc.name.toLowerCase().includes(query))
-    );
-  }
-  if (selectedCategoryDocs.value) {
-    results = results.filter(solution => solution.category === selectedCategoryDocs.value);
-  }
+const docsBySolution = computed(() => {
+  // Mélanger l'array de solutions avant de le traiter
+  const shuffledSolutions = shuffleArray(filteredSolutionsForDocs.value);
+  const results = shuffledSolutions.map(solution => {
+    const allDocsForSolution = solutionStore.allDocs.filter(doc => doc.platform.id === solution.id);
+    const shuffledDocs = shuffleArray(allDocsForSolution);
+    const selectedDocs = shuffledDocs.slice(0, 3);
+    return {
+      solution,
+      docs: selectedDocs
+    };
+  });
   return results;
 });
 
-const filteredAndPagedDocs = computed(() => {
-  return filteredSolutionsWithDocs.value.slice(docStartIndex.value, docStartIndex.value + 3);
+const filteredAndPagedDocsBySolution = computed(() => {
+  return docsBySolution.value.slice(docStartIndex.value, docStartIndex.value + 3);
 });
 
 const scrollDocs = (direction: -1 | 1) => {
   const newIndex = docStartIndex.value + (direction * 3);
-  docStartIndex.value = Math.max(0, Math.min(filteredSolutionsWithDocs.value.length - 3, newIndex));
-  // Smooth scroll to the documentation section
+  docStartIndex.value = Math.max(0, Math.min(docsBySolution.value.length - 3, newIndex));
   document.querySelector('#documentation-section')?.scrollIntoView({ behavior: 'smooth' });
 };
 
@@ -362,22 +392,7 @@ const openFaqs = ref<number[]>([]);
 const showAllFaqs = ref(false);
 
 const combinedFaq = computed(() => {
-  let allFaqs: ({ question: string; answer: string; solutionDisabled: boolean; solutionName: string; category: string })[] = [];
-
-  solutionStore.solutions.forEach(solution => {
-    if (solution.faq) {
-      solution.faq.forEach(faq => {
-        allFaqs.push({ ...faq, solutionDisabled: solution.disabled, solutionName: solution.name, category: solution.category });
-      });
-    }
-  });
-
-  const activeFaqs = allFaqs.filter(faq => !faq.solutionDisabled);
-  const disabledFaqs = allFaqs.filter(faq => faq.solutionDisabled);
-  const shuffledActive = shuffleArray(activeFaqs);
-  const shuffledDisabled = shuffleArray(disabledFaqs);
-
-  return [...shuffledActive, ...shuffledDisabled].map(({ solutionDisabled, ...rest }) => rest);
+  return shuffleArray(solutionStore.allFaqs);
 });
 
 const filteredFaqs = computed(() => {
@@ -387,11 +402,12 @@ const filteredFaqs = computed(() => {
   if (query) {
     results = results.filter(faq =>
       faq.question.toLowerCase().includes(query) ||
-      faq.answer.toLowerCase().includes(query)
+      faq.answer.toLowerCase().includes(query) ||
+      faq.platform.name.toLowerCase().includes(query)
     );
   }
   if (selectedCategoryFaq.value) {
-    results = results.filter(faq => faq.category === selectedCategoryFaq.value);
+    results = results.filter(faq => faq.platform.category === selectedCategoryFaq.value);
   }
   return results;
 });
@@ -417,27 +433,7 @@ const showMoreFaqs = () => {
 const tutorialStartIndex = ref(0);
 
 const combinedTutorials = computed(() => {
-  let allTutorials: Array<{ title: string; description: string; time: string; link: string; thumbnail?: string; solutionDisabled: boolean; solutionName: string; category: string }> = [];
-
-  solutionStore.solutions.forEach(solution => {
-    if (solution.tutorials) {
-      solution.tutorials.forEach(tutorial => {
-        allTutorials.push({
-          ...tutorial,
-          solutionDisabled: solution.disabled,
-          solutionName: solution.name,
-          category: solution.category
-        });
-      });
-    }
-  });
-
-  const activeTutorials = allTutorials.filter(tutorial => !tutorial.solutionDisabled);
-  const disabledTutorials = allTutorials.filter(tutorial => tutorial.solutionDisabled);
-  const shuffledActive = shuffleArray(activeTutorials);
-  const shuffledDisabled = shuffleArray(disabledTutorials);
-
-  return [...shuffledActive, ...shuffledDisabled].map(({ solutionDisabled, ...rest }) => rest);
+  return shuffleArray(solutionStore.allTutorials);
 });
 
 const filteredTutorials = computed(() => {
@@ -447,11 +443,12 @@ const filteredTutorials = computed(() => {
   if (query) {
     results = results.filter(tutorial =>
       tutorial.title.toLowerCase().includes(query) ||
-      tutorial.description.toLowerCase().includes(query)
+      tutorial.description.toLowerCase().includes(query) ||
+      tutorial.platform.name.toLowerCase().includes(query)
     );
   }
   if (selectedCategoryTutorials.value) {
-    results = results.filter(tutorial => tutorial.category === selectedCategoryTutorials.value);
+    results = results.filter(tutorial => tutorial.platform.category === selectedCategoryTutorials.value);
   }
   return results;
 });
@@ -463,7 +460,6 @@ const filteredAndPagedTutorials = computed(() => {
 const scrollTutorials = (direction: -1 | 1) => {
   const newIndex = tutorialStartIndex.value + (direction * 3);
   tutorialStartIndex.value = Math.max(0, Math.min(filteredTutorials.value.length - 3, newIndex));
-  // Smooth scroll to the tutorials section
   document.querySelector('#tutorials-section')?.scrollIntoView({ behavior: 'smooth' });
 };
 

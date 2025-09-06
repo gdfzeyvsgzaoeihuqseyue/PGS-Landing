@@ -1,14 +1,18 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
-import type { Solution } from '@/types';
+import type { Solution, PlateformDoc, PlateformFaq, PlateformTutorial } from '@/types';
 import { useRuntimeConfig } from '#app';
 
 export const useSolutionStore = defineStore('solutions', () => {
   const config = useRuntimeConfig();
-  const API_BASE_URL = config.public.pgsBaseAPI; // Assuming this points to your backend
+  const API_BASE_URL = config.public.pgsBaseAPI; 
 
   const solutions = ref<Solution[]>([]);
   const currentSolution = ref<Solution | null>(null);
+  const allDocs = ref<PlateformDoc[]>([]);
+  const allFaqs = ref<PlateformFaq[]>([]); 
+  const allTutorials = ref<PlateformTutorial[]>([]); 
+
   const loading = ref(false);
   const error = ref<string | null>(null);
   const pagination = ref({
@@ -37,7 +41,7 @@ export const useSolutionStore = defineStore('solutions', () => {
             currentPage: number;
             totalPages: number;
             data: Solution[];
-          }>(`${API_BASE_URL}/plateform`, {
+          }>(`${API_BASE_URL}/plateform/solution`, {
             params: { page: currentPage, limit: initialLimit }
           });
 
@@ -63,7 +67,7 @@ export const useSolutionStore = defineStore('solutions', () => {
           currentPage: number;
           totalPages: number;
           data: Solution[];
-        }>(`${API_BASE_URL}/plateform`, {
+        }>(`${API_BASE_URL}/plateform/solution`, {
           params: { page, limit }
         });
 
@@ -91,8 +95,8 @@ export const useSolutionStore = defineStore('solutions', () => {
       const response = await $fetch<{
         success: boolean;
         message: string;
-        data: Solution;
-      }>(`${API_BASE_URL}/plateform/${identifier}`);
+        data: Solution; 
+      }>(`${API_BASE_URL}/plateform/solution/${identifier}`);
 
       currentSolution.value = response.data;
       return response.data;
@@ -105,13 +109,91 @@ export const useSolutionStore = defineStore('solutions', () => {
     }
   }
 
+  async function fetchPlateformDocs(page: number = 1, limit: number = 10, all: boolean = false) {
+    loading.value = true;
+    error.value = null;
+    try {
+      const response = await $fetch<{
+        success: boolean;
+        message: string;
+        nb: number;
+        nbOnPage: number;
+        currentPage: number;
+        totalPages: number;
+        data: PlateformDoc[];
+      }>(`${API_BASE_URL}/plateform/doc`, {
+        params: { page, limit: all ? 100 : limit } 
+      });
+      allDocs.value = response.data;
+    } catch (err: any) {
+      error.value = 'Erreur lors du chargement des documents: ' + (err.data?.message || err.message);
+      console.error(error.value, err);
+    } finally {
+      loading.value = false;
+    }
+  }
+
+  async function fetchPlateformFaqs(page: number = 1, limit: number = 10, all: boolean = false) {
+    loading.value = true;
+    error.value = null;
+    try {
+      const response = await $fetch<{
+        success: boolean;
+        message: string;
+        nb: number;
+        nbOnPage: number;
+        currentPage: number;
+        totalPages: number;
+        data: PlateformFaq[];
+      }>(`${API_BASE_URL}/plateform/faq`, {
+        params: { page, limit: all ? 100 : limit } 
+      });
+      allFaqs.value = response.data;
+    } catch (err: any) {
+      error.value = 'Erreur lors du chargement des FAQs: ' + (err.data?.message || err.message);
+      console.error(error.value, err);
+    } finally {
+      loading.value = false;
+    }
+  }
+
+  async function fetchPlateformTutorials(page: number = 1, limit: number = 10, all: boolean = false) {
+    loading.value = true;
+    error.value = null;
+    try {
+      const response = await $fetch<{
+        success: boolean;
+        message: string;
+        nb: number;
+        nbOnPage: number;
+        currentPage: number;
+        totalPages: number;
+        data: PlateformTutorial[];
+      }>(`${API_BASE_URL}/plateform/tutorial`, {
+        params: { page, limit: all ? 100 : limit } 
+      });
+      allTutorials.value = response.data;
+    } catch (err: any) {
+      error.value = 'Erreur lors du chargement des tutoriels: ' + (err.data?.message || err.message);
+      console.error(error.value, err);
+    } finally {
+      loading.value = false;
+    }
+  }
+
   return {
     solutions,
     currentSolution,
+    allDocs,
+    allFaqs,
+    allTutorials,
     loading,
     error,
     pagination,
     fetchSolutions,
     fetchSolutionByIdentifier,
+    fetchPlateformDocs,
+    fetchPlateformFaqs,
+    fetchPlateformTutorials,
   };
 });

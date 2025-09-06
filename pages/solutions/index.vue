@@ -119,9 +119,18 @@
           <!-- Cartes de solutions -->
           <div v-else-if="filteredSolutions.length > 0" class="grid grid-cols-1 md:grid-cols-3 gap-8">
             <NuxtLink v-for="solution in filteredSolutions" :key="solution.id" :to="`/solutions/${solution.slug}`"
-              :class="['group bg-white rounded-xl shadow-lg overflow-hidden p-6 border-2 transition-all duration-300 hover:shadow-xl hover:transform hover:scale-105',
+              :class="['group relative bg-white rounded-xl shadow-lg overflow-hidden p-6 border-2 transition-all duration-300 hover:shadow-xl hover:transform hover:scale-105',
                 solution.disabled ? 'border-dashed hover:border-warning cursor-progress' : 'border-transparent hover:border-primary']"
               :title="solution.disabled ? `${solution.name} est actuellement indisponible, cliquez pour en savoir plus.` : null">
+              
+              <!-- Indicateur de statut visuel -->
+              <div v-if="!solution.disabled" class="absolute top-4 right-4 px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
+                Activé
+              </div>
+              <div v-else class="absolute top-4 right-4 px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800">
+                Désactivé
+              </div>
+
               <div class="flex items-center mb-6 space-x-2">
                 <img :src="solution.logo" :alt="solution.name" class="h-[3em] w-auto scale-[1.5] mr-4"
                   @error="(e) => handleImageError(e, solution.name)" />
@@ -131,17 +140,10 @@
                 </div>
               </div>
 
-              <p class="text-gray-600 mb-6 line-clamp-2">{{ solution.description }}</p>
-              <ul class="space-y-2">
-                <li v-for="(feature, index) in solution.features?.slice(0, 3)" :key="index" class="flex items-center"
-                  :class="featureColors[index % featureColors.length]">
-                  <IconCheck class="h-5 w-5 mr-2" :class="featureColors[index % featureColors.length]" />
-                  {{ feature }}
-                </li>
-                <li v-if="solution.features && solution.features.length > 3" class="text-sm text-gray-500">
-                  ... et {{ solution.features.length - 3 }} autre(s) fonctionnalité(s)
-                </li>
-              </ul>
+              <p class="text-gray-600 mb-6 line-clamp-3">{{ solution.description }}</p>
+              <p v-if="solution.features" class="text-sm text-gray-500">
+                {{ solution.features.length }} autre(s) foneectionnalité(s)
+              </P>
             </NuxtLink>
           </div>
 
@@ -163,10 +165,10 @@ import type { Solution } from '@/types';
 
 const solutionStore = useSolutionStore();
 
-const handleImageError = (e: Event, title: string) => {
+const handleImageError = (e: Event, name: string) => {
   const img = e.target as HTMLImageElement;
-  img.src = `https://placehold.co/40x40/E0F2FE/0284C7?text=${encodeURIComponent(title)}`;
-  img.alt = `Logo de ${title} non disponible`;
+  img.src = `https://placehold.co/40x40/E0F2FE/0284C7?text=${encodeURIComponent(name)}`;
+  img.alt = `Logo de ${name} non disponible`;
 };
 
 // Variables réactives
@@ -177,19 +179,9 @@ const searchSuggestions = ref<string[]>([]);
 const sortOrder = ref<"default" | "asc" | "desc">("default");
 const showSidebar = ref(false); // Controls sidebar visibility
 
-// Define a set of colors for features
-const featureColors = [
-  'text-blue-600',
-  'text-green-600',
-  'text-purple-600',
-  'text-orange-600',
-  'text-red-600',
-  'text-indigo-600',
-];
-
 // Fetch solutions on component mount
 onMounted(() => {
-  solutionStore.fetchSolutions(undefined, undefined, true); // Fetch all solutions
+  solutionStore.fetchSolutions(undefined, undefined, true);
 });
 
 // Statistics computed property
