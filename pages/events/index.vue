@@ -2,10 +2,10 @@
   <main>
     <!-- Hero section -->
     <header class="text-center py-6 mt-8">
-      <h1 class="text-5xl font-extrabold text-gray-900 leading-tight">
+      <h1 class="text-4xl sm:text-5xl font-extrabold text-gray-900 leading-tight">
         <span class="text-primary">Nos</span> événements
       </h1>
-      <p class="mt-4 text-xl max-w-2xl mx-auto">
+      <p class="mt-4 text-lg sm:text-xl max-w-2xl mx-auto">
         Des événements pour accélérer votre croissance
       </p>
     </header>
@@ -25,23 +25,23 @@
 
             <!-- Bloc statistiques -->
             <div class="mb-8">
-              <h3 class="text-lg font-bold mb-4">Statistiques des événements</h3>
+              <h3 class="text-base sm:text-lg font-bold mb-4">Statistiques des événements</h3>
               <div class="grid grid-cols-2 gap-4 text-center">
                 <div>
-                  <p class="text-2xl font-bold text-secondary">{{ eventStatistics.total }}</p>
-                  <p class="text-gray-600">Total événements</p>
+                  <p class="text-xl sm:text-2xl font-bold text-secondary">{{ eventStatistics.total }}</p>
+                  <p class="text-sm sm:text-base text-gray-600">Total événements</p>
                 </div>
                 <div>
-                  <p class="text-2xl font-bold text-green-500">{{ eventStatistics.online }}</p>
-                  <p class="text-gray-600">En ligne</p>
+                  <p class="text-xl sm:text-2xl font-bold text-green-500">{{ eventStatistics.online }}</p>
+                  <p class="text-sm sm:text-base text-gray-600">En ligne</p>
                 </div>
                 <div>
-                  <p class="text-2xl font-bold text-purple-500">{{ eventStatistics.presential }}</p>
-                  <p class="text-gray-600">Présentiel</p>
+                  <p class="text-xl sm:text-2xl font-bold text-purple-500">{{ eventStatistics.presential }}</p>
+                  <p class="text-sm sm:text-base text-gray-600">Présentiel</p>
                 </div>
                 <div>
-                  <p class="text-2xl font-bold text-blue-500">{{ eventStatistics.hybride }}</p>
-                  <p class="text-gray-600">Hybride</p>
+                  <p class="text-xl sm:text-2xl font-bold text-blue-500">{{ eventStatistics.hybride }}</p>
+                  <p class="text-sm sm:text-base text-gray-600">Hybride</p>
                 </div>
               </div>
             </div>
@@ -50,7 +50,7 @@
             <div class="space-y-6">
               <!-- Barre de recherche -->
               <div>
-                <h3 class="text-lg font-bold mb-3">Rechercher un événement</h3>
+                <h3 class="text-base sm:text-lg font-bold mb-3">Rechercher un événement</h3>
                 <div class="relative">
                   <input v-model="searchQuery" type="text" placeholder="Rechercher un événement..."
                     class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-primary focus:border-primary">
@@ -62,7 +62,7 @@
 
               <!-- Filtre par format -->
               <div>
-                <h3 class="text-lg font-bold mb-3">Filtrer par format</h3>
+                <h3 class="text-base sm:text-lg font-bold mb-3">Filtrer par format</h3>
                 <select v-model="selectedFormat" class="w-full px-4 py-2 border rounded-lg">
                   <option value="">Tous les formats</option>
                   <option v-for="formatOption in uniqueFormats" :key="formatOption" :value="formatOption">
@@ -73,7 +73,7 @@
 
               <!-- Sélecteur de tri -->
               <div>
-                <h3 class="text-lg font-bold mb-3">Trier par</h3>
+                <h3 class="text-base sm:text-lg font-bold mb-3">Trier par</h3>
                 <select v-model="sortOrder" class="w-full px-4 py-2 border rounded-lg">
                   <option value="default">Par défaut (Date)</option>
                   <option value="asc">Titre (A-Z)</option>
@@ -146,7 +146,7 @@
 import { ref, computed, onMounted, watch } from 'vue';
 import { useEventStore } from '@/stores';
 import EventItemCard from '@/components/EventItemCard.vue';
-import { IconLoader, IconX, IconFilter, IconSearch } from '@tabler/icons-vue'; // Importez les nouvelles icônes
+import { IconLoader, IconX, IconFilter, IconSearch } from '@tabler/icons-vue';
 import type { Event } from '@/types';
 
 const eventStore = useEventStore();
@@ -154,11 +154,11 @@ const eventStore = useEventStore();
 const searchQuery = ref('');
 const selectedFormat = ref('');
 const sortOrder = ref<"default" | "asc" | "desc" | "closest" | "furthest">("default");
-const showSidebar = ref(false); // Nouvelle variable pour la visibilité de la sidebar
+const showSidebar = ref(false);
 
 // Pagination client-side
 const currentPage = ref(1);
-const itemsPerPage = 9; // Nombre d'événements par page
+const itemsPerPage = 9;
 
 // Helper pour convertir date et heure en objet Date
 const parseEventDateTime = (event: Event) => {
@@ -200,7 +200,7 @@ const eventStatistics = computed(() => {
 
 // Récupère tous les événements au montage du composant pour le filtrage client-side
 onMounted(() => {
-  eventStore.fetchEvents(undefined, undefined, true); // all: true pour récupérer tous les événements
+  eventStore.fetchEvents(undefined, undefined, true);
 });
 
 // Filtre et trie les événements affichés en fonction des critères de recherche et de format
@@ -219,7 +219,7 @@ const filteredAndSortedEvents = computed(() => {
     results = [...results].sort((a, b) => parseEventDateTime(a).getTime() - parseEventDateTime(b).getTime());
   } else if (sortOrder.value === "furthest") {
     results = [...results].sort((a, b) => parseEventDateTime(b).getTime() - parseEventDateTime(a).getTime());
-  } else { // Tri par défaut: du plus récent au plus ancien
+  } else {
     results = [...results].sort((a, b) => parseEventDateTime(b).getTime() - parseEventDateTime(a).getTime());
   }
 
@@ -244,7 +244,7 @@ const totalPages = computed(() =>
 // Calcule les pages visibles dans la pagination
 const visiblePages = computed(() => {
   const pages = [];
-  const maxVisible = 5; // Nombre maximal de boutons de page à afficher
+  const maxVisible = 5;
   const total = totalPages.value;
   const current = currentPage.value;
 
@@ -267,7 +267,7 @@ function resetFilters() {
   searchQuery.value = '';
   selectedFormat.value = '';
   sortOrder.value = 'default';
-  currentPage.value = 1; // Réinitialise la page actuelle
+  currentPage.value = 1;
 }
 
 // Réinitialise la page actuelle à 1 lorsque les filtres ou le tri changent
@@ -280,4 +280,3 @@ useHead(() => ({
   title: 'Événements',
 }));
 </script>
-

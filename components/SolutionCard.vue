@@ -4,12 +4,14 @@
     <div class="flex items-center mb-4">
       <div class="mr-2">
         <img :src="solution.logo" :alt="solution.name" class="h-12 w-12 object-contain rounded-full"
-          @error="(e) => handleImageError(e, solution.name, '40x40')" />
+          @error="(e) => handleImageError(e, solution.name)" />
       </div>
       <h3 class="text-xl font-bold text-gray-900">{{ solution.name }}</h3>
     </div>
 
-    <p class="text-gray-600 mb-6 leading-relaxed">{{ solution.description }}</p>
+    <p class="text-sm text-gray-600 mb-6 leading-relaxed">
+      {{ solution.description }}
+    </p>
 
     <NuxtLink :to="`/solutions/${solution.slug}`"
       class="inline-flex items-center mx-auto px-4 py-2 border rounded-lg text-base font-medium hover:text-secondary hover:bg-gray-50"
@@ -25,7 +27,7 @@
 <script setup lang="ts">
 import { ref, watchEffect } from 'vue';
 import { IconArrowRight } from '@tabler/icons-vue';
-import { useSolutionStore } from '@/stores/solutions'; // Import the new store
+import { useSolutionStore } from '@/stores/solutions';
 import type { Solution } from '@/types';
 
 // Exclure la solution actuellement affichée.
@@ -33,13 +35,13 @@ const props = defineProps<{
   currentSolutionSlug?: string;
 }>();
 
-const solutionStore = useSolutionStore(); // Initialize the store
+const solutionStore = useSolutionStore();
 
 // Erreurs de chargement d'image
-const handleImageError = (e: Event, name: string, size: string) => {
+const handleImageError = (e: Event, name: string) => {
   const img = e.target as HTMLImageElement;
-  img.src = `https://placehold.co/${size}/E0F2FE/0284C7?text=${encodeURIComponent(name)}`;
-  img.alt = `Image non disponible pour ${name}`;
+  img.src = `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(name)}&radius=50`;
+  img.alt = `Logo de ${name} non disponible`;
 };
 
 // Mélange aléatoirement les éléments
@@ -56,7 +58,6 @@ const shuffleArray = (array: Solution[]): Solution[] => {
 const randomSolutions = ref<Solution[]>([]);
 
 watchEffect(async () => {
-  // Ensure solutions are loaded
   if (solutionStore.solutions.length === 0 && !solutionStore.loading) {
     await solutionStore.fetchSolutions(undefined, undefined, true);
   }

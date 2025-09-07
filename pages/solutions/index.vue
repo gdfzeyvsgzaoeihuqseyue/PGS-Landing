@@ -2,10 +2,10 @@
   <main>
     <!-- Hero section -->
     <header class="text-center py-6 mt-8">
-      <h1 class="text-5xl font-extrabold text-gray-900 leading-tight">
+      <h1 class="text-4xl sm:text-5xl font-extrabold text-gray-900 leading-tight">
         <span class="text-primary">Nos</span> solutions
       </h1>
-      <p class="mt-4 text-xl max-w-2xl mx-auto">
+      <p class="mt-4 text-lg sm:text-xl max-w-2xl mx-auto">
         Des solutions innovantes pour optimiser vos processus métier
       </p>
     </header>
@@ -25,23 +25,23 @@
 
             <!-- Bloc statistiques -->
             <div class="mb-8">
-              <h3 class="text-lg font-bold mb-4">Statistiques des solutions</h3>
+              <h3 class="text-base sm:text-lg font-bold mb-4">Statistiques des solutions</h3>
               <div class="grid grid-cols-2 gap-4 text-center">
                 <div>
-                  <p class="text-2xl font-bold text-secondary">{{ solutionStatistics.total }}</p>
-                  <p class="text-gray-600">Total solutions</p>
+                  <p class="text-xl sm:text-2xl font-bold text-secondary">{{ solutionStatistics.total }}</p>
+                  <p class="text-sm sm:text-base text-gray-600">Total solutions</p>
                 </div>
                 <div>
-                  <p class="text-2xl font-bold text-green-500">{{ solutionStatistics.available }}</p>
-                  <p class="text-gray-600">Disponibles</p>
+                  <p class="text-xl sm:text-2xl font-bold text-green-500">{{ solutionStatistics.available }}</p>
+                  <p class="text-sm sm:text-base text-gray-600">Disponibles</p>
                 </div>
                 <div>
-                  <p class="text-2xl font-bold text-red-500">{{ solutionStatistics.unavailable }}</p>
-                  <p class="text-gray-600">Indisponibles</p>
+                  <p class="text-xl sm:text-2xl font-bold text-red-500">{{ solutionStatistics.unavailable }}</p>
+                  <p class="text-sm sm:text-base text-gray-600">Indisponibles</p>
                 </div>
                 <div>
-                  <p class="text-2xl font-bold text-blue-500">{{ solutionStatistics.uniqueCategories }}</p>
-                  <p class="text-gray-600">Catégories uniques</p>
+                  <p class="text-xl sm:text-2xl font-bold text-blue-500">{{ solutionStatistics.uniqueCategories }}</p>
+                  <p class="text-sm sm:text-base text-gray-600">Catégories uniques</p>
                 </div>
               </div>
             </div>
@@ -50,7 +50,7 @@
             <div class="space-y-6">
               <!-- Barre de recherche -->
               <div>
-                <h3 class="text-lg font-bold mb-3">Rechercher une solution</h3>
+                <h3 class="text-base sm:text-lg font-bold mb-3">Rechercher une solution</h3>
                 <div class="relative">
                   <input v-model="searchQuery" @input="updateSuggestions" @focus="showSuggestions = true"
                     @blur="hideSuggestions" type="text" placeholder="Rechercher une solution..."
@@ -71,7 +71,7 @@
 
               <!-- Filtre par catégorie -->
               <div>
-                <h3 class="text-lg font-bold mb-3">Filtrer par catégorie</h3>
+                <h3 class="text-base sm:text-lg font-bold mb-3">Filtrer par catégorie</h3>
                 <select v-model="selectedCategory" class="w-full px-4 py-2 border rounded-lg">
                   <option value="">Toutes les catégories</option>
                   <option v-for="category in uniqueCategories" :key="category" :value="category">
@@ -82,7 +82,7 @@
 
               <!-- Sélecteur de tri -->
               <div>
-                <h3 class="text-lg font-bold mb-3">Trier par</h3>
+                <h3 class="text-base sm:text-lg font-bold mb-3">Trier par</h3>
                 <select v-model="sortOrder" class="w-full px-4 py-2 border rounded-lg">
                   <option value="default">Par défaut</option>
                   <option value="asc">Nom (A-Z)</option>
@@ -135,13 +135,13 @@
                 <img :src="solution.logo" :alt="solution.name" class="h-[3em] w-auto scale-[1.5] mr-4"
                   @error="(e) => handleImageError(e, solution.name)" />
                 <div>
-                  <h2 class="text-xl font-bold">{{ solution.name }}</h2>
-                  <span class="text-sm text-gray-500">{{ solution.category }}</span>
+                  <h2 class="text-lg sm:text-xl font-bold">{{ solution.name }}</h2>
+                  <span class="text-xs sm:text-sm text-gray-500">{{ solution.category }}</span>
                 </div>
               </div>
 
-              <p class="text-gray-600 mb-6 line-clamp-3">{{ solution.description }}</p>
-              <p v-if="solution.features" class="text-sm text-gray-500">
+              <p class="text-sm text-gray-600 mb-6 line-clamp-3">{{ solution.description }}</p>
+              <p v-if="solution.features" class="text-xs sm:text-sm text-gray-500">
                 {{ solution.features.length }} autre(s) foneectionnalité(s)
               </P>
             </NuxtLink>
@@ -177,9 +177,8 @@ const selectedCategory = ref("");
 const showSuggestions = ref(false);
 const searchSuggestions = ref<string[]>([]);
 const sortOrder = ref<"default" | "asc" | "desc">("default");
-const showSidebar = ref(false); // Controls sidebar visibility
+const showSidebar = ref(false); 
 
-// Fetch solutions on component mount
 onMounted(() => {
   solutionStore.fetchSolutions(undefined, undefined, true);
 });

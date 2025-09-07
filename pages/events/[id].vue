@@ -20,29 +20,30 @@
       <!-- Détails de l'événement -->
       <div v-else-if="event" class="bg-white rounded-xl shadow-lg p-8">
         <!-- En-tête avec titre et badge -->
-        <div class="relative h-48 md:h-64 bg-gradient-to-br from-primary to-secondary rounded-lg overflow-hidden mb-6 flex items-end p-6">
+        <div
+          class="relative h-48 md:h-64 bg-gradient-to-br from-primary to-secondary rounded-lg overflow-hidden mb-6 flex items-end p-6">
           <div class="absolute inset-0 flex items-center justify-center">
             <IconCalendarEvent class="w-24 h-24 text-white opacity-50" />
           </div>
           <div class="relative z-10">
-            <h1 class="text-4xl font-extrabold text-white leading-tight mb-2">{{ event.title }}</h1>
-            <span class="inline-block px-3 py-1 text-sm font-semibold text-white rounded-full"
+            <h1 class="text-3xl sm:text-4xl font-extrabold text-white leading-tight mb-2">{{ event.title }}</h1>
+            <span class="inline-block px-3 py-1 text-xs sm:text-sm font-semibold text-white rounded-full"
               :class="typeClass(event.type)">
               {{ typeDisplay(event.type) }}
             </span>
-            <span class="inline-block px-3 py-1 text-sm font-semibold text-white rounded-full ml-2"
+            <span class="inline-block px-3 py-1 text-xs sm:text-sm font-semibold text-white rounded-full ml-2"
               :class="badgeClass(event.format)">
               {{ formatDisplay(event.format) }}
             </span>
           </div>
         </div>
 
-        <p class="text-gray-700 leading-relaxed mb-6">{{ event.description }}</p>
+        <p class="text-base sm:text-lg text-gray-700 leading-relaxed mb-6">{{ event.description }}</p>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
           <div>
-            <h2 class="text-xl font-bold text-gray-800 mb-3">Informations clés</h2>
-            <ul class="space-y-2 text-gray-600">
+            <h2 class="text-lg sm:text-xl font-bold text-gray-800 mb-3">Informations clés</h2>
+            <ul class="space-y-2 text-sm sm:text-base text-gray-600">
               <li class="flex items-center">
                 <IconCalendar class="h-5 w-5 text-primary mr-2" />
                 <span>Date: {{ formatDate(event.date) }}</span>
@@ -72,8 +73,8 @@
           </div>
 
           <div v-if="event.agenda && event.agenda.length > 0">
-            <h2 class="text-xl font-bold text-gray-800 mb-3">Agenda</h2>
-            <ul class="space-y-2 text-gray-600">
+            <h2 class="text-lg sm:text-xl font-bold text-gray-800 mb-3">Agenda</h2>
+            <ul class="space-y-2 text-sm sm:text-base text-gray-600">
               <li v-for="(item, index) in event.agenda" :key="index" class="flex items-start">
                 <IconCheck class="h-5 w-5 text-primary mr-2 mt-1" />
                 <span>{{ item }}</span>
@@ -84,7 +85,7 @@
 
         <div class="text-center mt-8">
           <a :href="event.ctaLink" target="_blank" rel="noopener noreferrer"
-            class="bg-primary text-white px-8 py-4 rounded-lg hover:bg-secondary transition-colors inline-flex items-center space-x-2">
+            class="bg-primary text-white px-6 py-3 sm:px-8 sm:py-4 rounded-lg hover:bg-secondary transition-colors inline-flex items-center space-x-2">
             <span>{{ event.ctaText }}</span>
             <IconArrowRight class="w-5 h-5" />
           </a>
@@ -93,8 +94,8 @@
 
       <!-- Message si événement non trouvé -->
       <div v-else class="text-center bg-white rounded-xl shadow-md p-8 md:p-12">
-        <h2 class="text-6xl font-extrabold text-gray-800 mb-4">Oups !</h2>
-        <p class="text-lg text-gray-600 mb-8">
+        <h2 class="text-5xl sm:text-6xl font-extrabold text-gray-800 mb-4">Oups !</h2>
+        <p class="text-base sm:text-lg text-gray-600 mb-8">
           Désolé, l'événement que vous recherchez n'existe pas ou a été supprimé.
         </p>
         <NuxtLink to="/events"
@@ -111,11 +112,11 @@
         <button @click="showMapModal = false" class="absolute top-3 right-3 text-gray-500 hover:text-gray-700">
           <IconX class="h-6 w-6" />
         </button>
-        <h2 class="text-xl font-bold mb-4 text-warning flex items-center">
+        <h2 class="text-lg sm:text-xl font-bold mb-4 text-warning flex items-center">
           <IconAlertTriangle class="h-6 w-6 mr-2" />
           Attention
         </h2>
-        <p class="text-gray-700 mb-6">
+        <p class="text-sm sm:text-base text-gray-700 mb-6">
           Les informations de localisation sur Google Maps peuvent ne pas être entièrement précises ou à jour.
           Veuillez toujours vérifier la fiabilité de l'information auprès des sources officielles de l'événement.
         </p>
@@ -151,8 +152,8 @@ const event = computed<Event | null>(() => eventStore.currentEvent);
 const showMapModal = ref(false);
 const mapLocation = ref('');
 
-const currentTime = ref(new Date()); // Pour le compte à rebours
-let timer: NodeJS.Timeout; // Pour le compte à rebours
+const currentTime = ref(new Date());
+let timer: NodeJS.Timeout;
 
 // Au montage du composant, récupère l'ID de l'URL et charge l'événement
 onMounted(() => {

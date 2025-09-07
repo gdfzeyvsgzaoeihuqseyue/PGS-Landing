@@ -3,12 +3,18 @@
     <div class="mb-8">
       <IconMail class="h-16 w-16 text-blue-400 mx-auto mb-6" />
       <h2 class="text-4xl font-bold mb-4">Restez informé</h2>
-      <p class="text-xl text-gray-300">
+      <p class="text-lg text-gray-300 md:text-xl">
         Recevez les dernières actualités, conseils et mises à jour de nos produits directement dans votre boîte mail.
       </p>
     </div>
 
     <form @submit.prevent="submitNewsletter" class="max-w-md mx-auto">
+      <div class="flex flex-col sm:flex-row gap-4 mb-4">
+        <input v-model="firstName" type="text" placeholder="Votre prénom" required
+          class="flex-1 px-4 py-3 rounded-lg border border-gray-600 bg-gray-800 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+        <input v-model="lastName" type="text" placeholder="Votre nom" required
+          class="flex-1 px-4 py-3 rounded-lg border border-gray-600 bg-gray-800 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+      </div>
       <div class="flex flex-col sm:flex-row gap-4">
         <input v-model="email" type="email" placeholder="Votre adresse email" required
           class="flex-1 px-4 py-3 rounded-lg border border-gray-600 bg-gray-800 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
@@ -22,7 +28,8 @@
 
     <p class="text-sm text-gray-400 mt-4">
       En vous abonnant, vous acceptez de recevoir nos communications marketing.
-      Vous pouvez vous <NuxtLink to="/preferences" class="hover:underline text-warning">désabonner</NuxtLink> à tout moment.
+      Vous pouvez vous <NuxtLink to="/preferences" class="hover:underline text-warning">désabonner</NuxtLink> à tout
+      moment.
     </p>
 
     <!-- Message de succès -->
@@ -39,19 +46,28 @@
 import { IconMail, IconSend, IconCheck } from '@tabler/icons-vue'
 
 const email = ref('')
+const firstName = ref('')
+const lastName = ref('')
 const isSubmitting = ref(false)
 const showSuccess = ref(false)
 
 const submitNewsletter = async () => {
-  if (!email.value) return
+  if (!email.value || !firstName.value || !lastName.value) return
 
   isSubmitting.value = true
 
   // Simulation d'un appel API
+  console.log('Submitting newsletter with:', {
+    firstName: firstName.value,
+    lastName: lastName.value,
+    email: email.value
+  });
   setTimeout(() => {
     isSubmitting.value = false
     showSuccess.value = true
     email.value = ''
+    firstName.value = ''
+    lastName.value = ''
 
     // Masquer le message de succès après 5 secondes
     setTimeout(() => {

@@ -1,7 +1,7 @@
 <template>
   <main v-if="solutionStore.currentSolution">
     <!-- Hero section -->
-    <section class="relative py-24 bg-cover bg-center"
+    <section class="relative py-24 bg-center hero-bg-responsive"
       :style="`background-image: url('${solutionStore.currentSolution?.logoDesk}');`">
       <div class="absolute inset-0 bg-gradient-to-r from-primary/90 to-secondary/90"></div>
       <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-white">
@@ -13,8 +13,40 @@
     <!-- Contenu -->
     <section class="py-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="grid grid-cols-1 md:grid-cols-3 gap-12">
-        <!-- De gauche-->
-        <div class="md:col-span-2">
+        <!-- GAUCHE -->
+        <aside class="md:col-span-1 order-first md:order-none">
+          <div class="bg-gray-50 p-6 rounded-lg shadow-md">
+            <img :src="solutionStore.currentSolution?.logo" :alt="solutionStore.currentSolution?.name"
+              class="h-24 w-auto mx-auto mb-6 object-contain"
+              @error="(e) => handleImageError(e, solutionStore.currentSolution?.name || 'Solution', '100x100')" />
+
+            <a :href="solutionStore.currentSolution?.ctaLink" :class="['block text-center py-3 px-6 rounded-md font-medium',
+              solutionStore.currentSolution?.disabled ? 'bg-gray-200 text-gray-400 cursor-not-allowed' :
+                'bg-primary text-white hover:bg-secondary']" :aria-disabled="solutionStore.currentSolution?.disabled"
+              target="_blank" rel="noopener noreferrer">
+              {{ solutionStore.currentSolution?.ctaText }}
+            </a>
+
+            <div class="mt-6 pt-6 border-t border-gray-200">
+              <ul class="space-y-3">
+                <li><strong>Catégorie :</strong> {{ solutionStore.currentSolution.category }}</li>
+                <li>
+                  <strong>Statut :</strong>
+                  <span
+                    :class="['inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ml-2',
+                      solutionStore.currentSolution.disabled ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800']">
+                    {{ solutionStore.currentSolution.disabled ? 'Indisponible' : 'Disponible' }}
+                  </span>
+                </li>
+                <li><strong>Dernière mise à jour :</strong> {{ formatDate(solutionStore.currentSolution?.updatedAt) }}
+                </li>
+              </ul>
+            </div>
+          </div>
+        </aside>
+
+        <!-- DROIT -->
+        <div class="md:col-span-2 order-last md:order-none">
           <h2 class="text-3xl font-bold mb-6">Présentation détaillée</h2>
           <p class="prose max-w-none mb-8">{{ solutionStore.currentSolution.content }}</p>
 
@@ -48,38 +80,6 @@
             </p>
           </template>
         </div>
-
-        <!-- de Droite -->
-        <aside class="md:col-span-1">
-          <div class="bg-gray-50 p-6 rounded-lg shadow-md">
-            <img :src="solutionStore.currentSolution?.logo" :alt="solutionStore.currentSolution?.name"
-              class="h-24 w-auto mx-auto mb-6 object-contain"
-              @error="(e) => handleImageError(e, solutionStore.currentSolution?.name || 'Solution', '100x100')" />
-
-            <a :href="solutionStore.currentSolution?.ctaLink" :class="['block text-center py-3 px-6 rounded-md font-medium',
-              solutionStore.currentSolution?.disabled ? 'bg-gray-200 text-gray-400 cursor-not-allowed' :
-                'bg-primary text-white hover:bg-secondary']" :aria-disabled="solutionStore.currentSolution?.disabled"
-              target="_blank" rel="noopener noreferrer">
-              {{ solutionStore.currentSolution?.ctaText }}
-            </a>
-
-            <div class="mt-6 pt-6 border-t border-gray-200">
-              <ul class="space-y-3">
-                <li><strong>Catégorie :</strong> {{ solutionStore.currentSolution.category }}</li>
-                <li>
-                  <strong>Statut :</strong>
-                  <span
-                    :class="['inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ml-2',
-                      solutionStore.currentSolution.disabled ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800']">
-                    {{ solutionStore.currentSolution.disabled ? 'Indisponible' : 'Disponible' }}
-                  </span>
-                </li>
-                <li><strong>Dernière mise à jour :</strong> {{ formatDate(solutionStore.currentSolution?.updatedAt) }}
-                </li>
-              </ul>
-            </div>
-          </div>
-        </aside>
       </div>
     </section>
 
@@ -271,3 +271,17 @@ useHead(() => ({
   ],
 }));
 </script>
+
+<style scoped>
+.hero-bg-responsive {
+  background-size: contain; /* Default for mobile: image is fully contained */
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+@media (min-width: 768px) { /* md breakpoint */
+  .hero-bg-responsive {
+    background-size: cover; /* On larger screens, cover the area */
+  }
+}
+</style>

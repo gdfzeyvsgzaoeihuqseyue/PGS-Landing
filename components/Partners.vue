@@ -2,7 +2,7 @@
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="text-center mb-12">
       <h2 class="text-3xl font-bold text-gray-900 mb-4">Ils nous font confiance</h2>
-      <p class="text-lg text-gray-600">
+      <p class="text-base text-gray-600 md:text-lg">
         Des entreprises leaders qui transforment l'Afrique avec nos solutions
       </p>
     </div>
@@ -32,7 +32,7 @@
       >
         <div class="flex items-start mb-4">
           <IconQuote class="h-8 w-8 text-blue-600 mr-3 flex-shrink-0" />
-          <p class="text-gray-700 italic text-lg">{{ testimonial.quote }}</p>
+          <p class="text-base text-gray-700 italic md:text-lg">{{ testimonial.quote }}</p>
         </div>
         <div class="flex items-center mt-6">
           <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mr-4">

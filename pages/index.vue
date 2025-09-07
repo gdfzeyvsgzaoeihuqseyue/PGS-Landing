@@ -15,7 +15,7 @@
           <h1 class="text-5xl md:text-7xl font-bold font-heading mb-8 leading-tight animate-fade-in">
             Transformez votre <span class="text-accent">gestion d'entreprise</span> avec PRO GESTION SOFT
           </h1>
-          <p class="text-xl md:text-2xl mb-12 leading-relaxed text-gray-100 animate-fade-in-delay">
+          <p class="text-lg md:text-2xl mb-12 leading-relaxed text-gray-100 animate-fade-in-delay">
             Des solutions innovantes pour optimiser vos processus métier et accélérer votre croissance
           </p>
           <div class="flex flex-col sm:flex-row justify-center gap-6 animate-fade-in-delay-2">
@@ -43,35 +43,35 @@
     </section>
 
     <!-- Statistiques -->
-    <section class="py-24 bg-white">
+    <!-- <section class="py-24 bg-white">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="grid grid-cols-2 md:grid-cols-4 gap-12">
           <div
             class="text-center transform hover:scale-105 transition-all duration-300 p-8 rounded-2xl hover:shadow-xl">
-            <div class="text-6xl font-bold text-primary mb-4 counter">15+</div>
+            <div class="text-4xl md:text-6xl font-bold text-primary mb-4 counter">15+</div>
             <div class="text-gray-600 font-medium text-lg">Années d'expérience</div>
           </div>
           <div
             class="text-center transform hover:scale-105 transition-all duration-300 p-8 rounded-2xl hover:shadow-xl">
-            <div class="text-6xl font-bold text-primary mb-4 counter">500+</div>
+            <div class="text-4xl md:text-6xl font-bold text-primary mb-4 counter">500+</div>
             <div class="text-gray-600 font-medium text-lg">Clients satisfaits</div>
           </div>
           <div
             class="text-center transform hover:scale-105 transition-all duration-300 p-8 rounded-2xl hover:shadow-xl">
-            <div class="text-6xl font-bold text-primary mb-4 counter">50+</div>
+            <div class="text-4xl md:text-6xl font-bold text-primary mb-4 counter">50+</div>
             <div class="text-gray-600 font-medium text-lg">Experts dédiés</div>
           </div>
           <div
             class="text-center transform hover:scale-105 transition-all duration-300 p-8 rounded-2xl hover:shadow-xl">
-            <div class="text-6xl font-bold text-primary mb-4 counter">24/7</div>
+            <div class="text-4xl md:text-6xl font-bold text-primary mb-4 counter">24/7</div>
             <div class="text-gray-600 font-medium text-lg">Support client</div>
           </div>
         </div>
       </div>
-    </section>
+    </section> -->
 
     <!-- Solution -->
-    <section class="py-24 bg-gray-50 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section class="py-16 bg-gray-50 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="text-right max-w-2xl mb-16 ml-auto">
         <h2 class="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent text-3xl font-extrabold">
           Votre partenaire technologique de confiance
@@ -110,15 +110,15 @@
               class="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent text-3xl font-extrabold">
               À propos de PRO GESTION SOFT
             </h2>
-            <p class="text-lg text-gray-600 mb-6">
+            <p class="text-base text-gray-600 mb-6 md:text-lg">
               Fondée par des entrepreneurs africains pour des entrepreneurs africains, PRO GESTION SOFT (PGS)
               développe des solutions numériques innovantes qui répondent aux défis spécifiques des PME du continent.
             </p>
-            <p class="text-lg text-gray-600 mb-6">
+            <p class="text-base text-gray-600 mb-6 md:text-lg">
               Notre mission est de démocratiser l'accès aux technologies de pointe en proposant des outils
               intuitifs, abordables et parfaitement adaptés au contexte économique et culturel africain.
             </p>
-            <p class="text-lg text-gray-600 mb-8">
+            <p class="text-base text-gray-600 mb-8 md:text-lg">
               Avec plusieurs entreprises dans plusieurs villes, nous construisons l'écosystème numérique
               qui permettra aux PME africaines de prospérer dans l'économie mondiale.
             </p>
@@ -179,12 +179,11 @@
 <script setup>
 import { IconRocket, IconEye, IconUsers, IconFileText, IconAward, IconLoader } from '@tabler/icons-vue';
 import { useSharedFiles } from '~/stores/sharedFiles';
-import { useSolutionStore } from '~/stores/solutions'; // Import solution store
+import { useSolutionStore } from '~/stores/solutions';
 
 const sharedFiles = useSharedFiles();
-const solutionStore = useSolutionStore(); // Initialize solution store
+const solutionStore = useSolutionStore();
 
-// Fetch solutions on component mount to ensure data is available for SolutionCard
 onMounted(() => {
   solutionStore.fetchSolutions(undefined, undefined, true);
 });
