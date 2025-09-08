@@ -181,9 +181,9 @@ const team = [
     description: 'Financier comptable, Développeur front end et designer graphique.',
     image: sharedFiles.paths.team.SteveAster,
     socials: {
-      linkedin: 'https://www.linkedin.com/in/steve-afovo-464a93213/',
-      twitter: 'https://twitter.com/SteveAfovo',
-      facebook: 'https://www.facebook.com/steve.afovo.7'
+      linkedin: 'https://www.linkedin.com/in/SteveAsterAfovo',
+      twitter: 'https://x.com/SteveAsterAfovo',
+      facebook: 'https://www.facebook.com/SteveAsterAfovo.1'
     }
   },
   {
@@ -192,9 +192,9 @@ const team = [
     description: 'Technicien commercial, spécialiste marketing et communication.',
     image: sharedFiles.paths.team.Marcias,
     socials: {
-      linkedin: 'https://www.linkedin.com/in/ulrich-marcias-laleye-a1282b204/',
+      linkedin: 'https://www.linkedin.com/in/a-ulrich-marcias-laleye-1a91191b3/',
       twitter: null,
-      facebook: 'https://www.facebook.com/marcias.laleye'
+      facebook: 'https://www.facebook.com/marcias.mclaleye'
     }
   },
   {
@@ -203,9 +203,9 @@ const team = [
     description: 'Comptable, consultant et gestionnaire de projet.',
     image: sharedFiles.paths.team.Delluc,
     socials: {
-      linkedin: 'https://www.linkedin.com/in/delluc-hounmenou-09b914197/',
+      linkedin: 'https://www.linkedin.com/in/delluc-dotou-hounmenou-a39795227/',
       twitter: null,
-      facebook: 'https://www.facebook.com/delluc.hounmenou'
+      facebook: 'https://www.facebook.com/profile.php?id=61577156683888'
     }
   },
   {
@@ -216,7 +216,7 @@ const team = [
     socials: {
       linkedin: null,
       twitter: null,
-      facebook: 'https://www.facebook.com/profile.php?id=100076043422453'
+      facebook: 'https://www.facebook.com/yeb.charme'
     }
   }
 ]

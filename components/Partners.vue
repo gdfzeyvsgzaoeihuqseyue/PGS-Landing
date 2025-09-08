@@ -7,18 +7,18 @@
       </p>
     </div>
 
-    <!-- Logos des partenaires -->
-    <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-8 mb-16">
+    <!-- Partenaires -->
+    <div class="flex flex-wrap justify-center gap-8 mb-16">
       <div
         v-for="partner in partners"
         :key="partner.id"
         :title="partner.name"
-        class="flex items-center justify-center p-4 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow"
+        class="flex-none p-4 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow filter grayscale hover:grayscale-0"
       >
         <img
           :src="partner.logo"
           :alt="partner.name"
-          class="h-12 filter grayscale hover:grayscale-0 transition duration-500 ease-in-out"
+          class="h-12 w-auto transition duration-500 ease-in-out"
         />
       </div>
     </div>
@@ -35,8 +35,8 @@
           <p class="text-base text-gray-700 italic md:text-lg">{{ testimonial.quote }}</p>
         </div>
         <div class="flex items-center mt-6">
-          <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mr-4">
-            <IconUser class="h-6 w-6 text-blue-600" />
+          <div class="w-12 h-12 rounded-full overflow-hidden mr-4 flex-shrink-0">
+            <img :src="testimonial.image" :alt="testimonial.author" class="w-full h-full object-cover" />
           </div>
           <div>
             <div class="font-bold text-gray-900">{{ testimonial.author }}</div>
@@ -49,45 +49,36 @@
   </div>
 </template>
 
-
 <script setup>
-import { IconQuote, IconUser } from '@tabler/icons-vue'
+import { IconQuote } from '@tabler/icons-vue'
 
 const partners = [
   {
     id: 1,
-    name: 'MTN',
-    logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/93/New-mtn-logo.jpg/640px-New-mtn-logo.jpg'
+    name: 'Cabinet HODD',
+    logo: 'https://lh3.googleusercontent.com/a-/ALV-UjXzZxkRKtHxPSuGbCFhTykXq_X290TXbkrEDAjpRFFDwUZZIKI=s265-w265-h265'
   },
   {
     id: 2,
-    name: 'Celtiis',
-    logo: 'https://pbs.twimg.com/profile_images/1583478753627365376/-Su4Yn3M_400x400.jpg'
-  },
-  {
-    id: 3,
-    name: 'Moov',
-    logo: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRbolKY35j83WM75fplZkiT69ll7P6_YWLQTQ&s'
-  },
-  {
-    id: 4,
-    name: 'Ministère',
-    logo: 'https://www.gouv.bj/images/armoiries.jpg'
+    name: 'STAF PRINT CENTER',
+    logo: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQtDgYOXv2wJ4yuEw-xjGxv6zUW73N49xAlZw'
   }
 ]
 
 const testimonials = [
   {
-    quote: "SuitOps a révolutionné notre gestion quotidienne. Nous avons gagné 40% de temps sur nos processus administratifs et nos équipes sont plus productives que jamais.",
-    author: "Marie Kouassi",
-    role: "Directrice Générale",
-    company: "EcoTrade Côte d'Ivoire"
+    quote: "PGS nous a aidés à optimiser notre suivi des ventes et des achats. Grâce aux rapports automatiques et à la facturation centralisée, nous avons augmenté nos revenus de 15 % en seulement six mois.",
+    author: "Archimède Codjovi",
+    role: "Responsable des Ventes",
+    company: "Univers Plus",
+    image: "https://api.pgs.ctrlengine.com/api/v1/superadmin/document/SBaxuhjp8LK"
   },
   {
-    quote: "Grâce à Store, nous avons lancé notre boutique en ligne en moins d'une semaine. Nos ventes ont augmenté de 200% en 3 mois. Un investissement qui change tout !",
-    author: "Amadou Diallo",
+    quote: "La fonctionnalité de recrutement de PGS a complètement transformé notre processus. Publier des offres, organiser des tests en ligne et suivre les candidatures n’a jamais été aussi simple. Nous attirons maintenant des talents plus rapidement.",
+    author: "Raymondo Pironio",
     role: "Fondateur",
-    company: "Artisanat Sahel"
+    company: "Wood Picture",
+    image: "https://api.pgs.ctrlengine.com/api/v1/superadmin/document/gwCDpeZr8cy"
   }
 ]
 </script>

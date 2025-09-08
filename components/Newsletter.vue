@@ -8,18 +8,19 @@
       </p>
     </div>
 
-    <form @submit.prevent="submitNewsletter" class="max-w-md mx-auto">
-      <div class="flex flex-col sm:flex-row gap-4 mb-4">
+    <form @submit.prevent="submitNewsletter" class="max-w-md md:max-w-2xl mx-auto">
+      <div class="flex flex-col md:flex-row gap-4 mb-4">
         <input v-model="firstName" type="text" placeholder="Votre prénom" required
           class="flex-1 px-4 py-3 rounded-lg border border-gray-600 bg-gray-800 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
         <input v-model="lastName" type="text" placeholder="Votre nom" required
           class="flex-1 px-4 py-3 rounded-lg border border-gray-600 bg-gray-800 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
       </div>
-      <div class="flex flex-col sm:flex-row gap-4">
+      <div class="flex flex-col md:flex-row gap-4">
         <input v-model="email" type="email" placeholder="Votre adresse email" required
           class="flex-1 px-4 py-3 rounded-lg border border-gray-600 bg-gray-800 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-        <button type="submit" :disabled="isSubmitting"
-          class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 transform hover:scale-105 bg-blue-600 hover:bg-blue-700 whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed">
+        <button type="submit"
+          :disabled="!firstName || !lastName || !email || isSubmitting"
+          class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 transform hover:scale-105 whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed">
           <IconSend class="mr-2 h-5 w-5" />
           {{ isSubmitting ? 'En cours...' : 'S\'abonner' }}
         </button>
@@ -43,6 +44,7 @@
 </template>
 
 <script setup>
+import { ref } from 'vue'
 import { IconMail, IconSend, IconCheck } from '@tabler/icons-vue'
 
 const email = ref('')
@@ -69,7 +71,6 @@ const submitNewsletter = async () => {
     firstName.value = ''
     lastName.value = ''
 
-    // Masquer le message de succès après 5 secondes
     setTimeout(() => {
       showSuccess.value = false
     }, 5000)

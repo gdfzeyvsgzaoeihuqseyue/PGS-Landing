@@ -142,7 +142,7 @@
 
               <p class="text-sm text-gray-600 mb-6 line-clamp-3">{{ solution.description }}</p>
               <p v-if="solution.features" class="text-xs sm:text-sm text-gray-500">
-                {{ solution.features.length }} autre(s) foneectionnalité(s)
+                {{ solution.features.length }} fonctionnalité(s)
               </P>
             </NuxtLink>
           </div>

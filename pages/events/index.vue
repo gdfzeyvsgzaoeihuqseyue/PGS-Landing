@@ -71,6 +71,16 @@
                 </select>
               </div>
 
+              <!-- Filtre par statut -->
+              <div>
+                <h3 class="text-base sm:text-lg font-bold mb-3">Filtrer par statut</h3>
+                <select v-model="selectedStatus" class="w-full px-4 py-2 border rounded-lg">
+                  <option value="upcoming">En cours</option>
+                  <option value="past">Terminé</option>
+                  <option value="all">Tout</option>
+                </select>
+              </div>
+
               <!-- Sélecteur de tri -->
               <div>
                 <h3 class="text-base sm:text-lg font-bold mb-3">Trier par</h3>
@@ -143,7 +153,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, watch } from 'vue';
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue';
 import { useEventStore } from '@/stores';
 import EventItemCard from '@/components/EventItemCard.vue';
 import { IconLoader, IconX, IconFilter, IconSearch } from '@tabler/icons-vue';
@@ -153,16 +163,26 @@ const eventStore = useEventStore();
 
 const searchQuery = ref('');
 const selectedFormat = ref('');
+const selectedStatus = ref<'upcoming' | 'past' | 'all'>('upcoming'); // New status filter
 const sortOrder = ref<"default" | "asc" | "desc" | "closest" | "furthest">("default");
 const showSidebar = ref(false);
+
+// Reactive current time for status filtering
+const currentTime = ref(new Date());
+let timer: NodeJS.Timeout;
 
 // Pagination client-side
 const currentPage = ref(1);
 const itemsPerPage = 9;
 
-// Helper pour convertir date et heure en objet Date
+// Helper to convert date and time to a Date object
 const parseEventDateTime = (event: Event) => {
   return new Date(`${event.date}T${event.time}:00`);
+};
+
+// Helper to check if an event is in the past
+const isPastEvent = (event: Event) => {
+  return parseEventDateTime(event) < currentTime.value;
 };
 
 // Mappe les formats backend aux noms d'affichage français
@@ -201,6 +221,15 @@ const eventStatistics = computed(() => {
 // Récupère tous les événements au montage du composant pour le filtrage client-side
 onMounted(() => {
   eventStore.fetchEvents(undefined, undefined, true);
+  // Start timer to update currentTime
+  timer = setInterval(() => {
+    currentTime.value = new Date();
+  }, 1000);
+});
+
+// Clear timer on unmount
+onUnmounted(() => {
+  clearInterval(timer);
 });
 
 // Filtre et trie les événements affichés en fonction des critères de recherche et de format
@@ -210,7 +239,15 @@ const filteredAndSortedEvents = computed(() => {
     (selectedFormat.value === "" || event.format === selectedFormat.value)
   );
 
-  // Applique le tri
+  // Apply status filter
+  if (selectedStatus.value === 'upcoming') {
+    results = results.filter(event => !isPastEvent(event));
+  } else if (selectedStatus.value === 'past') {
+    results = results.filter(event => isPastEvent(event));
+  }
+  // If selectedStatus is 'all', no additional filtering is needed here
+
+  // Apply sorting
   if (sortOrder.value === "asc") {
     results = [...results].sort((a, b) => a.title.localeCompare(b.title, 'fr', { sensitivity: 'base' }));
   } else if (sortOrder.value === "desc") {
@@ -220,6 +257,7 @@ const filteredAndSortedEvents = computed(() => {
   } else if (sortOrder.value === "furthest") {
     results = [...results].sort((a, b) => parseEventDateTime(b).getTime() - parseEventDateTime(a).getTime());
   } else {
+    // Default sort by date, newest first (or closest if not past)
     results = [...results].sort((a, b) => parseEventDateTime(b).getTime() - parseEventDateTime(a).getTime());
   }
 
@@ -251,7 +289,7 @@ const visiblePages = computed(() => {
   let startPage = Math.max(1, current - Math.floor(maxVisible / 2));
   let endPage = Math.min(total, startPage + maxVisible - 1);
 
-  // Ajuste startPage si nous sommes à la fin de la plage de pages
+  // Ajuste startPage if we are at the end of the page range
   if (endPage - startPage + 1 < maxVisible) {
     startPage = Math.max(1, endPage - maxVisible + 1);
   }
@@ -266,12 +304,13 @@ const visiblePages = computed(() => {
 function resetFilters() {
   searchQuery.value = '';
   selectedFormat.value = '';
+  selectedStatus.value = 'upcoming'; // Reset status filter
   sortOrder.value = 'default';
   currentPage.value = 1;
 }
 
 // Réinitialise la page actuelle à 1 lorsque les filtres ou le tri changent
-watch([searchQuery, selectedFormat, sortOrder], () => {
+watch([searchQuery, selectedFormat, selectedStatus, sortOrder], () => {
   currentPage.value = 1;
 });
 

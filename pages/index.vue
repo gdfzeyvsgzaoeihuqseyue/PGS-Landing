@@ -72,7 +72,7 @@
 
     <!-- Solution -->
     <section class="py-16 bg-gray-50 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="text-right max-w-2xl mb-16 ml-auto">
+      <div class="max-w-3xl mx-0 md:ml-auto text-center lg:text-right mb-8">
         <h2 class="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent text-3xl font-extrabold">
           Votre partenaire technologique de confiance
         </h2>
@@ -102,42 +102,16 @@
     </section>
 
     <!-- A porpos -->
-    <section id="about" class="py-20 bg-white">
+    <section id="about" class="py-10 bg-white">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-          <div>
-            <h2
-              class="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent text-3xl font-extrabold">
-              À propos de PRO GESTION SOFT
-            </h2>
-            <p class="text-base text-gray-600 mb-6 md:text-lg">
-              Fondée par des entrepreneurs africains pour des entrepreneurs africains, PRO GESTION SOFT (PGS)
-              développe des solutions numériques innovantes qui répondent aux défis spécifiques des PME du continent.
-            </p>
-            <p class="text-base text-gray-600 mb-6 md:text-lg">
-              Notre mission est de démocratiser l'accès aux technologies de pointe en proposant des outils
-              intuitifs, abordables et parfaitement adaptés au contexte économique et culturel africain.
-            </p>
-            <p class="text-base text-gray-600 mb-8 md:text-lg">
-              Avec plusieurs entreprises dans plusieurs villes, nous construisons l'écosystème numérique
-              qui permettra aux PME africaines de prospérer dans l'économie mondiale.
-            </p>
+          <h2
+            class="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent text-3xl text-center font-extrabold mb-6 block lg:hidden">
+            À propos de PRO GESTION SOFT
+          </h2>
 
-            <div class="flex flex-col sm:flex-row gap-4">
-              <a href="t.me/PGSUsers" target="_blank" rel="noopener noreferrer"
-                class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 transform hover:scale-105">
-                <IconUsers class="mr-2 h-5 w-5" />
-                Rejoindre la communauté
-              </a>
-              <NuxtLink to="/about"
-                class="inline-flex items-center px-6 py-3 border border-gray-300 text-base font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200">
-                <IconFileText class="mr-2 h-5 w-5" />
-                Notre histoire
-              </NuxtLink>
-            </div>
-          </div>
-
-          <div class="relative">
+          <!-- Image -->
+          <div class="relative lg:order-2">
             <div
               class="aspect-w-4 aspect-h-3 bg-gradient-to-br from-blue-100 to-indigo-200 rounded-2xl overflow-hidden">
               <img :src="sharedFiles.paths.page.indexAbout" alt="Équipe PRO GESTION SOFT au travail"
@@ -155,6 +129,37 @@
               </div>
             </div>
           </div>
+
+          <!-- Texte -->
+          <div class="lg:order-1 text-center lg:text-left flex flex-col justify-center">
+            <h2
+              class="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent text-3xl font-extrabold mb-6 hidden lg:block">
+              À propos de PRO GESTION SOFT
+            </h2>
+
+            <p class="text-base text-gray-600 mb-4 md:text-lg">
+              Fondée par des entrepreneurs africains pour des entrepreneurs africains, PRO GESTION SOFT (PGS)
+              développe des solutions numériques innovantes qui répondent aux défis spécifiques des PME du continent.
+            </p>
+            <p class="text-base text-gray-600 mb-6 md:text-lg">
+              Notre mission est de démocratiser l'accès aux technologies de pointe en proposant des outils
+              intuitifs, abordables et parfaitement adaptés au contexte économique et culturel africain.
+            </p>
+
+            <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+              <a href="t.me/PGSUsers" target="_blank" rel="noopener noreferrer"
+                class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700 transition-all duration-200 transform hover:scale-105">
+                <IconUsers class="mr-2 h-5 w-5" />
+                Rejoindre la communauté
+              </a>
+              <NuxtLink to="/about"
+                class="inline-flex items-center px-6 py-3 border border-gray-300 text-base font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-all duration-200">
+                <IconFileText class="mr-2 h-5 w-5" />
+                Notre histoire
+              </NuxtLink>
+            </div>
+          </div>
+
         </div>
       </div>
     </section>

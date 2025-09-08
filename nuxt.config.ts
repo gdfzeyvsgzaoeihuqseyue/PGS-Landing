@@ -4,7 +4,7 @@ export default defineNuxtConfig({
   devtools: { enabled: false },
   modules: [
     ['nuxt-gtag', {
-      id: process.env.GTAG_ID || 'G-PZGPXME136', 
+      id: process.env.GTAG_ID || 'G-PZGPXME136',
       enabled: process.env.NODE_ENV === 'production'
     }],
     '@nuxtjs/tailwindcss',
@@ -14,10 +14,11 @@ export default defineNuxtConfig({
     '@nuxtjs/sitemap',
   ],
 
-   runtimeConfig: {
+  runtimeConfig: {
     public: {
       pgsBaseAPI: process.env.PGS_API_URL,
       pgsSharedFiles: process.env.PGS_SHARED_FILES,
+      siteIdentifier: process.env.NUXT_PUBLIC_SITE_IDENTIFIER || 'pgs',
     }
   },
 
@@ -61,5 +62,6 @@ export default defineNuxtConfig({
         { rel: 'icon', type: 'image/png', href: '/favicon.ico' },
         { rel: 'canonical', href: 'https://progestionsoft.com' }
       ]
-    }}
-  })
+    }
+  }
+})
