@@ -10,6 +10,7 @@ export default defineNuxtRouteMiddleware((to, from) => {
   const normalizedPath = withoutTrailingSlash(to.path);
 
   if (isBetaMode) {
+    // Routes privées générales
     const privateRoutes = [
       '/privacy', '/terms', '/help', '/usefullinks'
     ].map(route => withoutTrailingSlash(route));
@@ -17,6 +18,7 @@ export default defineNuxtRouteMiddleware((to, from) => {
     const isEventsRoute = normalizedPath.startsWith('/events');
     const isPrivate = privateRoutes.includes(normalizedPath);
 
+    // Bloquer toutes les routes /events et les autres routes privées
     if (isEventsRoute || isPrivate) {
       throw createError({
         statusCode: 403,

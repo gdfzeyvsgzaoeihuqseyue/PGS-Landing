@@ -92,9 +92,9 @@
       <div v-else class="grid grid-cols-1 md:grid-cols-3 gap-8">
         <SolutionCard />
       </div>
-
-      <!-- <div v-if="!solutionStore.loading && !solutionStore.error" class="flex justify-center mt-8"> -->
-      <div class="flex justify-center mt-8">
+        
+      <div v-if="!solutionStore.loading && !solutionStore.error && solutionStore.solutions?.length"
+       class="flex justify-center mt-8">
         <NuxtLink to="/solutions"
           class="bg-primary text-white px-6 py-3 rounded-full font-medium hover:bg-secondary transition-all duration-300">
           Voir plus de solutions
