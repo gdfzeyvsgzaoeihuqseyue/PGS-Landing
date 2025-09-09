@@ -1,8 +1,8 @@
 import { defineStore } from 'pinia';
 
-type FooterData = { 
-  brand: string; 
-  brandUrl: string 
+type FooterData = {
+  brand: string;
+  brandUrl: string
 }
 
 export const useSharedFiles = defineStore('sharedFiles', () => {
@@ -30,8 +30,9 @@ export const useSharedFiles = defineStore('sharedFiles', () => {
       Charmaine: `${SHARED_URL}/Team/Charmaine.png`,
     },
     general: {
-      error404: `${SHARED_URL}/General/404.png`,
       error403: `${SHARED_URL}/General/403.png`,
+      error404: `${SHARED_URL}/General/404.png`,
+      error500: `${SHARED_URL}/General/500.png`,
     },
 
     //JSON
