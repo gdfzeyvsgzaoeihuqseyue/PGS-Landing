@@ -18,7 +18,7 @@
         <!-- Boutons -->
         <div class="flex flex-col sm:flex-row gap-4">
           <NuxtLink to="/"
-            class="flex items-center justify-center px-6 py-3 bg-primary-600 text-white rounded-full shadow-md hover:bg-secondary-600 hover:scale-105 transition-transform duration-300">
+            class="flex items-center justify-center px-6 py-3 bg-primary text-white rounded-full shadow-md hover:bg-secondary hover:scale-105 transition-transform duration-300">
             <IconHome class="w-5 h-5 mr-2" />
             Aller à l'accueil
           </NuxtLink>
@@ -97,7 +97,7 @@ const props = defineProps({
 const statusColor = computed(() => {
   switch (props.error.statusCode) {
     case 404:
-      return 'text-primary-600'
+      return 'text-primary'
     case 403:
       return 'text-red-600'
     case 500:

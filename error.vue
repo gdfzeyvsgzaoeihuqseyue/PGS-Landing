@@ -1,38 +1,35 @@
 <template>
-  <div class="min-h-screen flex flex-col items-center justify-center bg-gray-100 text-textClr p-4">
-    <!-- Préférences -->
-    <div class="mb-6">
-      <prefSettings />
+ <main class="font-body">
+    <div class="min-h-screen flex flex-col items-center justify-center bg-gray-100 text-textClr p-4">
+      <ErrorPage :error="errorData" class="flex-grow" />
     </div>
 
-    <ErrorPage :error="errorData" class="flex-grow" />
-  </div>
+    <!-- Footer -->
+    <footer class="py-4 border-t bg-WtBAct">
+      <div class="flex flex-col md:flex-row justify-between items-center max-w-6xl mx-auto w-full gap-4 px-4">
+        <!-- Logos Desktop -->
+        <div class="flex-shrink-0 items-center justify-center mx-4 hidden lg:block">
+          <img :src="sharedFiles.paths.logo.dc" alt="Logo" class="h-12 w-auto dark:hidden" />
+          <img :src="sharedFiles.paths.logo.dw" alt="Logo" class="h-12 w-auto hidden dark:block" />
+        </div>
 
-  <!-- Footer -->
-  <footer class="py-4 border-t bg-WtBAct">
-    <div class="flex flex-col md:flex-row justify-between items-center max-w-6xl mx-auto w-full gap-4 px-4">
-      <!-- Logos Desktop -->
-      <div class="flex-shrink-0 items-center justify-center mx-4 hidden lg:block">
-        <img :src="sharedFiles.paths.logo.dc" alt="Logo" class="h-12 w-auto dark:hidden" />
-        <img :src="sharedFiles.paths.logo.dw" alt="Logo" class="h-12 w-auto hidden dark:block" />
+        <!-- Logos Mobiles -->
+        <div class="sm:hidden flex-shrink-0 flex items-center mx-4">
+          <img :src="sharedFiles.paths.logo.mc" alt="Logo" class="h-12 w-auto dark:hidden" />
+          <img :src="sharedFiles.paths.logo.mw" alt="Logo" class="h-12 w-auto hidden dark:block" />
+        </div>
+
+        <div>
+          <p>© {{ new Date().getFullYear() }} EasyQuickTrack. Tous droits réservés.</p>
+        </div>
+
+        <!-- Liens sociaux -->
+        <ul role="list" class="flex justify-center sm:justify-start space-x-4">
+          <SocialCustomLink />
+        </ul>
       </div>
-
-      <!-- Logos Mobiles -->
-      <div class="sm:hidden flex-shrink-0 flex items-center mx-4">
-        <img :src="sharedFiles.paths.logo.mc" alt="Logo" class="h-12 w-auto dark:hidden" />
-        <img :src="sharedFiles.paths.logo.mw" alt="Logo" class="h-12 w-auto hidden dark:block" />
-      </div>
-
-      <div>
-        <p>© {{ new Date().getFullYear() }} EasyQuickTrack. Tous droits réservés.</p>
-      </div>
-
-      <!-- Liens sociaux -->
-      <ul role="list" class="flex justify-center sm:justify-start space-x-4">
-        <SocialLink />
-      </ul>
-    </div>
-  </footer>
+    </footer>
+  </main>
 </template>
 
 <script setup>
