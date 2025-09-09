@@ -1,7 +1,7 @@
 <template>
   <div class="space-x-4 flex justify-center sm:justify-start">
     <p v-if="loading" class="text-gray-600 text-sm">Chargement des liens sociaux...</p>
-    <p v-else-if="error" class="text-red-600 text-sm">Impossible de charger les liens sociaux</p>
+    <p v-else-if="error" class="text-red-600 text-sm">Impossible de filter les liens sociaux</p>
     <ul v-else class="flex flex-wrap gap-4 justify-center md:justify-start">
       <li v-for="link in displayedLinks" :key="link.name">
         <a :href="link.href" target="_blank" rel="noopener noreferrer" :title="link.title"
@@ -25,6 +25,6 @@ const router = useRouter()
 
 // Réseaux sociaux
 const { displayedLinks, loading, error } = useSocialLinksDisplay({
-  filterMedia: ['linkedin', 'facebook', 'x', 'tiktok'],
+  filterMedia: ['linkedin', 'facebook', 'x', 'youtube', 'tiktok'],
 }); 
 </script>

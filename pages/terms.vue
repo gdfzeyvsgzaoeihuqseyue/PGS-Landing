@@ -1,213 +1,256 @@
 <template>
   <div class="bg-gray-50 min-h-screen py-12">
     <div class="container mx-auto px-4 md:px-8 lg:px-12">
-      <header class="text-center mb-16">
-        <h1 class="text-5xl font-extrabold text-gray-900 mb-4 animate-fade-in">
-          Conditions Générales d'Utilisation (CGU)
+      <header class="text-center mb-12 py-6">
+        <h1 class="text-4xl sm:text-5xl font-extrabold text-gray-900 leading-tight">
+          <span class="text-primary">Conditions Générales</span> d'Utilisation
         </h1>
-        <p class="text-xl text-gray-600 max-w-2xl mx-auto animate-fade-in-up">
-          Accédez aux règles qui régissent l'utilisation de nos services et de la plateforme
-          <strong class="text-blue-600">SuitOps</strong> par <strong class="text-blue-600">PRO GESTION SOFT (PGS)</strong>.
+        <p class="mt-4 text-lg sm:text-xl max-w-2xl mx-auto">
+          Accédez aux règles qui régissent l'utilisation de nos services et de la plateforme.
         </p>
+        <p class="mt-2 text-sm text-gray-500">Dernière mise à jour : {{ lastUpdatedDate }}</p>
       </header>
 
-      <section class="bg-white rounded-xl shadow-lg p-8 md:p-12 lg:p-16 animate-fade-in-delay">
-        <p class="text-gray-700 leading-relaxed text-lg mb-8">
-          Les présentes Conditions Générales d'Utilisation (ci-après les "CGU") régissent l'accès et l'utilisation de la plateforme
-          <strong class="text-blue-600">SuitOps</strong> et de l'ensemble des services connexes (applications desktop, modules, écosystème PGS, etc.)
-          proposés par <strong class="text-blue-600">PRO GESTION SOFT (PGS)</strong>, entreprise technologique béninoise.
-        </p>
-        <p class="text-gray-700 leading-relaxed text-lg mb-12">
-          En accédant ou en utilisant nos services, vous reconnaissez avoir lu, compris et accepté d'être lié par les présentes CGU.
-          Si vous n'acceptez pas ces CGU, veuillez ne pas utiliser nos services.
-        </p>
-
-        <div class="space-y-12">
-          <div class="flex flex-col md:flex-row items-start md:space-x-8">
-            <div class="flex-shrink-0 text-blue-600 mb-4 md:mb-0">
-              <IconHash class="w-12 h-12" />
-            </div>
-            <div>
-              <h2 class="text-3xl font-bold text-gray-800 mb-4">1. Définitions</h2>
-              <ul class="list-disc list-inside space-y-2 text-gray-700 text-lg ml-4">
-                <li><strong class="font-semibold text-gray-800">Plateforme SuitOps :</strong> Désigne la solution tout-en-un développée par PGS, incluant ses modules intégrés (PGS RH, PGS Docs, PGS Facturation, PGS Recrutement, PGS Projets, PGS Formations (Skillup), PGS Sécurité).</li>
-                <li><strong class="font-semibold text-gray-800">Services :</strong> Désigne l'ensemble des fonctionnalités et outils mis à disposition par PGS, incluant la Plateforme SuitOps, l'écosystème PGS (PGS Studio, PGS Store, Templix, Dropshop, Skillup, VisualIDE, PGS for Dev, PGS N/S, PGSAPPBOT, NOAH, PGS Game), les applications desktop, et toute autre prestation offerte par PGS.</li>
-                <li><strong class="font-semibold text-gray-800">Utilisateur :</strong> Toute personne physique ou morale qui accède ou utilise les Services de PGS.</li>
-                <li><strong class="font-semibold text-gray-800">Compte :</strong> Espace personnel créé par l'Utilisateur pour accéder aux Services.</li>
-              </ul>
-            </div>
-          </div>
-
-          <div class="flex flex-col md:flex-row items-start md:space-x-8">
-            <div class="flex-shrink-0 text-blue-600 mb-4 md:mb-0">
-              <IconTarget class="w-12 h-12" />
-            </div>
-            <div>
-              <h2 class="text-3xl font-bold text-gray-800 mb-4">2. Objet des CGU</h2>
-              <p class="text-gray-700 text-lg">
-                Les CGU ont pour objet de définir les conditions dans lesquelles les Utilisateurs peuvent accéder et utiliser les Services proposés par PGS.
-              </p>
-            </div>
-          </div>
-
-          <div class="flex flex-col md:flex-row items-start md:space-x-8">
-            <div class="flex-shrink-0 text-blue-600 mb-4 md:mb-0">
-              <IconLogin class="w-12 h-12" />
-            </div>
-            <div>
-              <h2 class="text-3xl font-bold text-gray-800 mb-4">3. Accès aux Services</h2>
-              <ul class="list-disc list-inside space-y-2 text-gray-700 text-lg ml-4">
-                <li>L'accès aux Services nécessite la création d'un Compte. L'Utilisateur s'engage à fournir des informations exactes, complètes et à jour lors de l'inscription et à maintenir ces informations à jour.</li>
-                <li>L'accès peut se faire en ligne, hors ligne (pour les applications desktop), et est multi-plateforme (desktop, web).</li>
-                <li>PGS se réserve le droit de refuser, suspendre ou clôturer un Compte en cas de non-respect des présentes CGU.</li>
-              </ul>
-            </div>
-          </div>
-
-          <div class="flex flex-col md:flex-row items-start md:space-x-8">
-            <div class="flex-shrink-0 text-blue-600 mb-4 md:mb-0">
-              <IconTool class="w-12 h-12" />
-            </div>
-            <div>
-              <h2 class="text-3xl font-bold text-gray-800 mb-4">4. Utilisation des Services</h2>
-              <p class="text-gray-700 text-lg mb-3">L'Utilisateur s'engage à utiliser les Services de manière légale, éthique et conformément aux présentes CGU.</p>
-              <ul class="list-disc list-inside space-y-2 text-gray-700 text-lg ml-4">
-                <li>L'Utilisateur est seul responsable de l'exactitude des données qu'il saisit et gère via la Plateforme SuitOps.</li>
-                <li>Il est interdit de :
-                  <ul class="list-circle list-inside space-y-1 text-gray-700 ml-6 mt-2">
-                    <li>Utiliser les Services à des fins illégales ou frauduleuses.</li>
-                    <li>Perturber ou tenter de perturber le fonctionnement des Services.</li>
-                    <li>Tenter d'accéder sans autorisation à des systèmes ou réseaux liés aux Services.</li>
-                    <li>Diffuser des contenus illicites, offensants ou nuisibles.</li>
-                    <li>Utiliser des bots, spiders ou tout autre moyen automatisé pour accéder ou interagir avec les Services, sauf autorisation expresse de PGS.</li>
-                  </ul>
-                </li>
-                <li>L'assistant IA <strong class="font-semibold text-blue-600">NOAH</strong> est fourni pour faciliter l'utilisation des modules. Ses réponses sont basées sur les données et les règles configurées au sein de la plateforme. PGS ne garantit pas l'exactitude absolue des informations fournies par NOAH, et l'Utilisateur doit exercer son propre jugement.</li>
-              </ul>
-            </div>
-          </div>
-
-          <div class="flex flex-col md:flex-row items-start md:space-x-8">
-            <div class="flex-shrink-0 text-blue-600 mb-4 md:mb-0">
-              <IconLicense class="w-12 h-12" />
-            </div>
-            <div>
-              <h2 class="text-3xl font-bold text-gray-800 mb-4">5. Propriété Intellectuelle</h2>
-              <ul class="list-disc list-inside space-y-2 text-gray-700 text-lg ml-4">
-                <li>L'ensemble des contenus, marques, logos, logiciels, bases de données, et tout autre élément composant les Services de PGS (y compris la Plateforme SuitOps, les modules, l'écosystème PGS, les technologies utilisées comme Electron + Vue 3, etc.) sont la propriété exclusive de <strong class="font-semibold text-blue-600">PRO GESTION SOFT (PGS)</strong> ou de ses concédants, et sont protégés par les lois sur la propriété intellectuelle.</li>
-                <li>L'utilisation des Services ne confère à l'Utilisateur aucun droit de propriété sur ces éléments, à l'exception des droits d'utilisation limités et non exclusifs expressément accordés par les présentes CGU.</li>
-                <li>Les composants et modèles accessibles via <strong class="font-semibold text-blue-600">PGS Store</strong> ou <strong class="font-semibold text-blue-600">Templix</strong> sont soumis à leurs propres licences d'utilisation, que l'Utilisateur s'engage à respecter.</li>
-                <li>Bien que certains aspects puissent être orientés vers une approche "open-source" et "communautaire", les droits de propriété intellectuelle sur le code source principal et la conception globale des produits restent la propriété de PGS, sauf indication contraire explicite.</li>
-              </ul>
-            </div>
-          </div>
-
-          <div class="flex flex-col md:flex-row items-start md:space-x-8">
-            <div class="flex-shrink-0 text-blue-600 mb-4 md:mb-0">
-              <IconHandStop class="w-12 h-12" />
-            </div>
-            <div>
-              <h2 class="text-3xl font-bold text-gray-800 mb-4">6. Responsabilité</h2>
-              <ul class="list-disc list-inside space-y-2 text-gray-700 text-lg ml-4">
-                <li><strong class="font-semibold text-gray-800">Responsabilité de PGS :</strong> PGS s'engage à fournir les Services avec diligence et selon les règles de l'art. Cependant, PGS ne peut garantir une disponibilité continue et sans erreur des Services. PGS ne sera pas responsable des dommages directs ou indirects résultant de l'utilisation ou de l'impossibilité d'utiliser les Services, y compris la perte de données, de profits ou d'opportunités.</li>
-                <li><strong class="font-semibold text-gray-800">Responsabilité de l'Utilisateur :</strong> L'Utilisateur est seul responsable de l'utilisation qu'il fait des Services, des données qu'il y intègre et des conséquences de cette utilisation. L'Utilisateur s'engage à indemniser PGS contre toute réclamation ou dommage résultant de sa violation des présentes CGU.</li>
-              </ul>
-            </div>
-          </div>
-
-          <div class="flex flex-col md:flex-row items-start md:space-x-8">
-            <div class="flex-shrink-0 text-blue-600 mb-4 md:mb-0">
-              <IconLockOpen class="w-12 h-12" />
-            </div>
-            <div>
-              <h2 class="text-3xl font-bold text-gray-800 mb-4">7. Données Personnelles</h2>
-              <p class="text-gray-700 text-lg">
-                La collecte et le traitement des données personnelles sont régis par notre <NuxtLink to="/confidentialite" class="text-blue-600 hover:underline font-semibold">Politique de Confidentialité</NuxtLink>,
-                disponible sur le site web. En utilisant nos Services, vous consentez à la collecte et à l'utilisation de vos données conformément à cette politique.
-              </p>
-            </div>
-          </div>
-
-          <div class="flex flex-col md:flex-row items-start md:space-x-8">
-            <div class="flex-shrink-0 text-blue-600 mb-4 md:mb-0">
-              <IconHistory class="w-12 h-12" />
-            </div>
-            <div>
-              <h2 class="text-3xl font-bold text-gray-800 mb-4">8. Modifications des CGU</h2>
-              <p class="text-gray-700 text-lg">
-                PGS se réserve le droit de modifier les présentes CGU à tout moment. Les modifications prendront effet dès leur publication sur le site web.
-                Il est de la responsabilité de l'Utilisateur de consulter régulièrement les CGU pour se tenir informé des éventuelles mises à jour.
-                L'utilisation continue des Services après la publication des modifications constitue une acceptation tacite des nouvelles CGU.
-              </p>
-            </div>
-          </div>
-
-          <div class="flex flex-col md:flex-row items-start md:space-x-8">
-            <div class="flex-shrink-0 text-blue-600 mb-4 md:mb-0">
-              <IconPower class="w-12 h-12" />
-            </div>
-            <div>
-              <h2 class="text-3xl font-bold text-gray-800 mb-4">9. Résiliation</h2>
-              <p class="text-gray-700 text-lg">
-                PGS peut résilier ou suspendre l'accès de l'Utilisateur aux Services, sans préavis ni indemnité, en cas de violation des présentes CGU
-                ou si PGS estime que l'utilisation des Services par l'Utilisateur nuit à son fonctionnement ou à sa réputation.
-              </p>
-            </div>
-          </div>
-
-          <div class="flex flex-col md:flex-row items-start md:space-x-8">
-            <div class="flex-shrink-0 text-blue-600 mb-4 md:mb-0">
-              <IconScale class="w-12 h-12" />
-            </div>
-            <div>
-              <h2 class="text-3xl font-bold text-gray-800 mb-4">10. Loi Applicable et Juridiction Compétente</h2>
-              <p class="text-gray-700 text-lg">
-                Les présentes CGU sont régies par le droit béninois. Tout litige relatif à l'interprétation ou à l'exécution des présentes CGU sera
-                soumis à la compétence exclusive des tribunaux de Cotonou, Bénin.
-              </p>
-            </div>
-          </div>
+      <div class="lg:hidden mb-6">
+        <button @click="showMobileToc = !showMobileToc"
+          class="w-full flex items-center justify-center px-4 py-2 border border-gray-300 rounded-lg shadow-sm text-gray-700 bg-white hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary">
+          <IconList class="h-5 w-5 mr-2" />
+          Table des matières
+        </button>
+        <div v-if="showMobileToc" class="mt-4 bg-white rounded-lg shadow-md p-4">
+          <nav>
+            <ul class="space-y-2">
+              <li v-for="item in tableOfContents" :key="item.id">
+                <a :href="`#${item.id}`" @click="scrollToSection(item.id); showMobileToc = false"
+                  :class="['block text-gray-700 hover:text-primary transition-colors', { 'font-bold text-primary': activeSectionId === item.id }]">
+                  {{ item.text }}
+                </a>
+              </li>
+            </ul>
+          </nav>
         </div>
-      </section>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+        <aside class="hidden lg:block lg:col-span-1">
+          <div class="bg-white rounded-xl shadow-lg p-6 sticky top-24">
+            <h2 class="text-xl font-bold mb-4">Table des matières</h2>
+            <nav>
+              <ul class="space-y-2">
+                <li v-for="item in tableOfContents" :key="item.id">
+                  <a :href="`#${item.id}`" @click="scrollToSection(item.id)"
+                    :class="['block text-gray-700 hover:text-primary transition-colors', { 'font-bold text-primary': activeSectionId === item.id }]">
+                    {{ item.text }}
+                  </a>
+                </li>
+              </ul>
+            </nav>
+          </div>
+        </aside>
+
+        <section id="legal-content"
+          class="lg:col-span-3 bg-white rounded-xl shadow-lg p-8 md:p-12 lg:p-16 animate-fade-in-delay">
+
+          <div class="space-y-10">
+            <div>
+              <p class="text-base sm:text-lg leading-relaxed mb-4">
+                En utilisant les Services de PRO GESTION SOFT (PGS), vous acceptez les présentes Conditions d’utilisation. Si vous n’acceptez pas ces conditions, ne vous inscrivez pas et ne vous abonnez pas, n’accédez pas et n’utilisez pas les Services PGS.
+              </p>
+            </div>
+
+            <div>
+              <h2 id="definition" class="text-primary mb-4 text-2xl sm:text-3xl font-bold">0.	DEFINITION DES THEMES</h2>
+              <p class="text-base sm:text-lg leading-relaxed mb-4">
+                Conformément à la loi 2017-20 portant code du numérique en République du Bénin (Livre 5ième relatif à la
+                protection des données personnelles et de la vie privée), le site a fait l'objet d'une déclaration
+                auprès
+                de l’Autorité de Protection des Données Personnelles (A.D.P.D) (<a href="https://www.apdp.bj"
+                  target="_blank" rel="noopener noreferrer" class="text-primary hover:underline">www.apdp.bj</a>) sous
+                le
+                numéro (le numéro du récépissé).
+              </p>
+              <p class="text-base sm:text-lg leading-relaxed">
+                En tout état de cause PRO GESTION SOFT ne collecte des informations personnelles relatives à
+                l’utilisateur
+                que pour le besoin de certains services proposés par le site <a href="https://progestionsoft.com"
+                  target="_blank" rel="noopener noreferrer"
+                  class="text-primary hover:underline">https://progestionsoft.com</a>. L’utilisateur fournit ces
+                informations en toute connaissance de cause, notamment lorsqu’il procède par lui-même à leur saisie.
+              </p>
+            </div>
+
+            <div>
+              <div class="flex items-center text-primary mb-4">
+                <IconUserCheck class="w-8 h-8 mr-3" />
+                <h2 id="droit-acces" class="text-2xl sm:text-3xl font-bold">Droit d'accès</h2>
+              </div>
+              <p class="text-base sm:text-lg leading-relaxed mb-4">
+                Conformément aux dispositions de la loi 2017-20 portant code du numérique en République du Bénin, tout
+                utilisateur dispose d’un droit d’accès, de rectification et d’opposition aux données personnelles le
+                concernant, en effectuant sa demande écrite et signée, accompagnée d’une copie du titre d’identité avec
+                signature du titulaire de la pièce, en précisant l’adresse à laquelle la réponse doit être envoyée.
+              </p>
+              <p class="text-base sm:text-lg leading-relaxed">
+                Ce droit peut être exercé par voie postale auprès de <a href="https://progestionsoft.com"
+                  target="_blank" rel="noopener noreferrer"
+                  class="text-primary hover:underline">https://progestionsoft.com</a> ou par
+                voie électronique à l’adresse email suivante : <a href="mailto:legal@progestionsoft.com"
+                  class="text-primary hover:underline">legal@progestionsoft.com</a>.
+              </p>
+              <p class="text-base sm:text-lg leading-relaxed">
+                Aucune information personnelle de l’utilisateur du site <a href="https://progestionsoft.com"
+                  target="_blank" rel="noopener noreferrer"
+                  class="text-primary hover:underline">https://progestionsoft.com</a> n’est publiée à l’insu de
+                l’utilisateur, échangée, transférée, cédée ou vendue sur un support quelconque à des tiers.
+              </p>
+            </div>
+
+            <div>
+              <div class="flex items-center text-primary mb-4">
+                <IconShieldLock class="w-8 h-8 mr-3" />
+                <h2 id="confidentialite" class="text-2xl sm:text-3xl font-bold">Confidentialité</h2>
+              </div>
+              <p class="text-base sm:text-lg leading-relaxed">
+                Vos données personnelles sont confidentielles et ne seront en aucun cas communiquées à des tiers
+                conformément à notre <NuxtLink to="/privacy" class="text-primary hover:underline">Politique de
+                  Confidentialité</NuxtLink>.
+              </p>
+            </div>
+
+            <div>
+              <div class="flex items-center text-primary mb-4">
+                <IconCopyright class="w-8 h-8 mr-3" />
+                <h2 id="propriete-intellectuelle" class="text-2xl sm:text-3xl font-bold">Propriété Intellectuelle</h2>
+              </div>
+              <p class="text-base sm:text-lg leading-relaxed mb-4">
+                À l’exception des services tiers, les services sont la propriété unique et exclusive de PRO GESTION SOFT
+                et non de l’utilisateur. Sans limiter la généralité de ce qui précède, tous les droits, titres et
+                intérêts
+                dans et sur les Services, y compris tous les logiciels, sites Web, serveurs, graphiques, images, audio,
+                vidéo et autres médias, designs, animations, interfaces, documentation, l’apparence, algorithmes,
+                données,
+                caractéristiques, outils et méthodes de publicité et d’acquisition, inventions, secrets commerciaux,
+                logos, marques commerciales, marques de service, noms commerciaux et autres identificateurs
+                propriétaires,
+                qu’ils soient ou non enregistrés et/ou susceptibles d’être enregistrés, et toutes leurs dérivations sont
+                la propriété de et/ou sous licence de PRO GESTION SOFT.
+              </p>
+              <p class="text-base sm:text-lg leading-relaxed mb-4">
+                Toute reproduction, distribution, modification, adaptation, retransmission ou publication, même
+                partielle,
+                de ces différents éléments est strictement interdite sans l'accord exprès par écrit de PRO GESTION SOFT
+                SARL.
+              </p>
+              <p class="text-base sm:text-lg leading-relaxed">
+                Le responsable de publication est PRO GESTION SOFT SARL, représentée par son service de Recherche et
+                Développement (RD), en qualité de chargé des recherches et co-fondateur de KAARÒ GROUP SARL.
+              </p>
+            </div>
+          </div>
+        </section>
+      </div>
     </div>
   </div>
 </template>
 
-<script setup>
-import {
-  IconHash,
-  IconTarget,
-  IconLogin,
-  IconTool,
-  IconLicense,
-  IconHandStop,
-  IconLockOpen,
-  IconHistory,
-  IconPower,
-  IconScale
-} from '@tabler/icons-vue';
+<script setup lang="ts">
+import { ref, onMounted, onUnmounted, nextTick } from 'vue';
+import { IconCopyright, IconFileText, IconUserCheck, IconShieldLock, IconList } from '@tabler/icons-vue';
+
+const lastUpdatedDate = ref('25 septembre 2025'); 
+const tableOfContents = ref<{ id: string; text: string }[]>([]);
+const activeSectionId = ref('');
+const showMobileToc = ref(false);
+
+// Function to generate a slug from text
+const slugify = (text: string) => {
+  return text
+    .toString()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .trim()
+    .replace(/\s+/g, '-')
+    .replace(/[^\w-]+/g, '')
+    .replace(/--+/g, '-');
+};
+
+// Function to scroll to a section
+const scrollToSection = (id: string) => {
+  const element = document.getElementById(id);
+  if (element) {
+    element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+};
+
+// Scroll spy logic
+const handleScroll = () => {
+  const scrollY = window.scrollY;
+  const sections = tableOfContents.value.map(item => document.getElementById(item.id)).filter(Boolean) as HTMLElement[];
+
+  let currentActiveId = '';
+  for (let i = sections.length - 1; i >= 0; i--) {
+    const section = sections[i];
+    if (section.offsetTop <= scrollY + 100) {
+      currentActiveId = section.id;
+      break;
+    }
+  }
+  activeSectionId.value = currentActiveId;
+};
+
+onMounted(() => {
+  // Generate TOC
+  nextTick(() => {
+    const contentContainer = document.getElementById('legal-content');
+    if (contentContainer) {
+      const headings = contentContainer.querySelectorAll('h2');
+      headings.forEach((heading) => {
+        const text = heading.textContent || '';
+        const id = slugify(text);
+        heading.id = id; 
+        tableOfContents.value.push({ id, text });
+      });
+    }
+    handleScroll();
+    window.addEventListener('scroll', handleScroll);
+  });
+});
+
+onUnmounted(() => {
+  window.removeEventListener('scroll', handleScroll);
+});
 
 useHead({
-  title: 'Conditions Générales d\'Utilisation - PRO GESTION SOFT',
+  title: 'Conditions Générales d\'Utilisation',
   meta: [
     { name: 'description', content: 'Consultez les Conditions Générales d\'Utilisation des services et de la plateforme SuitOps de PRO GESTION SOFT (PGS).' }
   ],
-  link: [
-    { rel: 'canonical', href: 'https://votredomaine.com/conditions-generales-utilisation' } // Remplacez par votre URL canonique
-  ]
 });
 </script>
 
 <style scoped>
 /* Animations basiques pour un peu de dynamisme */
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .animate-fade-in {
@@ -222,10 +265,5 @@ useHead({
 .animate-fade-in-delay {
   animation: fadeIn 1s ease-out forwards;
   animation-delay: 0.4s;
-}
-
-/* Styles spécifiques pour les listes imbriquées */
-.list-circle {
-  list-style-type: circle;
 }
 </style>

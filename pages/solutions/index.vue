@@ -28,20 +28,20 @@
               <h3 class="text-base sm:text-lg font-bold mb-4">Statistiques des solutions</h3>
               <div class="grid grid-cols-2 gap-4 text-center">
                 <div>
-                  <p class="text-xl sm:text-2xl font-bold text-secondary">{{ solutionStatistics.total }}</p>
-                  <p class="text-sm sm:text-base text-gray-600">Total solutions</p>
+                  <p class="text-xl sm:text-2xl font-bold">{{ solutionStatistics.total }}</p>
+                  <p class="text-sm sm:text-base text-gray-600">Solutions</p>
                 </div>
                 <div>
-                  <p class="text-xl sm:text-2xl font-bold text-green-500">{{ solutionStatistics.available }}</p>
+                  <p class="text-xl sm:text-2xl font-bold">{{ solutionStatistics.uniqueCategories }}</p>
+                  <p class="text-sm sm:text-base text-gray-600">Catégories</p>
+                </div>
+                <div>
+                  <p class="text-xl sm:text-2xl font-bold">{{ solutionStatistics.available }}</p>
                   <p class="text-sm sm:text-base text-gray-600">Disponibles</p>
                 </div>
                 <div>
-                  <p class="text-xl sm:text-2xl font-bold text-red-500">{{ solutionStatistics.unavailable }}</p>
+                  <p class="text-xl sm:text-2xl font-bold">{{ solutionStatistics.unavailable }}</p>
                   <p class="text-sm sm:text-base text-gray-600">Indisponibles</p>
-                </div>
-                <div>
-                  <p class="text-xl sm:text-2xl font-bold text-blue-500">{{ solutionStatistics.uniqueCategories }}</p>
-                  <p class="text-sm sm:text-base text-gray-600">Catégories uniques</p>
                 </div>
               </div>
             </div>
@@ -112,8 +112,8 @@
             <IconLoader class="animate-spin h-10 w-10 text-primary mx-auto" />
             <p class="mt-2 text-gray-600">Chargement des solutions...</p>
           </div>
-          <div v-else-if="solutionStore.error" class="text-center py-10 text-red-500">
-            <p>Erreur: {{ solutionStore.error }}</p>
+          <div v-else-if="solutionStore.error" class="text-center py-10">
+            <p>Nous n'avons pas réussi à charger les solutions</p>
           </div>
 
           <!-- Cartes de solutions -->
@@ -122,12 +122,14 @@
               :class="['group relative bg-white rounded-xl shadow-lg overflow-hidden p-6 border-2 transition-all duration-300 hover:shadow-xl hover:transform hover:scale-105',
                 solution.disabled ? 'border-dashed hover:border-warning cursor-progress' : 'border-transparent hover:border-primary']"
               :title="solution.disabled ? `${solution.name} est actuellement indisponible, cliquez pour en savoir plus.` : null">
-              
+
               <!-- Indicateur de statut visuel -->
-              <div v-if="!solution.disabled" class="absolute top-4 right-4 px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
+              <div v-if="!solution.disabled"
+                class="absolute top-4 right-4 px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
                 Activé
               </div>
-              <div v-else class="absolute top-4 right-4 px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800">
+              <div v-else
+                class="absolute top-4 right-4 px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800">
                 Désactivé
               </div>
 
@@ -148,8 +150,12 @@
           </div>
 
           <!-- Message d'absence -->
-          <div v-else class="text-center text-gray-500 mt-6">
-            Aucune solution trouvée pour <span class="font-bold">{{ searchQuery }}</span>.
+          <div v-else class="bg-white rounded-xl shadow-md p-8 text-center">
+            <h3 class="text-xl font-medium text-gray-900 mb-2">Aucune solutione trouvée</h3>
+            <p class="text-gray-600 mb-4">Essayez de modifier vos critères de recherche.</p>
+            <button @click="resetFilters" class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-secondary">
+              Réinitialiser les filtres
+            </button>
           </div>
         </main>
       </div>
@@ -177,7 +183,7 @@ const selectedCategory = ref("");
 const showSuggestions = ref(false);
 const searchSuggestions = ref<string[]>([]);
 const sortOrder = ref<"default" | "asc" | "desc">("default");
-const showSidebar = ref(false); 
+const showSidebar = ref(false);
 
 onMounted(() => {
   solutionStore.fetchSolutions(undefined, undefined, true);

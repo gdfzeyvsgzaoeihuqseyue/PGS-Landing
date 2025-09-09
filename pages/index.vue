@@ -86,13 +86,14 @@
         <IconLoader class="animate-spin h-10 w-10 text-primary mx-auto" />
         <p class="mt-2 text-gray-600">Chargement des solutions...</p>
       </div>
-      <div v-else-if="solutionStore.error" class="text-center py-10 text-red-500">
-        <p>Erreur: {{ solutionStore.error }}</p>
+      <div v-else-if="solutionStore.error" class="text-center">
+        <p>Nous n'avons pas réussi à filter les soutions disponibles</p>
       </div>
       <div v-else class="grid grid-cols-1 md:grid-cols-3 gap-8">
         <SolutionCard />
       </div>
 
+      <!-- <div v-if="!solutionStore.loading && !solutionStore.error" class="flex justify-center mt-8"> -->
       <div class="flex justify-center mt-8">
         <NuxtLink to="/solutions"
           class="bg-primary text-white px-6 py-3 rounded-full font-medium hover:bg-secondary transition-all duration-300">
@@ -101,7 +102,7 @@
       </div>
     </section>
 
-    <!-- A porpos -->
+    <!-- A propos -->
     <section id="about" class="py-10 bg-white">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">

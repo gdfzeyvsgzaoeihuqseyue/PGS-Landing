@@ -31,7 +31,7 @@
           <div class="bg-white rounded-xl shadow-md p-6 sticky top-6">
             <!-- En-tête mobile -->
             <div class="flex justify-between items-center mb-6 lg:hidden">
-              <h3 class="text-lg font-bold">Filtres</h3>
+              <h3 class="text-lg font-bold">Statistiques</h3>
               <button @click="showSidebar = false" class="text-gray-500">
                 <IconX class="h-6 w-6" />
               </button>
@@ -39,15 +39,15 @@
 
             <!-- Bloc statistiques -->
             <div class="mb-8">
-              <h3 class="text-lg font-bold mb-4">Statistiques</h3>
-              <div class="space-y-4">
+              <h3 class="text-lg font-bold mb-4 hidden lg:block">Statistiques</h3>
+              <div class="grid grid-cols-2 gap-4 text-center">
                 <div>
-                  <p class="text-sm text-gray-500">Articles publiés</p>
                   <p class="text-2xl font-bold">{{ articleStore.articles.length }}</p>
+                  <p class="text-sm text-gray-500">Articles</p>
                 </div>
                 <div>
-                  <p class="text-sm text-gray-500">Vues totales</p>
                   <p class="text-2xl font-bold">{{ totalViews.toLocaleString() }}</p>
+                  <p class="text-sm text-gray-500">Vues</p>
                 </div>
               </div>
             </div>
@@ -116,8 +116,8 @@
             <IconLoader class="animate-spin h-10 w-10 text-primary mx-auto" />
             <p class="mt-2 text-gray-600">Chargement des articles...</p>
           </div>
-          <div v-else-if="articleStore.error || categoryStore.error || authorStore.error" class="text-center py-10 text-red-500">
-            <p>Erreur: {{ articleStore.error || categoryStore.error || authorStore.error }}</p>
+          <div v-else-if="articleStore.error || categoryStore.error || authorStore.error" class="text-center py-10">
+            <p>Nous n'arrivons pas à afficher les articles</p>
           </div>
 
           <!-- Articles -->

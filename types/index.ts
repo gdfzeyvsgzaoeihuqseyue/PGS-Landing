@@ -129,8 +129,10 @@ export interface Article {
   title: string;
   excerpt: string;
   content: string;
-  imageUrl: string;
+  imageUrl?: string;
+  publishedAt: string;
   tags: string[];
+  imageAlt?: string;
   views: number; 
   createdAt: string; 
   updatedAt: string; 

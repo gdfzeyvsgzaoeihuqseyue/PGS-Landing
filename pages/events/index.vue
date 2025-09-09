@@ -28,19 +28,19 @@
               <h3 class="text-base sm:text-lg font-bold mb-4">Statistiques des événements</h3>
               <div class="grid grid-cols-2 gap-4 text-center">
                 <div>
-                  <p class="text-xl sm:text-2xl font-bold text-secondary">{{ eventStatistics.total }}</p>
-                  <p class="text-sm sm:text-base text-gray-600">Total événements</p>
+                  <p class="text-xl sm:text-2xl font-bold">{{ eventStatistics.total }}</p>
+                  <p class="text-sm sm:text-base text-gray-600">Evénements</p>
                 </div>
                 <div>
-                  <p class="text-xl sm:text-2xl font-bold text-green-500">{{ eventStatistics.online }}</p>
+                  <p class="text-xl sm:text-2xl font-bold">{{ eventStatistics.online }}</p>
                   <p class="text-sm sm:text-base text-gray-600">En ligne</p>
                 </div>
                 <div>
-                  <p class="text-xl sm:text-2xl font-bold text-purple-500">{{ eventStatistics.presential }}</p>
+                  <p class="text-xl sm:text-2xl font-bold">{{ eventStatistics.presential }}</p>
                   <p class="text-sm sm:text-base text-gray-600">Présentiel</p>
                 </div>
                 <div>
-                  <p class="text-xl sm:text-2xl font-bold text-blue-500">{{ eventStatistics.hybride }}</p>
+                  <p class="text-xl sm:text-2xl font-bold">{{ eventStatistics.hybride }}</p>
                   <p class="text-sm sm:text-base text-gray-600">Hybride</p>
                 </div>
               </div>
@@ -115,13 +115,17 @@
             <IconLoader class="animate-spin h-10 w-10 text-primary mx-auto" />
             <p class="mt-2 text-gray-600">Chargement des événements...</p>
           </div>
-          <div v-else-if="eventStore.error" class="text-center py-10 text-red-500">
-            <p>Erreur: {{ eventStore.error }}</p>
+          <div v-else-if="eventStore.error" class="text-center py-10">
+            <p>Nous n'avons pas réussi à charger les événements</p>
           </div>
 
           <!-- Message si aucun résultat -->
-          <div v-else-if="noResultsFound" class="text-center text-gray-500">
-            Aucun événement trouvé pour <span class="font-bold">{{ searchQuery }}</span>.
+          <div v-else-if="noResultsFound" class="bg-white rounded-xl shadow-md p-8 text-center">
+            <h3 class="text-xl font-medium text-gray-900 mb-2">Aucun événement trouvé</h3>
+            <p class="text-gray-600 mb-4">Essayez de modifier vos critères de recherche.</p>
+            <button @click="resetFilters" class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-secondary">
+              Réinitialiser les filtres
+            </button>
           </div>
 
           <!-- Événements en grille -->

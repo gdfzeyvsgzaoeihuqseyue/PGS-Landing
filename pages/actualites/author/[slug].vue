@@ -134,7 +134,7 @@
               <p class="mt-2 text-gray-600">Chargement des articles...</p>
             </div>
             <div v-else-if="authorStore.error || articleStore.error" class="text-center py-10 text-red-500">
-              <p>Erreur: {{ authorStore.error || articleStore.error }}</p>
+              <p>Nous n'avons pas réussi à charger les articles de cet autheur</p>
             </div>
 
             <!-- Liste des articles -->

@@ -30,7 +30,8 @@ export const useSharedFiles = defineStore('sharedFiles', () => {
       Charmaine: `${SHARED_URL}/Team/Charmaine.png`,
     },
     general: {
-      error404: `${SHARED_URL}/General/404Error.png`,
+      error404: `${SHARED_URL}/General/404.png`,
+      error403: `${SHARED_URL}/General/403.png`,
     },
 
     //JSON

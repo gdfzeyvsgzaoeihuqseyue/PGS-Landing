@@ -65,16 +65,14 @@
             <div>
               <div class="flex items-center text-primary mb-4">
                 <IconFileText class="w-8 h-8 mr-3" />
-                <h2 id="declaration-apdp" class="text-2xl sm:text-3xl font-bold">Déclaration à l'APDP</h2>
+                <h2 class="text-2xl sm:text-3xl font-bold">Déclaration à l'APDP</h2>
               </div>
               <p class="text-base sm:text-lg leading-relaxed mb-4">
                 Conformément à la loi 2017-20 portant code du numérique en République du Bénin (Livre 5ième relatif à la
                 protection des données personnelles et de la vie privée), le site a fait l'objet d'une déclaration
                 auprès
                 de l’Autorité de Protection des Données Personnelles (A.D.P.D) (<a href="https://www.apdp.bj"
-                  target="_blank" rel="noopener noreferrer" class="text-primary hover:underline">www.apdp.bj</a>) sous
-                le
-                numéro (le numéro du récépissé).
+                  target="_blank" rel="noopener noreferrer" class="text-primary hover:underline">www.apdp.bj</a>) sous le numéro (le numéro du récépissé).
               </p>
               <p class="text-base sm:text-lg leading-relaxed">
                 En tout état de cause PRO GESTION SOFT ne collecte des informations personnelles relatives à
@@ -89,7 +87,7 @@
             <div>
               <div class="flex items-center text-primary mb-4">
                 <IconUserCheck class="w-8 h-8 mr-3" />
-                <h2 id="droit-acces" class="text-2xl sm:text-3xl font-bold">Droit d'accès</h2>
+                <h2 class="text-2xl sm:text-3xl font-bold">Droit d'accès</h2>
               </div>
               <p class="text-base sm:text-lg leading-relaxed mb-4">
                 Conformément aux dispositions de la loi 2017-20 portant code du numérique en République du Bénin, tout
@@ -115,7 +113,7 @@
             <div>
               <div class="flex items-center text-primary mb-4">
                 <IconShieldLock class="w-8 h-8 mr-3" />
-                <h2 id="confidentialite" class="text-2xl sm:text-3xl font-bold">Confidentialité</h2>
+                <h2 class="text-2xl sm:text-3xl font-bold">Confidentialité</h2>
               </div>
               <p class="text-base sm:text-lg leading-relaxed">
                 Vos données personnelles sont confidentielles et ne seront en aucun cas communiquées à des tiers
@@ -127,7 +125,7 @@
             <div>
               <div class="flex items-center text-primary mb-4">
                 <IconCopyright class="w-8 h-8 mr-3" />
-                <h2 id="propriete-intellectuelle" class="text-2xl sm:text-3xl font-bold">Propriété Intellectuelle</h2>
+                <h2 class="text-2xl sm:text-3xl font-bold">Propriété Intellectuelle</h2>
               </div>
               <p class="text-base sm:text-lg leading-relaxed mb-4">
                 À l’exception des services tiers, les services sont la propriété unique et exclusive de PRO GESTION SOFT
@@ -162,15 +160,9 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, nextTick } from 'vue';
-import {
-  IconCopyright,
-  IconFileText,
-  IconUserCheck,
-  IconShieldLock,
-  IconList
-} from '@tabler/icons-vue';
+import { IconCopyright, IconFileText, IconUserCheck, IconShieldLock, IconList } from '@tabler/icons-vue';
 
-const lastUpdatedDate = ref('25 septembre 2025'); 
+const lastUpdatedDate = ref('1er septembre 2025');
 const tableOfContents = ref<{ id: string; text: string }[]>([]);
 const activeSectionId = ref('');
 const showMobileToc = ref(false);
@@ -221,7 +213,7 @@ onMounted(() => {
       headings.forEach((heading) => {
         const text = heading.textContent || '';
         const id = slugify(text);
-        heading.id = id; 
+        heading.id = id;
         tableOfContents.value.push({ id, text });
       });
     }
@@ -235,12 +227,9 @@ onUnmounted(() => {
 });
 
 useHead({
-  title: 'Mentions Légales - PRO GESTION SOFT',
+  title: 'Mentions Légales',
   meta: [
     { name: 'description', content: 'Mentions légales de PRO GESTION SOFT (PGS), entreprise tech béninoise spécialisée dans les solutions numériques pour PME africaines.' }
-  ],
-  link: [
-    { rel: 'canonical', href: 'https://votredomaine.com/mentions-legales' }
   ]
 });
 </script>

@@ -95,8 +95,8 @@
             <IconLoader class="animate-spin h-10 w-10 text-primary mx-auto" />
             <p class="mt-2 text-gray-600">Chargement des auteurs...</p>
           </div>
-          <div v-else-if="authorStore.error || articleStore.error" class="text-center py-10 text-red-500">
-            <p>Erreur: {{ authorStore.error || articleStore.error }}</p>
+          <div v-else-if="authorStore.error || articleStore.error" class="text-center py-10">
+            <p>Nous n'avons pas réussi à charger les articles de cet autheur</p>
           </div>
 
           <div v-else-if="filteredAndSortedAuthors.length > 0"

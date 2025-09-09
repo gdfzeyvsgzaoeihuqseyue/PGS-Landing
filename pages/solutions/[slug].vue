@@ -64,9 +64,9 @@
           <template v-if="solutionStore.currentSolution.faq && solutionStore.currentSolution.faq.length > 0">
             <div class="flex items-center mb-4 gap-4">
               <h3 class="text-2xl font-bold">FAQ sur {{ solutionStore.currentSolution.name }}</h3>
-            ( {{ solutionStore.currentSolution.faq.length }} FAQs )
+              ( {{ solutionStore.currentSolution.faq.length }} FAQs )
             </div>
-            
+
             <div v-if="solutionStore.currentSolution.faq.length > 2" class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
               <input type="search" v-model="faqSearchQuery" placeholder="Rechercher une question..."
                 class="w-full p-2 border border-gray-300 rounded-md" />
@@ -156,11 +156,29 @@
     <IconLoader class="animate-spin h-10 w-10 text-primary mx-auto" />
     <p class="mt-2 text-gray-600">Chargement de la solution...</p>
   </div>
-  <div v-else-if="solutionStore.error" class="text-center py-20 text-red-500">
-    <p>Erreur: {{ solutionStore.error }}</p>
+  <div v-else-if="solutionStore.error" class="text-center py-20">
+    <p>Nous rencontrons une erreur pour afficher les détails de cette solution</p>
   </div>
-  <div v-else class="text-center py-20">
-    <p class="text-2xl text-warning">Solution introuvable.</p>
+  <!-- Message d'absence -->
+  <div v-else class="bg-gray-50 py-12 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- Bouton retour -->
+    <button @click="$router.back()"
+      class="mb-6 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-gray-700 bg-white hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition">
+      <IconArrowLeft class="h-5 w-5 mr-2" />
+      Retour
+    </button>
+
+    <div class="text-center bg-white rounded-xl shadow-md p-8 md:p-12">
+      <h2 class="text-5xl sm:text-6xl font-extrabold text-gray-800 mb-4">Oups !</h2>
+      <p class="text-base sm:text-lg text-gray-600 mb-8">
+        Désolé, la solution que vous recherchez n'existe pas ou a été supprimée.
+      </p>
+      <NuxtLink to="/solutions"
+        class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-primary hover:bg-secondary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition">
+        <IconArrowBack class="mr-2 -mr-1 h-5 w-5" />
+        Retour aux solutions
+      </NuxtLink>
+    </div>
   </div>
 </template>
 
@@ -168,7 +186,7 @@
 import { computed, ref, onMounted, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import { useSolutionStore } from '@/stores/solutions';
-import { IconCheck, IconBook, IconVideo, IconLoader } from '@tabler/icons-vue';
+import { IconArrowLeft, IconCheck, IconBook, IconVideo, IconLoader } from '@tabler/icons-vue';
 
 const route = useRoute();
 const slug = route.params.slug as string;
@@ -178,10 +196,9 @@ const faqSearchQuery = ref('');
 const docSearchQuery = ref('');
 const tutorialSearchQuery = ref('');
 
-// Fetch solution on component mount and when slug changes
+// Charger les solutions
 onMounted(async () => {
   await solutionStore.fetchSolutionByIdentifier(slug);
-  // Ensure all solutions are loaded for SolutionCard if not already
   if (solutionStore.solutions.length === 0) {
     await solutionStore.fetchSolutions(undefined, undefined, true);
   }
@@ -274,14 +291,18 @@ useHead(() => ({
 
 <style scoped>
 .hero-bg-responsive {
-  background-size: contain; /* Default for mobile: image is fully contained */
+  background-size: contain;
+  /* Default for mobile: image is fully contained */
   background-repeat: no-repeat;
   background-position: center;
 }
 
-@media (min-width: 768px) { /* md breakpoint */
+@media (min-width: 768px) {
+
+  /* md breakpoint */
   .hero-bg-responsive {
-    background-size: cover; /* On larger screens, cover the area */
+    background-size: cover;
+    /* On larger screens, cover the area */
   }
 }
 </style>

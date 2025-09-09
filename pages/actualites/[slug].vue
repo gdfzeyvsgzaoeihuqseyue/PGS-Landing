@@ -14,8 +14,8 @@
         </div>
       </template>
       <template v-else-if="articleStore.error">
-        <div class="text-center py-10 text-red-500">
-          <p>Erreur: {{ articleStore.error }}</p>
+        <div class="text-center py-10">
+          <p>Désolé, nous n'avons pas réussi à charger cet article</p>
         </div>
       </template>
       <template v-else-if="article">

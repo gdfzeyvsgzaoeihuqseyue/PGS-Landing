@@ -13,8 +13,8 @@
         <IconLoader class="animate-spin h-10 w-10 text-primary mx-auto" />
         <p class="mt-2 text-gray-600">Chargement de l'événement...</p>
       </div>
-      <div v-else-if="eventStore.error" class="text-center py-10 text-red-500">
-        <p>Erreur: {{ eventStore.error }}</p>
+      <div v-else-if="eventStore.error" class="text-center py-10">
+        <p>Nous rencontrons une erreur pour afficher les détails de cet événement</p>
       </div>
 
       <!-- Détails de l'événement -->
