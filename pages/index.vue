@@ -148,7 +148,7 @@
             </p>
 
             <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-              <a href="t.me/PGSUsers" target="_blank" rel="noopener noreferrer"
+              <a href="https://t.me/PGSUsers" target="_blank" rel="noopener noreferrer"
                 class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700 transition-all duration-200 transform hover:scale-105">
                 <IconUsers class="mr-2 h-5 w-5" />
                 Rejoindre la communauté
