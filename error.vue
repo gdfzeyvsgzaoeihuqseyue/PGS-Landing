@@ -20,7 +20,7 @@
         </div>
 
         <div>
-          <p>© {{ new Date().getFullYear() }} EasyQuickTrack. Tous droits réservés.</p>
+          <p>© {{ new Date().getFullYear() }} PRO GESTION SOFT. Tous droits réservés.</p>
         </div>
 
         <!-- Liens sociaux -->

@@ -1,18 +1,15 @@
 <template>
   <main>
-    <!-- Hero section avec background -->
-    <section class="relative py-24 bg-cover bg-center"
-      style="background-image: url('https://thumbs.dreamstime.com/b/mes-gars-vont-faire-le-travail-portrait-d-un-jeune-homme-debout-dans-bureau-avec-des-designers-en-arri%C3%A8re-plan-277062855.jpg');">
-      <div class="absolute inset-0 bg-gradient-to-r from-primary/90 to-secondary/90"></div>
-      <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-white">
-        <h1 class="text-5xl md:text-6xl font-bold mb-6">Contactez-nous</h1>
-        <p class="text-xl md:text-2xl max-w-3xl mx-auto">
-          Contactez-nous pour plus d'assistance.
-        </p>
-      </div>
-    </section>
+    <header class="text-center mb-8 sm:mb-12 py-6 mt-6 sm:mt-8">
+      <h1 class="text-3xl sm:text-5xl font-extrabold text-gray-900 leading-tight">
+        <span class="text-primary">Contactez</span>-nous
+      </h1>
+      <p class="mt-2 sm:mt-4 text-base sm:text-xl max-w-2xl mx-auto">
+        Contactez-nous pour plus d'assistance.
+      </p>
+    </header>
 
-    <section class="max-w-7xl mx-auto px-4 sm:px-6 py-16 lg:px-8">
+    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
         <!-- Formulaire de contact -->
         <div class="bg-white p-8 rounded-lg shadow-md">
@@ -77,14 +74,6 @@
             <h2 class="text-2xl font-bold mb-6">Nos coordonnées</h2>
             <div class="space-y-4">
               <div class="flex items-start">
-                <IconMapPin class="h-6 w-6 text-primary mr-3 mt-1" />
-                <div>
-                  <h3 class="font-semibold mb-1">Adresse</h3>
-                  <p class="text-gray-600">Tanmè, Adjarra<br />République du Bénin</p>
-                </div>
-              </div>
-
-              <div class="flex items-start">
                 <IconMail class="h-6 w-6 text-primary mr-3 mt-1" />
                 <div>
                   <h3 class="font-semibold mb-1">Email</h3>
@@ -101,6 +90,14 @@
                   <a href="tel:+2290152535380" class="text-primary hover:text-secondary">
                     +229 01 52535380
                   </a>
+                </div>
+              </div>
+
+              <div class="flex items-start">
+                <IconMapPin class="h-6 w-6 text-primary mr-3 mt-1" />
+                <div>
+                  <h3 class="font-semibold mb-1">Adresse</h3>
+                  <p class="text-primary">Tanmè, Adjarra<br />République du Bénin</p>
                 </div>
               </div>
             </div>
@@ -120,6 +117,24 @@
             </div>
           </div>
         </div>
+      </div>
+    </section>
+
+    <!-- Section Google Maps -->
+    <section class="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
+      <div class="bg-white p-8 rounded-lg shadow-md">
+        <h2 class="text-2xl font-bold mb-6">Où nous trouver</h2>
+        <div class="aspect-w-16 aspect-h-9">
+          <iframe
+            src="https://maps.google.com/maps?q=PRO%20GESTION%20SOFT%2C%20Tanm%C3%A8%2C%20Adjarra%2C%20B%C3%A9nin&t=&z=13&ie=UTF8&iwloc=&output=embed"
+            width="100%" height="450" style="border:0;" allowfullscreen="" loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade"></iframe>
+        </div>
+        <p class="text-sm text-gray-500 mt-4 text-center">
+          La carte ci-dessus indique notre emplacement général. Pour un itinéraire précis, veuillez utiliser
+          l'application
+          Google Maps.
+        </p>
       </div>
     </section>
   </main>

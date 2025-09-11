@@ -24,7 +24,7 @@ export const useSiteInfoStore = defineStore('siteInfo', () => {
       const response = await $fetch<{
         message: string;
         SiteInfos: SiteInfo[];
-      }>(`${API_BASE_URL}/site-info-active`, {
+      }>(`${API_BASE_URL}/site-info/active`, {
         params: { site: SITE_IDENTIFIER }
       });
 

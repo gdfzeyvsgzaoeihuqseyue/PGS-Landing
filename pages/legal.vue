@@ -1,14 +1,23 @@
 <template>
-  <div class="bg-gray-50 min-h-screen py-12">
+  <main>
     <div class="container mx-auto px-4 md:px-8 lg:px-12">
-      <header class="text-center mb-12 py-6">
-        <h1 class="text-4xl sm:text-5xl font-extrabold text-gray-900 leading-tight">
+      <header class="text-center mb-8 sm:mb-12 py-6 mt-6 sm:mt-8">
+        <h1 class="text-3xl sm:text-5xl font-extrabold text-gray-900 leading-tight">
           <span class="text-primary">Mentions</span> Légales
         </h1>
-        <p class="mt-4 text-lg sm:text-xl max-w-2xl mx-auto">
+        <p class="mt-2 sm:mt-4 text-base sm:text-xl max-w-2xl mx-auto">
           Transparence et conformité : retrouvez ici toutes les informations légales concernant PRO GESTION SOFT (PGS)
         </p>
+
         <p class="mt-2 text-sm text-gray-500">Dernière mise à jour : {{ lastUpdatedDate }}</p>
+        <!-- Fichier PDF -->
+        <div class="mt-6">
+          <a :href="sharedFiles.paths.pdf.legal" download="PGS_Mentions_Legales.pdf"
+            class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-primary hover:bg-secondary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition">
+            <IconDownload class="h-5 w-5 mr-2" />
+            Télécharger les Mentions Légales (PDF)
+          </a>
+        </div>
       </header>
 
       <div class="lg:hidden mb-6">
@@ -31,7 +40,7 @@
         </div>
       </div>
 
-      <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+      <div class="grid grid-cols-1 lg:grid-cols-4 gap-8 mb-6">
         <aside class="hidden lg:block lg:col-span-1">
           <div class="bg-white rounded-xl shadow-lg p-6 sticky top-24">
             <h2 class="text-xl font-bold mb-4">Table des matières</h2>
@@ -72,7 +81,8 @@
                 protection des données personnelles et de la vie privée), le site a fait l'objet d'une déclaration
                 auprès
                 de l’Autorité de Protection des Données Personnelles (A.D.P.D) (<a href="https://www.apdp.bj"
-                  target="_blank" rel="noopener noreferrer" class="text-primary hover:underline">www.apdp.bj</a>) sous le numéro (le numéro du récépissé).
+                  target="_blank" rel="noopener noreferrer" class="text-primary hover:underline">www.apdp.bj</a>) sous
+                le numéro (le numéro du récépissé).
               </p>
               <p class="text-base sm:text-lg leading-relaxed">
                 En tout état de cause PRO GESTION SOFT ne collecte des informations personnelles relatives à
@@ -155,13 +165,15 @@
         </section>
       </div>
     </div>
-  </div>
+  </main>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, nextTick } from 'vue';
-import { IconCopyright, IconFileText, IconUserCheck, IconShieldLock, IconList } from '@tabler/icons-vue';
+import { IconCopyright, IconFileText, IconUserCheck, IconShieldLock, IconList, IconDownload } from '@tabler/icons-vue';
+import { useSharedFiles } from '~/stores/sharedFiles'
 
+const sharedFiles = useSharedFiles()
 const lastUpdatedDate = ref('1er septembre 2025');
 const tableOfContents = ref<{ id: string; text: string }[]>([]);
 const activeSectionId = ref('');

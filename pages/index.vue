@@ -92,9 +92,9 @@
       <div v-else class="grid grid-cols-1 md:grid-cols-3 gap-8">
         <SolutionCard />
       </div>
-        
+
       <div v-if="!solutionStore.loading && !solutionStore.error && solutionStore.solutions?.length"
-       class="flex justify-center mt-8">
+        class="flex justify-center mt-8">
         <NuxtLink to="/solutions"
           class="bg-primary text-white px-6 py-3 rounded-full font-medium hover:bg-secondary transition-all duration-300">
           Voir plus de solutions
@@ -161,6 +161,20 @@
             </div>
           </div>
 
+        </div>
+      </div>
+    </section>
+
+    <!-- Section Carte Google Maps -->
+    <section class="py-4 bg-gray-50">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="bg-white p-8 rounded-lg shadow-md">
+          <div class="aspect-w-16 aspect-h-9">
+            <iframe
+              src="https://maps.google.com/maps?q=PRO%20GESTION%20SOFT%2C%20Tanm%C3%A8%2C%20Adjarra%2C%20B%C3%A9nin&t=&z=13&ie=UTF8&iwloc=&output=embed"
+              width="100%" height="450" style="border:0;" allowfullscreen="" loading="lazy"
+              referrerpolicy="no-referrer-when-downgrade"></iframe>
+          </div>
         </div>
       </div>
     </section>
