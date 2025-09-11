@@ -12,11 +12,11 @@
         <p class="mt-2 text-sm text-gray-500">Dernière mise à jour : {{ lastUpdatedDate }}</p>
         <!-- Fichier PDF -->
         <div class="mt-6">
-          <a :href="sharedFiles.paths.pdf.legal" download="PGS_Mentions_Legales.pdf"
+          <button @click.prevent="downloadPdf" download="PGS_Mentions_Legales.pdf"
             class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-primary hover:bg-secondary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition">
             <IconDownload class="h-5 w-5 mr-2" />
             Télécharger les Mentions Légales (PDF)
-          </a>
+          </button>
         </div>
       </header>
 
@@ -179,7 +179,7 @@ const tableOfContents = ref<{ id: string; text: string }[]>([]);
 const activeSectionId = ref('');
 const showMobileToc = ref(false);
 
-// Function to generate a slug from text
+// Slug
 const slugify = (text: string) => {
   return text
     .toString()
@@ -192,7 +192,7 @@ const slugify = (text: string) => {
     .replace(/--+/g, '-');
 };
 
-// Function to scroll to a section
+// Scroll
 const scrollToSection = (id: string) => {
   const element = document.getElementById(id);
   if (element) {
@@ -200,7 +200,6 @@ const scrollToSection = (id: string) => {
   }
 };
 
-// Scroll spy logic
 const handleScroll = () => {
   const scrollY = window.scrollY;
   const sections = tableOfContents.value.map(item => document.getElementById(item.id)).filter(Boolean) as HTMLElement[];
@@ -216,8 +215,34 @@ const handleScroll = () => {
   activeSectionId.value = currentActiveId;
 };
 
+// Téléchargement
+const downloadPdf = async () => {
+  const pdfUrl = sharedFiles.paths.pdf.legal;
+  const fileName = 'PGS_Mentions_Legales.pdf';
+
+  try {
+    const response = await fetch(pdfUrl);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const blob = await response.blob();
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.style.display = 'none';
+    a.href = url;
+    a.download = fileName;
+    document.body.appendChild(a);
+    a.click();
+    window.URL.revokeObjectURL(url);
+    a.remove();
+  } catch (error) {
+    console.error('Erreur lors du téléchargement du PDF:', error);
+    alert('Impossible de télécharger le fichier. Veuillez réessayer plus tard.');
+  }
+};
+
 onMounted(() => {
-  // Generate TOC
+  // Generer TOC
   nextTick(() => {
     const contentContainer = document.getElementById('legal-content');
     if (contentContainer) {
@@ -247,7 +272,6 @@ useHead({
 </script>
 
 <style scoped>
-/* Animations basiques pour un peu de dynamisme */
 @keyframes fadeIn {
   from {
     opacity: 0;
