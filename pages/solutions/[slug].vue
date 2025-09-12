@@ -42,6 +42,28 @@
                 </li>
               </ul>
             </div>
+
+            <!-- Ressources Wiki Section -->
+            <template v-if="solutionStore.currentSolution.wiki && solutionStore.currentSolution.wiki.length > 0">
+              <div class="flex items-center py-4 mt-4 gap-4 border-t">
+                <h3 class="text-xl font-bold">Ressources Wiki</h3>
+                ( {{ solutionStore.currentSolution.wiki.length }} Liens )
+              </div>
+
+              <div v-if="solutionStore.currentSolution.wiki.length > 2" class="gap-4 mb-8">
+                <input type="search" v-model="wikiSearchQuery" placeholder="Rechercher un lien util..."
+                  class="w-full p-2 border border-gray-300 rounded-md" />
+              </div>
+              <div v-for="(item, index) in filteredWikis" :key="index" class="mb-4 last:mb-0">
+                <NuxtLink :to="`/usefullinks/${item.slug}`" class="font-semibold text-primary hover:underline">
+                  {{ item.name }}
+                </NuxtLink>
+                <p class="text-sm">{{ item.description }}</p>
+              </div>
+              <p v-if="filteredFaqs.length === 0 && wikiSearchQuery" class="text-sm text-gray-500">
+                Aucune lien trouvée pour votre recherche.
+              </p>
+            </template>
           </div>
         </aside>
 
@@ -63,11 +85,11 @@
 
           <template v-if="solutionStore.currentSolution.faq && solutionStore.currentSolution.faq.length > 0">
             <div class="flex items-center mb-4 gap-4">
-              <h3 class="text-2xl font-bold">FAQ sur {{ solutionStore.currentSolution.name }}</h3>
+              <h3 class="text-2xl font-bold">FAQ</h3>
               ( {{ solutionStore.currentSolution.faq.length }} FAQs )
             </div>
 
-            <div v-if="solutionStore.currentSolution.faq.length > 2" class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+            <div v-if="solutionStore.currentSolution.faq.length > 2" class="gap-4 mb-8">
               <input type="search" v-model="faqSearchQuery" placeholder="Rechercher une question..."
                 class="w-full p-2 border border-gray-300 rounded-md" />
             </div>
@@ -186,7 +208,7 @@
 import { computed, ref, onMounted, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import { useSolutionStore } from '@/stores/solutions';
-import { IconArrowLeft, IconCheck, IconBook, IconVideo, IconLoader } from '@tabler/icons-vue';
+import { IconArrowLeft, IconCheck, IconBook, IconVideo, IconLoader, IconArrowBack } from '@tabler/icons-vue'; // Added IconArrowBack
 
 const route = useRoute();
 const slug = route.params.slug as string;
@@ -195,6 +217,7 @@ const solutionStore = useSolutionStore();
 const faqSearchQuery = ref('');
 const docSearchQuery = ref('');
 const tutorialSearchQuery = ref('');
+const wikiSearchQuery = ref('');
 
 // Charger les solutions
 onMounted(async () => {
@@ -279,10 +302,27 @@ const filteredTutorials = computed(() => {
   }
 });
 
+// Filtered Wikis
+const filteredWikis = computed(() => {
+  if (!solutionStore.currentSolution?.wiki) return [];
+
+  const wikis = solutionStore.currentSolution.wiki;
+  const query = wikiSearchQuery.value.toLowerCase();
+
+  if (query) {
+    return wikis.filter(
+      (item) =>
+        item.name.toLowerCase().includes(query) ||
+        item.description.toLowerCase().includes(query)
+    );
+  } else {
+    return wikis.slice(0, 2);
+  }
+});
 
 // SEO
 useHead(() => ({
-  title: solutionStore.currentSolution ? `Détail de ${solutionStore.currentSolution.name}` : 'Solution Introuvable',
+  title: solutionStore.currentSolution ? `${solutionStore.currentSolution.name}` : 'Solution Introuvable',
   meta: [
     { name: 'description', content: solutionStore.currentSolution ? solutionStore.currentSolution.description : 'Page de détail d\'une solution.' }
   ],

@@ -130,17 +130,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import {
-  IconCheck,
-  IconBolt,
-  IconMessages,
-  IconShieldStar,
-  IconWorldStar,
-  IconBrandLine,
-  IconBrandLinkedin,
-  IconBrandTwitter,
-  IconBrandFacebook
-} from '@tabler/icons-vue'
+import { IconCheck, IconBolt, IconMessages, IconShieldStar, IconWorldStar, IconBrandLine, IconBrandLinkedin, IconBrandTwitter, IconBrandFacebook } from '@tabler/icons-vue'
 import { useSharedFiles } from '~/stores/sharedFiles';
 
 const sharedFiles = useSharedFiles();
@@ -220,6 +210,10 @@ const team = [
     }
   }
 ]
+
+useHead({
+  title: 'A propos',
+})
 </script>
 
 <style scoped>

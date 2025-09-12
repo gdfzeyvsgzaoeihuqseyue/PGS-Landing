@@ -35,8 +35,8 @@ export const useSharedFiles = defineStore('sharedFiles', () => {
       error500: `${SHARED_URL}/General/Error500.png`,
     },
     pdf: {
-      legal: `${SHARED_URL}/PDF/PGS_Terms.pdf`,
-      error404: `${SHARED_URL}/General/Error404.png`,
+      legal: `${SHARED_URL}/PDF/PGS_Legal.pdf`,
+      terms: `${SHARED_URL}/PDF/PGS_Terms.pdf`,
       error500: `${SHARED_URL}/General/Error500.png`,
     },
 

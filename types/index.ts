@@ -17,17 +17,9 @@ export interface Solution {
   docs?: { name: string; link: string }[];
   faq?: { question: string; answer: string }[];
   tutorials?: { title: string; description: string; time: string; link: string; thumbnail?: string; }[];
+  wiki?: PlateformWiki[];
   createdAt: string;
   updatedAt: string;
-}
-
-export interface Platform {
-  id: string;
-  name: string;
-  logo: string;
-  logoDesk?: string;
-  category: string;
-  description?: string;
 }
 
 export interface PlatformInfo {
@@ -36,6 +28,7 @@ export interface PlatformInfo {
   slug: string;
   category?: string;
   logo?: string;
+  logoDesk?: string;
 }
 
 export interface PlateformDoc {
@@ -68,31 +61,18 @@ export interface PlateformTutorial {
   platform: PlatformInfo;
 }
 
-// ===============================================
-// LIENS UTILES
-// ===============================================
-export interface UsefulLink {
+export interface PlateformWiki { 
   id: string;
   name: string;
   description: string;
-  platformId: string;
   url: string;
   slug: string;
   additionalInfo?: string;
+  createdAt: string;
+  updatedAt: string;
+  platform: PlatformInfo;
+  order?: number; 
 }
-
-export interface UsefulLinksState {
-  links: UsefulLink[]
-  loading: boolean
-  error: string | null
-}
-
-export type EnrichedLink = UsefulLink & {
-  order: number;
-  platform: string;
-  platformLogo: string;
-  platformCategory?: string;
-};
 
 
 // ===============================================
@@ -220,7 +200,7 @@ export interface SiteInfo {
   id: string;
   title: string;
   message: string;
-  targetSites: string[]; // Ex: ['all', 'pgs']
+  targetSites: string[];
   displayType: 'banner' | 'modal' | 'popup' | 'toast';
   position: 'top' | 'bottom' | 'center' | 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
   animationSettings: {

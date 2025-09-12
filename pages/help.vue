@@ -28,19 +28,19 @@
               <h3 class="text-lg font-bold mb-4">Statistiques des ressources</h3>
               <div class="grid grid-cols-2 gap-4 text-center">
                 <div>
-                  <p class="text-2xl font-bold text-secondary">{{ solutionStore.solutions.length }}</p>
+                  <p class="text-2xl font-bold">{{ solutionStore.solutions.length }}</p>
                   <p class="text-gray-600">Total solutions</p>
                 </div>
                 <div>
-                  <p class="text-2xl font-bold text-green-500">{{ totalDocs }}</p>
+                  <p class="text-2xl font-bold">{{ totalDocs }}</p>
                   <p class="text-gray-600">Docs</p>
                 </div>
                 <div>
-                  <p class="text-2xl font-bold text-purple-500">{{ totalFaqs }}</p>
+                  <p class="text-2xl font-bold">{{ totalFaqs }}</p>
                   <p class="text-gray-600">FAQs</p>
                 </div>
                 <div>
-                  <p class="text-2xl font-bold text-blue-500">{{ totalTutorials }}</p>
+                  <p class="text-2xl font-bold">{{ totalTutorials }}</p>
                   <p class="text-gray-600">Tutoriels</p>
                 </div>
               </div>
@@ -155,7 +155,8 @@
                 <ul v-else class="space-y-4 flex-grow">
                   <li v-for="doc in item.docs" :key="doc.id">
                     <a :href="doc.link" target="_blank"
-                      class="group flex items-center text-gray-600 hover:text-primary transition-colors" :title="doc.name">
+                      class="group flex items-center text-gray-600 hover:text-primary transition-colors"
+                      :title="doc.name">
                       <span class="mr-2 overflow-hidden whitespace-nowrap text-ellipsis line-clamp-1">
                         {{ doc.name }}
                       </span>
@@ -201,9 +202,13 @@
                 v-for="(item, index) in displayedFaqs" :key="item.id" @click="toggleFaq(index)">
                 <!-- Badge plateforme -->
                 <div class="mb-2 flex justify-between items-center text-xs font-semibold">
-                  <span class="bg-gray-200 text-gray-700 px-3 py-1 rounded-full">
-                    {{ item.platform.name }}
-                  </span>
+                  <!-- Affichage logo + nom plateforme -->
+                  <div class="flex items-center gap-2">
+                    <img :src="item.platform?.logo" :alt="`Logo ${item.platform.name}`" class="w-5 h-5 rounded-full" />
+                    <span class="text-xs font-medium text-primary bg-primary/30 px-2 py-1 rounded-full">
+                      {{ item.platform.name }}
+                    </span>
+                  </div>
                 </div>
 
                 <h3 class="text-xl font-bold mb-4 flex justify-between items-center">
@@ -252,9 +257,11 @@
               <div v-for="tutorial in filteredAndPagedTutorials" :key="tutorial.id" class="group relative bg-white rounded-xl shadow-lg overflow-hidden p-6 border-2 transition-all duration-300
                 hover:shadow-xl hover:scale-105 border-transparent hover:border-primary">
                 <!-- Badge plateforme -->
-                <div
-                  class="absolute top-4 right-4 px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800 shadow-sm z-50">
-                  {{ tutorial.platform.name }}
+                <div class="flex items-center gap-2 absolute top-4 right-4 px-2 py-1 text-xs font-semibold rounded-full bg-primary/30 text-blue-800 shadow-sm z-50">
+                  <img :src="tutorial.platform?.logo" :alt="`Logo ${tutorial.platform.name}`" class="w-5 h-5 rounded-full" />
+                  <span class="text-xs font-medium text-primary px-2 py-1 rounded-full">
+                    {{ tutorial.platform.name }}
+                  </span>
                 </div>
                 <!-- Thumbnail -->
                 <div
@@ -295,12 +302,8 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue';
 import { useSolutionStore } from '@/stores/solutions';
-import type { PlateformDoc, PlateformFaq, PlateformTutorial } from '@/types';
 
-import {
-  IconChevronLeft, IconChevronRight, IconChevronDown, IconVideo, IconLoader,
-  IconFilter, IconX
-} from '@tabler/icons-vue';
+import { IconChevronLeft, IconChevronRight, IconChevronDown, IconVideo, IconLoader, IconFilter, IconX } from '@tabler/icons-vue';
 
 const solutionStore = useSolutionStore();
 
@@ -491,7 +494,7 @@ watch([searchQueryTutorials, selectedCategoryTutorials], () => {
 
 
 useHead(() => ({
-  title: 'Centre de Ressources - ProGestionSoft',
+  title: 'Centre de Ressources',
   meta: [
     { name: 'description', content: 'Accédez à la documentation, aux FAQ et aux tutoriels vidéo pour toutes les solutions ProGestionSoft.' }
   ],

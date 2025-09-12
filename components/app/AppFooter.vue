@@ -63,7 +63,7 @@ const navSections = [
     links: [
       { name: "Mentions légales", to: "/legal" },
       { name: "Politique de confidentialité", to: "/privacy" },
-      { name: "CGU", to: "/terms", disabled: true }
+      { name: "CGU", to: "/terms" }
     ]
   }
 ]

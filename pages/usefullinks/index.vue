@@ -27,18 +27,18 @@
           <div class="mb-6">
             <div class="mb-8">
               <h3 class="text-sm font-semibold text-gray-900 mb-3">Affichage</h3>
-              <div class="grid grid-cols-2 gap-4 text-center">
+              <div class="grid grid-cols-3 gap-4 text-center">
                 <div>
-                  <p class="text-2xl font-bold text-secondary">{{ links.length }}</p>
-                  <p class="text-gray-600">Liens disponibles</p>
+                  <p class="text-2xl font-bold">{{ links.length }}</p>
+                  <p class="text-gray-600">Liens</p>
                 </div>
                 <div>
-                  <p class="text-2xl font-bold text-green-500">{{ availablePlatforms.length }}</p>
+                  <p class="text-2xl font-bold">{{ availablePlatforms.length }}</p>
                   <p class="text-gray-600">Plateformes</p>
                 </div>
                 <div>
-                  <p class="text-2xl font-bold text-purple-500">{{ availableLetters.length }}</p>
-                  <p class="text-gray-600">Catégories alphabétiques</p>
+                  <p class="text-2xl font-bold">{{ availableLetters.length }}</p>
+                  <p class="text-gray-600">Lettres</p>
                 </div>
               </div>
             </div>
@@ -122,8 +122,8 @@
 
         <!-- Chargement -->
         <div v-if="loading" class="text-center py-12">
-          <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-          <p class="mt-4 text-gray-600">Chargement des liens...</p>
+          <IconLoader class="animate-spin h-12 w-12 text-primary mx-auto" />
+          <p class="mt-4 text-gray-600">Chargement des liens utiles...</p>
         </div>
 
         <!-- Erreur -->
@@ -179,25 +179,45 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, nextTick } from 'vue'
 import { storeToRefs } from 'pinia'
-import { IconGrid3x3, IconList, IconFilter, IconX } from '@tabler/icons-vue'
-import { useUsefulLinksStore } from '@/stores/usefulLinks'
+import { IconGrid3x3, IconList, IconFilter, IconX, IconLoader } from '@tabler/icons-vue'
+import { useSolutionStore } from '@/stores/solutions'
 import LinkCard from '~/components/LinkCard.vue'
 import LinkListItem from '~/components/LinkListItem.vue'
+import type { PlateformWiki } from '@/types';
 
-const store = useUsefulLinksStore()
-const { links, loading, error } = storeToRefs(store)
+const solutionStore = useSolutionStore()
+const { allWikis: links, loading, error } = storeToRefs(solutionStore)
 
-const showSidebar = ref(false); // New ref for sidebar visibility
+const showSidebar = ref(false);
 const viewMode = ref<'grid' | 'list'>('grid')
 const filterMode = ref<'alphabetical' | 'platform'>('alphabetical')
 const sortOrder = ref<'asc' | 'desc'>('asc')
 const selectedFilter = ref<string>('')
 
+const enrichedLinks = computed(() => {
+  return links.value.map((link, index) => ({
+    ...link,
+    order: index + 1,
+  }));
+});
+
+const sortedAlphabetically = computed(() => {
+  return [...enrichedLinks.value]
+    .sort((a, b) => a.name.localeCompare(b.name))
+    .map((link, index) => ({ ...link, order: index + 1 }));
+});
+
+const sortedAlphabeticallyReverse = computed(() => {
+  return [...enrichedLinks.value]
+    .sort((a, b) => b.name.localeCompare(a.name))
+    .map((link, index) => ({ ...link, order: index + 1 }));
+});
+
 const groupedLinks = computed(() => {
-  let result;
+  let result: PlateformWiki[];
   if (filterMode.value === 'alphabetical') {
-    result = sortOrder.value === 'asc' ? store.sortedAlphabetically : store.sortedAlphabeticallyReverse;
-    const grouped: Record<string, any[]> = {};
+    result = sortOrder.value === 'asc' ? sortedAlphabetically.value : sortedAlphabeticallyReverse.value;
+    const grouped: Record<string, PlateformWiki[]> = {};
     result.forEach(link => {
       const firstLetter = link.name.charAt(0).toUpperCase();
       if (!grouped[firstLetter]) {
@@ -207,24 +227,29 @@ const groupedLinks = computed(() => {
     });
     return grouped;
   } else {
-    result = sortOrder.value === 'asc' ? store.enrichedLinks.sort((a, b) => a.platform.localeCompare(b.platform)) : store.enrichedLinks.sort((a, b) => b.platform.localeCompare(a.platform));
-    const grouped: Record<string, any[]> = {};
+    result = sortOrder.value === 'asc' ? enrichedLinks.value.sort((a, b) => (a.platform?.name || '').localeCompare(b.platform?.name || '')) : enrichedLinks.value.sort((a, b) => (b.platform?.name || '').localeCompare(a.platform?.name || ''));
+    const grouped: Record<string, PlateformWiki[]> = {};
     result.forEach(link => {
-      if (!grouped[link.platform]) {
-        grouped[link.platform] = [];
+      const platformName = link.platform?.name || 'Inconnue';
+      if (!grouped[platformName]) {
+        grouped[platformName] = [];
       }
-      grouped[link.platform].push(link);
+      grouped[platformName].push(link);
     });
     return grouped;
   }
 })
 
 const availableLetters = computed(() => {
-  return store.letters
+  const letters = new Set<string>();
+  enrichedLinks.value.forEach(link => letters.add(link.name.charAt(0).toUpperCase()));
+  return Array.from(letters).sort();
 })
 
 const availablePlatforms = computed(() => {
-  return store.platforms
+  const platforms = new Set<string>();
+  enrichedLinks.value.forEach(link => platforms.add(link.platform?.name || 'Inconnue'));
+  return Array.from(platforms).sort();
 })
 
 const scrollToSection = (section: string) => {
@@ -242,11 +267,13 @@ const resetFilters = () => {
   filterMode.value = 'alphabetical';
   sortOrder.value = 'asc';
   selectedFilter.value = '';
-  showSidebar.value = false; // Close sidebar on reset
+  showSidebar.value = false;
 };
 
 onMounted(async () => {
-  await store.fetchLinks()
+  if (links.value.length === 0) {
+    await solutionStore.fetchPlateformWikis(undefined, undefined, true)
+  }
 })
 
 // SEO
@@ -254,7 +281,3 @@ useHead(() => ({
   title: 'Lien rapides',
 }));
 </script>
-
-<style scoped>
-/* Add any specific styles here if needed */
-</style>

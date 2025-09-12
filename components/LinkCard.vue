@@ -7,9 +7,10 @@
 
         <!-- Affichage logo + nom plateforme -->
         <div class="flex items-center gap-2">
-          <img v-if="link.platformLogo" :src="link.platformLogo" alt="" class="w-5 h-5 rounded-full" />
+          <img :src="link.platform.logo" :alt="`Logo ${link.platform?.name}`" class="w-5 h-5 rounded-full"
+            @error="handleImageError($event, link.platform?.name || 'Platform')" />
           <span class="text-xs font-medium text-primary bg-primary/10 px-2 py-1 rounded-full">
-            {{ link.platform }}
+            {{ link.platform?.name }}
           </span>
         </div>
       </div>
@@ -61,10 +62,10 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import { IconCopy, IconEye } from '@tabler/icons-vue'
-import type { EnrichedLink } from '@/types'
+import type { PlateformWiki } from '@/types'
 
 interface Props {
-  link: EnrichedLink
+  link: PlateformWiki
 }
 
 const props = defineProps<Props>()
@@ -86,6 +87,12 @@ const copyUrl = async () => {
     console.error('Erreur lors de la copie:', err)
   }
 }
+
+const handleImageError = (event: Event, platformName: string) => {
+  const target = event.target as HTMLImageElement;
+  target.src = `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(platformName)}`;
+  target.alt = `Logo de ${platformName} non disponible`;
+};
 </script>
 
 <style scoped>

@@ -269,6 +269,6 @@ watch([searchQuery, sortCategoriesBy], () => {
 
 // SEO
 useHead(() => ({
-  title: 'Toutes les catégories d\'articles - Blog PGS'
+  title: 'Catégories d\'articles'
 }))
 </script>

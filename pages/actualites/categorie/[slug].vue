@@ -334,6 +334,6 @@ watch([searchQuery, selectedAuthorIds, dateRange, sortBy], () => {
 
 // SEO
 useHead(() => ({
-  title: category.value ? `${category.value.name} - Blog PGS` : 'Catégorie non trouvée - Blog PGS',
+  title: category.value ? `Articles dans ${category.value.name}` : 'Catégorie non trouvée',
 }));
 </script>

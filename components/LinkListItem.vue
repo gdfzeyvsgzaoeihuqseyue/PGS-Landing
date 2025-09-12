@@ -4,7 +4,8 @@
       <!-- Ordre et logo plateforme -->
       <div class="flex-shrink-0 flex flex-col items-center gap-2">
         <span class="text-sm font-mono text-gray-500 bg-gray-100 px-2 py-1 rounded">#{{ link.order }}</span>
-        <img v-if="link.platformLogo" :src="link.platformLogo" alt="" class="w-8 h-8 rounded-full" />
+        <img :src="link.platform?.logo" :alt="`Logo ${link.platform?.name}`" class="w-8 h-8 rounded-full"
+          @error="handleImageError($event, link.platform?.name || 'Platform')" />
       </div>
 
       <!-- Contenu principal -->
@@ -16,7 +17,7 @@
             </NuxtLink>
           </h3>
           <span class="text-xs font-medium text-primary bg-primary/10 px-2 py-1 rounded-full ml-2">
-            {{ link.platform }}
+            {{ link.platform?.name }}
           </span>
         </div>
 
@@ -33,7 +34,8 @@
               <button @click="copyUrl" class="p-1 text-gray-400 hover:text-primary" title="Copier l'URL">
                 <IconCopy class="w-4 h-4" />
               </button>
-              <button @click="toggleFullUrl" class="p-1 text-gray-400 hover:text-primary" title="Afficher l'URL complète">
+              <button @click="toggleFullUrl" class="p-1 text-gray-400 hover:text-primary"
+                title="Afficher l'URL complète">
                 <IconEye class="w-4 h-4" />
               </button>
             </div>
@@ -59,10 +61,10 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import { IconCopy, IconEye } from '@tabler/icons-vue'
-import type { EnrichedLink } from '@/types'
+import type { PlateformWiki } from '@/types'
 
 interface Props {
-  link: EnrichedLink
+  link: PlateformWiki
 }
 
 const props = defineProps<Props>()
@@ -84,4 +86,10 @@ const copyUrl = async () => {
     console.error('Erreur lors de la copie:', err)
   }
 }
+
+const handleImageError = (event: Event, platformName: string) => {
+  const target = event.target as HTMLImageElement;
+  target.src = `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(platformName)}`;
+  target.alt = `Logo de ${platformName} non disponible`;
+};
 </script>

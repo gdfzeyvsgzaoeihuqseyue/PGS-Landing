@@ -12,7 +12,7 @@ export default defineNuxtRouteMiddleware((to, from) => {
   if (isBetaMode) {
     // Routes privées générales
     const privateRoutes = [
-      '/privacy', '/terms', '/help', '/usefullinks'
+      '/privacy', '/help',
     ].map(route => withoutTrailingSlash(route));
 
     const isEventsRoute = normalizedPath.startsWith('/events');

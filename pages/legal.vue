@@ -9,7 +9,7 @@
           Transparence et conformité : retrouvez ici toutes les informations légales concernant PRO GESTION SOFT (PGS)
         </p>
 
-        <p class="mt-2 text-sm text-gray-500">Dernière mise à jour : {{ lastUpdatedDate }}</p>
+        <p class="mt-2 text-sm text-gray-500">Dernière mise à jour : 1er septembre 2025</p>
         <!-- Fichier PDF -->
         <div class="mt-6">
           <button @click.prevent="downloadPdf" download="PGS_Mentions_Legales.pdf"
@@ -174,7 +174,6 @@ import { IconCopyright, IconFileText, IconUserCheck, IconShieldLock, IconList, I
 import { useSharedFiles } from '~/stores/sharedFiles'
 
 const sharedFiles = useSharedFiles()
-const lastUpdatedDate = ref('1er septembre 2025');
 const tableOfContents = ref<{ id: string; text: string }[]>([]);
 const activeSectionId = ref('');
 const showMobileToc = ref(false);

@@ -123,7 +123,7 @@
                 solution.disabled ? 'border-dashed hover:border-warning cursor-progress' : 'border-transparent hover:border-primary']"
               :title="solution.disabled ? `${solution.name} est actuellement indisponible, cliquez pour en savoir plus.` : null">
 
-              <!-- Indicateur de statut visuel -->
+              <!-- Indicateur de statut -->
               <div v-if="!solution.disabled"
                 class="absolute top-4 right-4 px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
                 Activé

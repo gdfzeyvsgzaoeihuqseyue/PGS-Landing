@@ -349,6 +349,6 @@ watch([searchQuery, selectedCategories, dateRange, sortBy], () => {
 
 // SEO
 useHead(() => ({
-  title: author.value ? `Articles de ${author.value.name} - Blog PGS` : 'Auteur non trouvé - Blog PGS',
+  title: author.value ? `Articles de ${author.value.name}` : 'Auteur non trouvé',
 }));
 </script>

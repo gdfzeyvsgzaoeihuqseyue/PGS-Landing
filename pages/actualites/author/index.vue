@@ -265,6 +265,6 @@ watch([searchQuery, sortAuthorsBy], () => {
 
 // SEO
 useHead(() => ({
-  title: 'Tous les auteurs - Blog PGS'
+  title: 'Auteurs d\'articles'
 }))
 </script>
