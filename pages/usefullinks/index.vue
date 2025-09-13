@@ -1,13 +1,11 @@
 <template>
-  <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
-    <!-- Hero Section -->
-    <header class="text-center mb-12 py-6 mt-8">
-      <h1 class="text-5xl font-extrabold text-gray-900 leading-tight">
-        Répertoire de <span class="text-primary">liens utiles</span>
+  <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+     <header class="text-center mb-8 sm:mb-12 py-6 mt-6 sm:mt-8">
+      <h1 class="text-3xl sm:text-5xl font-extrabold text-gray-900 leading-tight">
+        Wiki<span class="text-primary">links</span>
       </h1>
-      <p class="mt-4 text-xl max-w-2xl mx-auto">
-        Découvrez tous les liens utiles de l'écosystème LocaSpace et de nos partenaires.
-        Organisés et facilement accessibles pour optimiser votre expérience.
+      <p class="mt-2 sm:mt-4 text-base sm:text-xl max-w-2xl mx-auto">
+        Découvrez tous les liens utiles de l'écosystème LocaSpace et de nos partenaires. Organisés et facilement accessibles pour optimiser votre expérience.
       </p>
     </header>
 
@@ -61,13 +59,13 @@
           <!-- Filtres -->
           <div class="mb-6">
             <h3 class="text-sm font-semibold text-gray-900 mb-3">Filtrer par</h3>
-            <div class="space-y-2">
-              <button @click="filterMode = 'alphabetical'"
+            <div class="grid grid-cols-2 gap-4">
+              <button @click="setFilterMode('alphabetical')"
                 :class="filterMode === 'alphabetical' ? 'bg-primary text-white' : 'bg-gray-100 text-gray-700'"
                 class="w-full px-3 py-2 rounded text-sm font-medium transition-colors text-left">
                 Alphabétique
               </button>
-              <button @click="filterMode = 'platform'"
+              <button @click="setFilterMode('platform')"
                 :class="filterMode === 'platform' ? 'bg-primary text-white' : 'bg-gray-100 text-gray-700'"
                 class="w-full px-3 py-2 rounded text-sm font-medium transition-colors text-left">
                 Par plateforme
@@ -79,17 +77,17 @@
           <div>
             <h3 class="text-sm font-semibold text-gray-900 mb-3">Navigation rapide</h3>
             <div v-if="filterMode === 'alphabetical'" class="grid grid-cols-4 gap-1">
-              <button v-for="letter in availableLetters" :key="letter" @click="scrollToSection(letter)"
-                :class="selectedFilter === letter ? 'bg-primary text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'"
+              <button v-for="letter in availableLetters" :key="letter" @click="applyFilter(letter, 'startLetter')"
+                :class="selectedLetter === letter ? 'bg-primary text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'"
                 class="p-2 rounded text-xs font-medium transition-colors">
                 {{ letter }}
               </button>
             </div>
             <div v-else class="grid grid-cols-2 gap-1">
-              <button v-for="platform in availablePlatforms" :key="platform" @click="scrollToSection(platform)"
-                :class="selectedFilter === platform ? 'bg-primary text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'"
+              <button v-for="platform in availablePlatforms" :key="platform.id" @click="applyFilter(platform.id, 'platformId')"
+                :class="selectedPlatformId === platform.id ? 'bg-primary text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'"
                 class="w-full px-3 py-2 rounded text-xs font-medium transition-colors text-left truncate">
-                {{ platform }}
+                {{ platform.name }}
               </button>
             </div>
           </div>
@@ -170,6 +168,17 @@
               </div>
             </div>
           </div>
+
+          <div v-if="showPaginationControls" class="flex justify-center mt-8">
+            <button v-if="hasMore" @click="loadMore"
+              class="bg-primary text-white px-6 py-3 rounded-lg hover:bg-secondary transition-colors font-medium mr-4">
+              Voir plus ({{ remainingCount }})
+            </button>
+            <button v-if="isNotInitialPage" @click="viewLess"
+              class="bg-gray-200 text-gray-700 px-6 py-3 rounded-lg hover:bg-gray-300 transition-colors font-medium">
+              Voir moins
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -177,40 +186,111 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, nextTick } from 'vue'
-import { storeToRefs } from 'pinia'
-import { IconGrid3x3, IconList, IconFilter, IconX, IconLoader } from '@tabler/icons-vue'
-import { useSolutionStore } from '@/stores/solutions'
-import LinkCard from '~/components/LinkCard.vue'
-import LinkListItem from '~/components/LinkListItem.vue'
-import type { PlateformWiki } from '@/types';
+import { ref, computed, onMounted } from 'vue';
+import { storeToRefs } from 'pinia';
+import { IconGrid3x3, IconList, IconFilter, IconX, IconLoader } from '@tabler/icons-vue';
+import { useSolutionStore } from '@/stores/solutions';
+import LinkCard from '~/components/LinkCard.vue';
+import LinkListItem from '~/components/LinkListItem.vue';
+import type { PlateformWiki, Solution } from '@/types';
 
-const solutionStore = useSolutionStore()
-const { allWikis: links, loading, error } = storeToRefs(solutionStore)
+const solutionStore = useSolutionStore();
+const { allWikis: links, loading, error, pagination, counts } = storeToRefs(solutionStore);
 
 const showSidebar = ref(false);
-const viewMode = ref<'grid' | 'list'>('grid')
-const filterMode = ref<'alphabetical' | 'platform'>('alphabetical')
-const sortOrder = ref<'asc' | 'desc'>('asc')
-const selectedFilter = ref<string>('')
+const viewMode = ref<'grid' | 'list'>('grid');
+const filterMode = ref<'alphabetical' | 'platform'>('alphabetical');
+const sortOrder = ref<'asc' | 'desc'>('asc');
+const selectedLetter = ref<string | null>(null);
+const selectedPlatformId = ref<string | null>(null);
 
-const enrichedLinks = computed(() => {
-  return links.value.map((link, index) => ({
-    ...link,
-    order: index + 1,
-  }));
+const currentPage = ref(1);
+const limitPerPage = 10;
+
+// Calculer le nombre total basé sur le filtre actif
+const currentTotalCount = computed(() => {
+  if (filterMode.value === 'alphabetical' && selectedLetter.value) {
+    return counts.value.byLetter[selectedLetter.value] || 0;
+  }
+  if (filterMode.value === 'platform' && selectedPlatformId.value) {
+    // Trouvez le nom de la plateforme pour obtenir le décompte
+    const platform = availablePlatforms.value.find(p => p.id === selectedPlatformId.value);
+    const platformName = platform ? platform.name : 'Inconnue';
+    return counts.value.byPlatform[platformName]?.count || 0;
+  }
+  return pagination.value.totalSolutions;
 });
 
+// Affichez les contrôles de pagination basés sur le décompte actuel
+const hasMore = computed(() => links.value.length < currentTotalCount.value);
+const remainingCount = computed(() => currentTotalCount.value - links.value.length);
+const isNotInitialPage = computed(() => currentPage.value > 1);
+const showPaginationControls = computed(() => links.value.length > 0 && (hasMore.value || isNotInitialPage.value));
+
+const allPlatforms = ref<Solution[]>([]);
+
+const setFilterMode = async (mode: 'alphabetical' | 'platform') => {
+  if (filterMode.value === mode) return;
+  filterMode.value = mode;
+  selectedLetter.value = null;
+  selectedPlatformId.value = null;
+  currentPage.value = 1;
+  await fetchData();
+};
+
+const applyFilter = async (value: string, type: 'startLetter' | 'platformId') => {
+  if (type === 'startLetter') {
+    selectedLetter.value = value;
+    selectedPlatformId.value = null;
+  } else {
+    selectedPlatformId.value = value;
+    selectedLetter.value = null;
+  }
+  currentPage.value = 1;
+  await fetchData();
+};
+
+const resetFilters = async () => {
+  viewMode.value = 'grid';
+  filterMode.value = 'alphabetical';
+  sortOrder.value = 'asc';
+  selectedLetter.value = null;
+  selectedPlatformId.value = null;
+  currentPage.value = 1;
+  showSidebar.value = false;
+  await fetchData();
+};
+
+const loadMore = async () => {
+  currentPage.value++;
+  await fetchData(true);
+};
+
+const viewLess = async () => {
+  currentPage.value = 1;
+  await fetchData();
+};
+
+const fetchData = async (loadMore: boolean = false) => {
+  const currentLetter = selectedLetter.value;
+  const currentPlatform = selectedPlatformId.value;
+  
+  await solutionStore.fetchPlateformWikis(
+    currentPage.value,
+    limitPerPage,
+    false,
+    currentLetter,
+    currentPlatform,
+    loadMore
+  );
+};
+
 const sortedAlphabetically = computed(() => {
-  return [...enrichedLinks.value]
-    .sort((a, b) => a.name.localeCompare(b.name))
-    .map((link, index) => ({ ...link, order: index + 1 }));
+  return [...links.value].sort((a, b) => a.name.localeCompare(b.name));
 });
 
 const sortedAlphabeticallyReverse = computed(() => {
-  return [...enrichedLinks.value]
-    .sort((a, b) => b.name.localeCompare(a.name))
-    .map((link, index) => ({ ...link, order: index + 1 }));
+  return [...links.value].sort((a, b) => b.name.localeCompare(a.name));
 });
 
 const groupedLinks = computed(() => {
@@ -227,7 +307,7 @@ const groupedLinks = computed(() => {
     });
     return grouped;
   } else {
-    result = sortOrder.value === 'asc' ? enrichedLinks.value.sort((a, b) => (a.platform?.name || '').localeCompare(b.platform?.name || '')) : enrichedLinks.value.sort((a, b) => (b.platform?.name || '').localeCompare(a.platform?.name || ''));
+    result = sortOrder.value === 'asc' ? links.value.sort((a, b) => (a.platform?.name || '').localeCompare(b.platform?.name || '')) : links.value.sort((a, b) => (b.platform?.name || '').localeCompare(a.platform?.name || ''));
     const grouped: Record<string, PlateformWiki[]> = {};
     result.forEach(link => {
       const platformName = link.platform?.name || 'Inconnue';
@@ -238,43 +318,29 @@ const groupedLinks = computed(() => {
     });
     return grouped;
   }
-})
+});
 
 const availableLetters = computed(() => {
-  const letters = new Set<string>();
-  enrichedLinks.value.forEach(link => letters.add(link.name.charAt(0).toUpperCase()));
-  return Array.from(letters).sort();
-})
+  return Object.keys(counts.value.byLetter).sort();
+});
 
 const availablePlatforms = computed(() => {
-  const platforms = new Set<string>();
-  enrichedLinks.value.forEach(link => platforms.add(link.platform?.name || 'Inconnue'));
-  return Array.from(platforms).sort();
-})
-
-const scrollToSection = (section: string) => {
-  selectedFilter.value = section
-  nextTick(() => {
-    const element = document.getElementById(`section-${section}`)
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth', block: 'start' })
-    }
-  })
-}
-
-const resetFilters = () => {
-  viewMode.value = 'grid';
-  filterMode.value = 'alphabetical';
-  sortOrder.value = 'asc';
-  selectedFilter.value = '';
-  showSidebar.value = false;
-};
+  return Object.keys(counts.value.byPlatform).sort().map(name => {
+    return {
+      id: counts.value.byPlatform[name]?.id || '',
+      name: name,
+    };
+  });
+});
 
 onMounted(async () => {
+  await solutionStore.fetchCounts();
+  await solutionStore.fetchSolutions(1, 100, true);
+  allPlatforms.value = solutionStore.solutions;
   if (links.value.length === 0) {
-    await solutionStore.fetchPlateformWikis(undefined, undefined, true)
+    await fetchData();
   }
-})
+});
 
 // SEO
 useHead(() => ({

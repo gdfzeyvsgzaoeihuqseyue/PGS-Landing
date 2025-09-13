@@ -23,10 +23,15 @@ export const useSolutionStore = defineStore('solutions', () => {
     limit: 10,
   });
 
+  const counts = ref({
+    byLetter: {} as Record<string, number>,
+    byPlatform: {} as Record<string, { id: string | null; count: number }>,
+  });
+
   // Fonction helper pour enrichir les plateformes avec les logos
   function enrichPlatformWithLogos<T extends { platform: any }>(items: T[]): T[] {
     return items.map(item => {
-      const fullPlatform = solutions.value.find(s => s.id === item.platform.id);
+      const fullPlatform = solutions.value.find(s => s.id === item.platform?.id);
       if (fullPlatform) {
         return {
           ...item,
@@ -40,6 +45,21 @@ export const useSolutionStore = defineStore('solutions', () => {
       }
       return item;
     });
+  }
+
+  async function fetchCounts() {
+    try {
+      const response = await $fetch<{
+        countsByLetter: Record<string, number>;
+        countsByPlatform: Record<string, { id: string | null; count: number }>;
+      }>(`${API_BASE_URL}/plateform/wiki/counts`);
+
+      counts.value.byLetter = response.countsByLetter;
+      counts.value.byPlatform = response.countsByPlatform;
+    } catch (err: any) {
+      console.error('Erreur lors de la récupération des décomptes:', err);
+      error.value = 'Erreur lors du chargement des décomptes: ' + (err.data?.message || err.message);
+    }
   }
 
   async function fetchSolutions(page: number = 1, limit: number = 10, all: boolean = false) {
@@ -219,12 +239,20 @@ export const useSolutionStore = defineStore('solutions', () => {
     }
   }
 
-  async function fetchPlateformWikis(page: number = 1, limit: number = 10, all: boolean = false) {
+  async function fetchPlateformWikis(page: number = 1, limit: number = 10, all: boolean = false, startLetter: string | null = null, platformId: string | null = null, loadMore: boolean = false) {
     loading.value = true;
     error.value = null;
     try {
       if (solutions.value.length === 0) {
         await fetchSolutions(undefined, undefined, true);
+      }
+
+      const params: { [key: string]: any } = { page, limit: all ? 100 : limit };
+      if (startLetter) {
+        params.startLetter = startLetter;
+      }
+      if (platformId) {
+        params.platformId = platformId;
       }
 
       const response = await $fetch<{
@@ -236,10 +264,23 @@ export const useSolutionStore = defineStore('solutions', () => {
         totalPages: number;
         data: PlateformWiki[];
       }>(`${API_BASE_URL}/plateform/wiki`, {
-        params: { page, limit: all ? 100 : limit }
+        params: params
       });
 
-      allWikis.value = enrichPlatformWithLogos(response.data);
+      const enrichedData = enrichPlatformWithLogos(response.data);
+
+      if (loadMore) {
+        allWikis.value = [...allWikis.value, ...enrichedData];
+      } else {
+        allWikis.value = enrichedData;
+      }
+      
+      pagination.value = {
+        currentPage: response.currentPage,
+        totalPages: response.totalPages,
+        totalSolutions: response.nb,
+        limit: limit,
+      };
 
     } catch (err: any) {
       error.value = 'Erreur lors du chargement des wikis: ' + (err.data?.message || err.message);
@@ -259,11 +300,13 @@ export const useSolutionStore = defineStore('solutions', () => {
     loading,
     error,
     pagination,
+    counts,
     fetchSolutions,
     fetchSolutionByIdentifier,
     fetchPlateformDocs,
     fetchPlateformFaqs,
     fetchPlateformTutorials,
     fetchPlateformWikis,
+    fetchCounts,
   };
 });

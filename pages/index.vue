@@ -82,7 +82,7 @@
         </p>
       </div>
 
-      <div v-if="solutionStore.loading" class="text-center py-10">
+      <!-- <div v-if="solutionStore.loading" class="text-center py-10">
         <IconLoader class="animate-spin h-10 w-10 text-primary mx-auto" />
         <p class="mt-2 text-gray-600">Chargement des solutions...</p>
       </div>
@@ -90,6 +90,10 @@
         <p>Nous n'avons pas réussi à filter les soutions disponibles</p>
       </div>
       <div v-else class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <SolutionCard />
+      </div> -->
+      <div v-if="!solutionStore.loading && !solutionStore.error && solutionStore.solutions.length"
+        class="grid grid-cols-1 md:grid-cols-3 gap-8">
         <SolutionCard />
       </div>
 

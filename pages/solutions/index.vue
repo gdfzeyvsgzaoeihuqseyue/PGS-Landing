@@ -126,11 +126,11 @@
               <!-- Indicateur de statut -->
               <div v-if="!solution.disabled"
                 class="absolute top-4 right-4 px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
-                Activé
+                Actif
               </div>
               <div v-else
                 class="absolute top-4 right-4 px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800">
-                Désactivé
+                Inactif
               </div>
 
               <div class="flex items-center mb-6 space-x-2">
