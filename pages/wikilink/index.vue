@@ -5,7 +5,7 @@
         Wiki<span class="text-primary">links</span>
       </h1>
       <p class="mt-2 sm:mt-4 text-base sm:text-xl max-w-2xl mx-auto">
-        Découvrez tous les liens utiles de l'écosystème LocaSpace et de nos partenaires. Organisés et facilement accessibles pour optimiser votre expérience.
+        Découvrez tous les liens utiles de l'écosystème Pro Gestion Soft et de nos partenaires. Organisés et facilement accessibles pour optimiser votre expérience.
       </p>
     </header>
 

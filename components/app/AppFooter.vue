@@ -55,7 +55,7 @@ const navSections = [
     links: [
       { name: "Solutions", to: "/solutions", disabled: true },
       { name: "Evénements", to: "/events", disabled: true },
-      { name: "Wikilinks", to: "/usefullinks" }
+      { name: "Wikilinks", to: "/wikilink" }
     ]
   },
   {

@@ -17,7 +17,7 @@
 
       <!-- Nom du lien -->
       <h3 class="text-lg font-semibold text-gray-900 mb-2 hover:text-primary transition-colors">
-        <NuxtLink :to="`/usefullinks/${link.slug}`">
+        <NuxtLink :to="`/wikilink/${link.slug}`">
           {{ link.name }}
         </NuxtLink>
       </h3>
@@ -50,7 +50,7 @@
           :title="`Aller à ${link.name}`">
           Aller à {{ link.name }}
         </a>
-        <NuxtLink :to="`/usefullinks/${link.slug}`"
+        <NuxtLink :to="`/wikilink/${link.slug}`"
           class="px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 text-sm font-medium">
           Détails
         </NuxtLink>

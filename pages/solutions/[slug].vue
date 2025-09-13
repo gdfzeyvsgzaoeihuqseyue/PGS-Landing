@@ -55,7 +55,7 @@
                   class="w-full p-2 border border-gray-300 rounded-md" />
               </div>
               <div v-for="(item, index) in filteredWikis" :key="index" class="mb-4 last:mb-0">
-                <NuxtLink :to="`/usefullinks/${item.slug}`" class="font-semibold text-primary hover:underline">
+                <NuxtLink :to="`/wikilink/${item.slug}`" class="font-semibold text-primary hover:underline">
                   {{ item.name }}
                 </NuxtLink>
                 <p class="text-sm">{{ item.description }}</p>
