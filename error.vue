@@ -5,7 +5,7 @@
     </div>
 
     <!-- Footer -->
-    <footer class="py-4 border-t bg-WtBAct">
+    <footer class="py-4 border-t bg-WtBAct text-center">
       <div class="flex flex-col md:flex-row justify-between items-center max-w-6xl mx-auto w-full gap-4 px-4">
         <!-- Logos Desktop -->
         <div class="flex-shrink-0 items-center justify-center mx-4 hidden lg:block">
@@ -50,7 +50,7 @@ const errorData = computed(() => {
 
   if (statusCode === 404) {
     title = "Oups ! Page introuvable"
-    message = "Désolé, la page que vous recherchez semble s'être perdue."
+    message = "Désolé, la page que vous recherchez semble s'être perdue dans l'espace numérique. Il est possible qu'elle ait été déplacée, supprimée, ou que l'adresse soit incorrecte."
     image = sharedFiles.paths.general.error404
   } else if (statusCode === 403) {
     title = "Accès interdit"
