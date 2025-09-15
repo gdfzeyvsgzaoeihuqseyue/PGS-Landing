@@ -127,7 +127,7 @@
               <p>Erreur: {{ solutionStore.error }}</p>
             </div>
             <div v-else-if="filteredAndPagedDocsBySolution.length > 0"
-              class="relative grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 items-stretch">
+              class="relative grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-3 gap-8 items-stretch">
               <!-- Bouton de navigation gauche -->
               <button @click="scrollDocs(-1)" :disabled="docStartIndex === 0"
                 class="absolute left-0 top-1/2 -translate-y-1/2 bg-white p-2 rounded-full shadow-md z-10 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100 transition-colors">
@@ -167,7 +167,7 @@
               </NuxtLink>
 
               <!-- Bouton de navigation droite -->
-              <button @click="scrollDocs(1)" :disabled="docStartIndex + 3 >= docsBySolution.length"
+              <button @click="scrollDocs(1)" :disabled="docStartIndex + itemsPerScroll >= docsBySolution.length"
                 class="absolute right-0 top-1/2 -translate-y-1/2 bg-white p-2 rounded-full shadow-md z-10 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100 transition-colors">
                 <IconChevronRight class="w-6 h-6 text-gray-700" />
               </button>
@@ -245,7 +245,7 @@
             </div>
 
             <div v-else-if="filteredAndPagedTutorials.length > 0"
-              class="relative grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 items-stretch">
+              class="relative grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-3 gap-8 items-stretch">
 
               <!-- Bouton gauche -->
               <button @click="scrollTutorials(-1)" :disabled="tutorialStartIndex === 0" class="absolute left-0 top-1/2 -translate-y-1/2 bg-white p-2 rounded-full shadow-md z-10
@@ -283,7 +283,7 @@
                 </div>
               </div>
               <!-- Bouton droit -->
-              <button @click="scrollTutorials(1)" :disabled="tutorialStartIndex + 3 >= filteredTutorials.length" class="absolute right-0 top-1/2 -translate-y-1/2 bg-white p-2 rounded-full shadow-md z-10
+              <button @click="scrollTutorials(1)" :disabled="tutorialStartIndex + itemsPerScroll >= filteredTutorials.length" class="absolute right-0 top-1/2 -translate-y-1/2 bg-white p-2 rounded-full shadow-md z-10
              disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100 transition-colors">
                 <IconChevronRight class="w-6 h-6 text-gray-700" />
               </button>
@@ -300,12 +300,24 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, watch } from 'vue';
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue';
 import { useSolutionStore } from '@/stores/solutions';
 
 import { IconChevronLeft, IconChevronRight, IconChevronDown, IconVideo, IconLoader, IconFilter, IconX } from '@tabler/icons-vue';
 
 const solutionStore = useSolutionStore();
+
+// Reactive variable for items to scroll/display
+const itemsPerScroll = ref(3);
+
+// Function to update itemsPerScroll based on screen width
+const updateItemsPerScroll = () => {
+  if (window.innerWidth < 640) { // Tailwind's 'sm' breakpoint is 640px
+    itemsPerScroll.value = 1;
+  } else {
+    itemsPerScroll.value = 3;
+  }
+};
 
 // Fetch all solutions, docs, faqs, tutorials on component mount
 onMounted(() => {
@@ -313,6 +325,15 @@ onMounted(() => {
   solutionStore.fetchPlateformDocs(undefined, undefined, true);
   solutionStore.fetchPlateformFaqs(undefined, undefined, true);
   solutionStore.fetchPlateformTutorials(undefined, undefined, true);
+
+  // Set initial value and add resize listener
+  updateItemsPerScroll();
+  window.addEventListener('resize', updateItemsPerScroll);
+});
+
+// Clean up resize listener on unmount
+onUnmounted(() => {
+  window.removeEventListener('resize', updateItemsPerScroll);
 });
 
 // --- Sidebar and Filters ---
@@ -380,12 +401,12 @@ const docsBySolution = computed(() => {
 });
 
 const filteredAndPagedDocsBySolution = computed(() => {
-  return docsBySolution.value.slice(docStartIndex.value, docStartIndex.value + 3);
+  return docsBySolution.value.slice(docStartIndex.value, docStartIndex.value + itemsPerScroll.value);
 });
 
 const scrollDocs = (direction: -1 | 1) => {
-  const newIndex = docStartIndex.value + (direction * 3);
-  docStartIndex.value = Math.max(0, Math.min(docsBySolution.value.length - 3, newIndex));
+  const newIndex = docStartIndex.value + (direction * itemsPerScroll.value);
+  docStartIndex.value = Math.max(0, Math.min(docsBySolution.value.length - itemsPerScroll.value, newIndex));
   document.querySelector('#documentation-section')?.scrollIntoView({ behavior: 'smooth' });
 };
 
@@ -457,12 +478,12 @@ const filteredTutorials = computed(() => {
 });
 
 const filteredAndPagedTutorials = computed(() => {
-  return filteredTutorials.value.slice(tutorialStartIndex.value, tutorialStartIndex.value + 3);
+  return filteredTutorials.value.slice(tutorialStartIndex.value, tutorialStartIndex.value + itemsPerScroll.value);
 });
 
 const scrollTutorials = (direction: -1 | 1) => {
-  const newIndex = tutorialStartIndex.value + (direction * 3);
-  tutorialStartIndex.value = Math.max(0, Math.min(filteredTutorials.value.length - 3, newIndex));
+  const newIndex = tutorialStartIndex.value + (direction * itemsPerScroll.value);
+  tutorialStartIndex.value = Math.max(0, Math.min(filteredTutorials.value.length - itemsPerScroll.value, newIndex));
   document.querySelector('#tutorials-section')?.scrollIntoView({ behavior: 'smooth' });
 };
 

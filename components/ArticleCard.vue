@@ -6,7 +6,7 @@
         class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
 
       <!-- Badge de catégorie -->
-      <NuxtLink :to="`/actualites/categorie/${article.category.slug}`"
+      <NuxtLink :to="`/blogs/cat/${article.category.slug}`"
         class="absolute top-3 right-3 px-2 py-1 bg-primary text-white text-xs font-medium rounded-full hover:bg-secondary transition hover:scale-105">
         {{ article.category.name }}
       </NuxtLink>
@@ -22,7 +22,7 @@
       </div>
 
       <h3 class="text-lg font-bold text-gray-900 mb-2 hover:text-primary transition-colors">
-        <NuxtLink :to="`/actualites/${article.slug}`">{{ article.title }}</NuxtLink>
+        <NuxtLink :to="`/blogs/${article.slug}`">{{ article.title }}</NuxtLink>
       </h3>
 
       <!-- Extrait de l'article -->
@@ -31,7 +31,7 @@
       <div class="flex items-center justify-between">
         <!-- Auteur -->
         <div class="flex items-center">
-          <NuxtLink :to="`/actualites/author/${article.author.slug}`" class="flex items-center group">
+          <NuxtLink :to="`/blogs/author/${article.author.slug}`" class="flex items-center group">
             <img :src="authorAvatarUrl" :alt="article.author.name" @error="handleAvatarError"
               class="w-6 h-6 rounded-full mr-2" />
             <span class="text-sm font-medium text-gray-700 hover:text-primary transition-colors">

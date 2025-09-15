@@ -105,7 +105,7 @@
           <!-- Affichage des catégories trouvées -->
           <div v-else-if="filteredAndSortedCategories.length > 0"
             class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <NuxtLink v-for="cat in paginatedCategories" :key="cat.id" :to="`/actualites/categorie/${cat.slug}`"
+            <NuxtLink v-for="cat in paginatedCategories" :key="cat.id" :to="`/blogs/cat/${cat.slug}`"
               class="block bg-white rounded-xl shadow-md p-6 hover:shadow-lg transition-shadow text-center">
               <h3 class="text-xl font-bold text-gray-900 mb-2">{{ cat.name }}</h3>
               <p class="text-gray-600">{{ getArticleCountForCategory(cat.id) }} article(s)</p>

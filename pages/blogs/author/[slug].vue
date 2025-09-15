@@ -33,7 +33,7 @@
               Retour
             </button>
 
-            <NuxtLink to="/actualites"
+            <NuxtLink to="/blogs"
               class="my-2 sm:my-6 flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary hover:bg-secondary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition">
               <IconArrowBack class="h-5 w-5 mr-2" />
               Toutes les actualités
@@ -90,7 +90,7 @@
                     <li v-for="catName in uniqueCategoriesOfAuthor" :key="catName">
                       <label class="flex items-center space-x-2 cursor-pointer">
                         <input type="checkbox" v-model="selectedCategories" :value="catName" class="rounded text-primary">
-                        <span>{{ catName }}</span>
+                        <span>{{ catName }} ({{ getArticleCountForCategory(catName) }})</span>
                       </label>
                     </li>
                   </ul>
@@ -181,7 +181,7 @@
         <p class="text-lg text-gray-600 mb-8">
           Désolé, l'auteur que vous recherchez n'existe pas ou n'a pas encore publié d'articles.
         </p>
-        <NuxtLink to="/actualites"
+        <NuxtLink to="/blogs"
           class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-primary hover:bg-secondary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition">
           <IconArrowBack class="mr-2 -mr-1 h-5 w-5" />
           Voir toutes les actualités
@@ -298,6 +298,10 @@ const filteredArticles = computed(() => {
 const totalAuthorViews = computed(() =>
   articlesBySelectedAuthor.value.reduce((sum, article) => sum + (article.views || 0), 0)
 );
+
+const getArticleCountForCategory = (categoryName: string) => {
+  return articlesBySelectedAuthor.value.filter(article => article.category.name === categoryName).length;
+};
 
 const totalWords = computed(() => {
   return filteredArticles.value.reduce((sum, article) => {

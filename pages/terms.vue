@@ -42,7 +42,7 @@
 
       <div class="grid grid-cols-1 lg:grid-cols-4 gap-8 mb-6">
         <aside class="hidden lg:block lg:col-span-1">
-          <div class="bg-white rounded-xl shadow-lg p-6 sticky top-24">
+          <div class="bg-white rounded-xl shadow-lg p-6 sticky top-24 max-h-[calc(100vh-10rem)] overflow-y-auto">
             <h2 class="text-xl font-bold mb-4">Table des matières</h2>
             <nav>
               <ul class="space-y-2">
@@ -754,5 +754,9 @@ useHead({
 .animate-fade-in-delay {
   animation: fadeIn 1s ease-out forwards;
   animation-delay: 0.4s;
+}
+
+h2[id], h3[id] {
+  scroll-margin-top: 100px;
 }
 </style>

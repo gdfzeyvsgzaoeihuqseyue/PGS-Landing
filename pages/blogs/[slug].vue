@@ -29,13 +29,13 @@
 
           <!-- Catégorie, titre, auteur, date -->
           <div class="absolute bottom-0 left-0 p-4 md:p-8 text-white w-full">
-            <NuxtLink :to="`/actualites/categorie/${article.category.slug}`" class="inline-block px-3 py-1 bg-primary text-white text-xs font-medium rounded-full mb-2 hover:bg-secondary transition">
+            <NuxtLink :to="`/blogs/cat/${article.category.slug}`" class="inline-block px-3 py-1 bg-primary text-white text-xs font-medium rounded-full mb-2 hover:bg-secondary transition">
               {{ article.category.name }}
             </NuxtLink>
             <h1 class="text-2xl sm:text-3xl md:text-4xl font-bold mb-2 leading-tight">{{ article.title }}</h1>
             <div class="flex flex-wrap items-center text-white/90 text-sm sm:text-base">
               <!-- Auteur -->
-              <NuxtLink :to="`/actualites/author/${article.author.slug}`" class="flex items-center group">
+              <NuxtLink :to="`/blogs/author/${article.author.slug}`" class="flex items-center group">
                 <img :src="authorAvatarUrl" :alt="article.author.name"
                   class="w-6 h-6 sm:w-8 sm:h-8 rounded-full mr-2" />
                 <span class="font-medium hover:underline">{{ article.author.name }}</span>
@@ -113,7 +113,7 @@
         <p class="text-lg mb-8">
           Désolé, l'article que vous recherchez n'existe pas ou a été supprimé.
         </p>
-        <NuxtLink to="/actualites" class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-primary hover:bg-primary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition">
+        <NuxtLink to="/blogs" class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-primary hover:bg-primary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition">
           <IconArrowBack class="mr-2 -mr-1 h-5 w-5" />
           Retour aux actualités
         </NuxtLink>

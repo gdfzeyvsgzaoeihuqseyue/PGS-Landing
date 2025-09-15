@@ -1,22 +1,22 @@
 <template>
   <main class="min-h-screen bg-gray-50">
     <!-- En-tête -->
-    <header class="text-center mb-12 py-6 mt-8">
-      <h1 class="text-5xl font-extrabold text-gray-900 leading-tight">
+    <header class="text-center mb-12 py-6 mt-8 px-4 sm:px-6 lg:px-8">
+      <h1 class="text-4xl sm:text-5xl font-extrabold text-gray-900 leading-tight">
         <span class="text-primary">Actualités</span> & Blog
       </h1>
-      <p class="mt-4 text-xl max-w-2xl mx-auto">
+      <p class="mt-4 text-base sm:text-xl max-w-2xl mx-auto">
         Découvrez nos dernières actualités, analyses et conseils sur la digitalisation des PME africaines, les solutions
         logicielles et l'innovation technologique.
       </p>
 
       <!-- Boutons -->
       <div class="mt-6 flex flex-col sm:flex-row justify-center gap-4 text-white">
-        <NuxtLink to="/actualites/categorie" 
+        <NuxtLink to="/blogs/cat" 
           class="px-4 py-2 bg-primary rounded-lg hover:bg-secondary transition">
           Voir toutes les catégories
         </NuxtLink>
-        <NuxtLink to="/actualites/author" 
+        <NuxtLink to="/blogs/author" 
           class="px-4 py-2 bg-secondary rounded-lg hover:bg-primary transition">
           Voir tous les auteurs
         </NuxtLink>
@@ -58,10 +58,10 @@
               <div>
                 <h3 class="text-lg font-bold mb-3">Catégories</h3>
                 <ul class="space-y-2">
-                  <li v-for="cat in categoryStore.categories" :key="cat.id">
+                  <li v-for="cat in categoriesWithArticles" :key="cat.id">
                     <label class="flex items-center space-x-2 cursor-pointer">
                       <input type="checkbox" v-model="selectedCategoryIds" :value="cat.id" class="rounded text-primary">
-                      <span>{{ cat.name }}</span>
+                      <span>{{ cat.name }} ({{ getArticleCountForCategory(cat.id) }})</span>
                     </label>
                   </li>
                 </ul>
@@ -221,7 +221,17 @@ const filteredArticles = computed(() => {
 });
 
 // Nombre total d’articles et de vue cumulées
-const totalViews = computed(() => articleStore.articles.reduce((sum, article) => sum + (article.views || 0), 0)); // MODIFIÉ ICI
+const totalViews = computed(() => articleStore.articles.reduce((sum, article) => sum + (article.views || 0), 0));
+
+// Nombre d'articles pour une catégorie donnée
+const getArticleCountForCategory = (categoryId: string) => {
+  return articleStore.articles.filter(article => article.category.id === categoryId).length;
+};
+
+// Catégories qui ont au moins un article
+const categoriesWithArticles = computed(() => {
+  return categoryStore.categories.filter(cat => getArticleCountForCategory(cat.id) > 0);
+});
 
 // Pagination des articles filtrés
 const paginatedArticles = computed(() => {

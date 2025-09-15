@@ -199,7 +199,7 @@ const team = [
     }
   },
   {
-    name: 'Charmaine Aurette YEDABO',
+    name: 'Charmaine A. Yedabo',
     role: 'Ingénieur Système',
     description: 'Développeur logiciel, architecture système et technologies web.',
     image: sharedFiles.paths.team.Charmaine,
