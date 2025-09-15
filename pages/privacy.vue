@@ -679,7 +679,7 @@ const handleScroll = () => {
 // Téléchargement
 const downloadPdf = async () => {
   const pdfUrl = sharedFiles.paths.pdf.privacy;
-  const fileName = 'PGS_Protection des données.pdf';
+  const fileName = 'PGS_Protection-des-données.pdf';
 
   try {
     const response = await fetch(pdfUrl);

@@ -217,7 +217,7 @@ const handleScroll = () => {
 // Téléchargement
 const downloadPdf = async () => {
   const pdfUrl = sharedFiles.paths.pdf.legal;
-  const fileName = 'PGS_Mentions_Legales.pdf';
+  const fileName = 'PGS_Mentions-legales.pdf';
 
   try {
     const response = await fetch(pdfUrl);

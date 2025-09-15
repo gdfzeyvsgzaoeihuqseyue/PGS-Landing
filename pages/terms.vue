@@ -666,7 +666,7 @@ const handleScroll = () => {
 // Téléchargement
 const downloadPdf = async () => {
   const pdfUrl = sharedFiles.paths.pdf.legal;
-  const fileName = 'PGS_CGU.pdf';
+  const fileName = 'PGS_Conditions-Générales-d-Utilisation.pdf';
 
   try {
     const response = await fetch(pdfUrl);
