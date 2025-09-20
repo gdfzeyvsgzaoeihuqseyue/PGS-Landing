@@ -17,15 +17,11 @@ const baseUrl = "https://progestionsoft.netlify.app";
 useHead({
   titleTemplate: '%s | PRO GESTION SOFT',
   meta: [
-    { charset: 'utf-8' },
-    { name: 'viewport', content: 'width=device-width, initial-scale=1' },
     {
       key: 'description',
       name: 'description',
       content: 'Pro Gestion Soft développe des solutions numériques innovantes pour accompagner les PME africaines dans leur transformation digitale.'
     },
-    { name: 'author', content: 'Pro Gestion Soft' },
-    { name: 'keywords', content: 'Pro Gestion Soft, numérique, PME, Afrique, Bénin, SaaS, digitalisation, technologie, PGS, SuitOps' },
     
     // Open Graph (Facebook, LinkedIn)
     { property: 'og:title', content: 'Pro Gestion Soft - Solutions numériques pour les PME africaines' },
