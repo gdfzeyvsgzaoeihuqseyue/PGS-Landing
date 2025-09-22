@@ -52,7 +52,7 @@ export const useSolutionStore = defineStore('solutions', () => {
       const response = await $fetch<{
         countsByLetter: Record<string, number>;
         countsByPlatform: Record<string, { id: string | null; count: number }>;
-      }>(`${API_BASE_URL}/plateform/wiki/counts`);
+      }>(`${API_BASE_URL}/solution/wiki/counts`);
 
       counts.value.byLetter = response.countsByLetter;
       counts.value.byPlatform = response.countsByPlatform;
@@ -81,7 +81,7 @@ export const useSolutionStore = defineStore('solutions', () => {
             currentPage: number;
             totalPages: number;
             data: Solution[];
-          }>(`${API_BASE_URL}/plateform/solution`, {
+          }>(`${API_BASE_URL}/solution/platform`, {
             params: { page: currentPage, limit: initialLimit }
           });
 
@@ -107,7 +107,7 @@ export const useSolutionStore = defineStore('solutions', () => {
           currentPage: number;
           totalPages: number;
           data: Solution[];
-        }>(`${API_BASE_URL}/plateform/solution`, {
+        }>(`${API_BASE_URL}/solution/platform`, {
           params: { page, limit }
         });
 
@@ -136,7 +136,7 @@ export const useSolutionStore = defineStore('solutions', () => {
         success: boolean;
         message: string;
         data: Solution;
-      }>(`${API_BASE_URL}/plateform/solution/${identifier}`);
+      }>(`${API_BASE_URL}/solution/platform/${identifier}`);
 
       currentSolution.value = response.data;
       return response.data;
@@ -165,7 +165,7 @@ export const useSolutionStore = defineStore('solutions', () => {
         currentPage: number;
         totalPages: number;
         data: PlateformDoc[];
-      }>(`${API_BASE_URL}/plateform/doc`, {
+      }>(`${API_BASE_URL}/solution/doc`, {
         params: { page, limit: all ? 100 : limit }
       });
 
@@ -195,7 +195,7 @@ export const useSolutionStore = defineStore('solutions', () => {
         currentPage: number;
         totalPages: number;
         data: PlateformFaq[];
-      }>(`${API_BASE_URL}/plateform/faq`, {
+      }>(`${API_BASE_URL}/solution/faq`, {
         params: { page, limit: all ? 100 : limit }
       });
 
@@ -226,7 +226,7 @@ export const useSolutionStore = defineStore('solutions', () => {
         currentPage: number;
         totalPages: number;
         data: PlateformTutorial[];
-      }>(`${API_BASE_URL}/plateform/tutorial`, {
+      }>(`${API_BASE_URL}/solution/tutorial`, {
         params: { page, limit: all ? 100 : limit }
       });
 
@@ -263,7 +263,7 @@ export const useSolutionStore = defineStore('solutions', () => {
         currentPage: number;
         totalPages: number;
         data: PlateformWiki[];
-      }>(`${API_BASE_URL}/plateform/wiki`, {
+      }>(`${API_BASE_URL}/solution/wiki`, {
         params: params
       });
 
