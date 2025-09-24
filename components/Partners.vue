@@ -7,10 +7,17 @@
       </p>
     </div>
 
-    <!-- Partenaires -->
-    <div class="flex flex-wrap justify-center gap-8 mb-16">
+    <!-- Chargement / Erreur -->
+    <div v-if="partnerStore.loading" class="text-center py-10">
+      <IconLoader class="animate-spin h-10 w-10 text-primary mx-auto" />
+      <p class="mt-2 text-gray-600">Chargement des partenaires...</p>
+    </div>
+    <div v-else-if="partnerStore.error" class="text-center py-10 text-red-500">
+      <p>Erreur: {{ partnerStore.error }}</p>
+    </div>
+    <div v-else-if="randomPartners.length > 0" class="flex flex-wrap justify-center gap-8 mb-16">
       <div
-        v-for="partner in partners"
+        v-for="partner in randomPartners"
         :key="partner.id"
         :title="partner.name"
         class="flex-none p-4 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow filter grayscale hover:grayscale-0"
@@ -19,8 +26,12 @@
           :src="partner.logo"
           :alt="partner.name"
           class="h-12 w-auto transition duration-500 ease-in-out"
+          @error="handleImageError($event, partner.name)"
         />
       </div>
+    </div>
+    <div v-else class="text-center py-10 text-gray-500">
+      <p>Aucun partenaire à afficher pour le moment.</p>
     </div>
 
     <!-- Témoignages -->
@@ -49,21 +60,13 @@
   </div>
 </template>
 
-<script setup>
-import { IconQuote } from '@tabler/icons-vue'
+<script setup lang="ts">
+import { ref, onMounted, computed } from 'vue'
+import { IconQuote, IconLoader } from '@tabler/icons-vue'
+import { usePartnerStore } from '@/stores/partners';
+import type { Partner } from '@/types';
 
-const partners = [
-  {
-    id: 1,
-    name: 'Cabinet HODD',
-    logo: 'https://lh3.googleusercontent.com/a-/ALV-UjXzZxkRKtHxPSuGbCFhTykXq_X290TXbkrEDAjpRFFDwUZZIKI=s265-w265-h265'
-  },
-  {
-    id: 2,
-    name: 'STAF PRINT CENTER',
-    logo: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQtDgYOXv2wJ4yuEw-xjGxv6zUW73N49xAlZw'
-  }
-]
+const partnerStore = usePartnerStore();
 
 const testimonials = [
   {
@@ -81,4 +84,47 @@ const testimonials = [
     image: "https://api.pgs.ctrlengine.com/api/v1/superadmin/document/gwCDpeZr8cy"
   }
 ]
+
+// Fonction pour mélanger un tableau
+const shuffleArray = (array: Partner[]): Partner[] => {
+  const shuffled = [...array];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
+};
+
+// Crée une liste de partenaires uniques basée sur leur nom
+const uniquePartners = computed<Partner[]>(() => {
+  const seenNames = new Set<string>();
+  const unique: Partner[] = [];
+  for (const partner of partnerStore.partners) {
+    const normalizedName = partner.name.trim().toLowerCase();
+    if (!seenNames.has(normalizedName)) {
+      seenNames.add(normalizedName);
+      unique.push(partner);
+    }
+  }
+  return unique;
+});
+
+// Sélectionne 4 partenaires aléatoires parmi les uniques
+const randomPartners = computed<Partner[]>(() => {
+  if (uniquePartners.value.length === 0) {
+    return [];
+  }
+  return shuffleArray(uniquePartners.value).slice(0, 6);
+});
+
+// Gère les erreurs de chargement d'image
+const handleImageError = (event: Event, partnerName: string) => {
+  const target = event.target as HTMLImageElement;
+  target.src = `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(partnerName)}`;
+  target.alt = `Logo de ${partnerName} non disponible`;
+};
+
+onMounted(() => {
+  partnerStore.fetchPartners(1, 100, true); 
+});
 </script>

@@ -122,6 +122,24 @@ export interface Article {
 
 
 // ===============================================
+// COMMUNAUTE
+// ===============================================
+export interface Partner {
+  id: string;
+  name: string;
+  website: string;
+  logo: string;
+  createdAt: string;
+  updatedAt: string;
+  platforms: {
+    id: string;
+    name: string;
+    slug: string;
+  }[];
+}
+
+
+// ===============================================
 // EVENEMENT
 // ===============================================
 export interface Event {
