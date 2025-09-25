@@ -71,7 +71,7 @@
     </section> -->
 
     <!-- Solution -->
-    <section class="py-16 bg-gray-50 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section v-if="!solutionStore.loading && !solutionStore.error && solutionStore.solutions.length > 0" class="py-16 bg-gray-50 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="max-w-3xl mx-0 md:ml-auto text-center lg:text-right mb-8">
         <h2 class="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent text-3xl font-extrabold">
           Votre partenaire technologique de confiance
@@ -82,16 +82,6 @@
         </p>
       </div>
 
-      <!-- <div v-if="solutionStore.loading" class="text-center py-10">
-        <IconLoader class="animate-spin h-10 w-10 text-primary mx-auto" />
-        <p class="mt-2 text-gray-600">Chargement des solutions...</p>
-      </div>
-      <div v-else-if="solutionStore.error" class="text-center">
-        <p>Nous n'avons pas réussi à filter les soutions disponibles</p>
-      </div>
-      <div v-else class="grid grid-cols-1 md:grid-cols-3 gap-8">
-        <SolutionCard />
-      </div> -->
       <div v-if="!solutionStore.loading && !solutionStore.error && solutionStore.solutions.length"
         class="grid grid-cols-1 md:grid-cols-3 gap-8">
         <SolutionCard />

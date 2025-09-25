@@ -12,14 +12,15 @@ export default defineNuxtRouteMiddleware((to, from) => {
   if (isBetaMode) {
     // Routes privées générales
     const privateRoutes = [
-      '/nothing', '/nothing-again', '/empty'
+      '/submit-testimony', '/help'
     ].map(route => withoutTrailingSlash(route));
 
     const isEventsRoute = normalizedPath.startsWith('/events');
+    const isWikiRoute = normalizedPath.startsWith('/events');
     const isPrivate = privateRoutes.includes(normalizedPath);
 
-    // Bloquer toutes les routes /events et les autres routes privées
-    if (isEventsRoute || isPrivate) {
+    // Bloquer toutes les routes non accessibles
+    if (isEventsRoute || isWikiRoute || isPrivate) {
       throw createError({
         statusCode: 403,
         statusMessage: "Accès Interdit",

@@ -1,5 +1,12 @@
 <template>
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+  <div
+    v-if="
+      (randomPartners.length > 0 || randomTestimonies.length > 0) &&
+      !partnerStore.loading &&
+      !testimonyStore.loading
+    "
+    class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"
+  >
     <div class="text-center mb-12">
       <h2 class="text-3xl font-bold text-gray-900 mb-4">Ils nous font confiance</h2>
       <p class="text-base text-gray-600 md:text-lg">
@@ -7,15 +14,10 @@
       </p>
     </div>
 
-    <!-- Chargement / Erreur -->
-    <div v-if="partnerStore.loading" class="text-center py-10">
-      <IconLoader class="animate-spin h-10 w-10 text-primary mx-auto" />
-      <p class="mt-2 text-gray-600">Chargement des partenaires...</p>
-    </div>
-    <div v-else-if="partnerStore.error" class="text-center py-10 text-red-500">
-      <p>Erreur: {{ partnerStore.error }}</p>
-    </div>
-    <div v-else-if="randomPartners.length > 0" class="flex flex-wrap justify-center gap-8 mb-16">
+    <div
+      v-if="randomPartners.length > 0"
+      class="flex flex-wrap justify-center gap-8 mb-16"
+    >
       <div
         v-for="partner in randomPartners"
         :key="partner.id"
@@ -30,24 +32,59 @@
         />
       </div>
     </div>
-    <div v-else class="text-center py-10 text-gray-500">
-      <p>Aucun partenaire à afficher pour le moment.</p>
-    </div>
 
-    <!-- Témoignages -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+    <div v-if="randomTestimonies.length > 0" class="grid grid-cols-1 md:grid-cols-2 gap-8">
       <div
-        v-for="testimonial in testimonials"
-        :key="testimonial.author"
-        class="bg-white p-8 rounded-xl shadow-lg"
+        v-for="testimonial in randomTestimonies"
+        :key="testimonial.id"
+        :class="[
+          'p-8 rounded-xl shadow-lg transition-all duration-300 ease-in-out',
+          testimonial.isFeatured
+            ? 'bg-blue-50 border-2 border-blue-500 shadow-xl scale-[1.02]'
+            : 'bg-white',
+        ]"
       >
+        <div v-if="testimonial.platform && testimonial.platform.length > 0" class="mb-2">
+          <span
+            class="inline-block px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800"
+          >
+            {{ testimonial.platform[0].name }}
+          </span>
+        </div>
+
         <div class="flex items-start mb-4">
           <IconQuote class="h-8 w-8 text-blue-600 mr-3 flex-shrink-0" />
-          <p class="text-base text-gray-700 italic md:text-lg">{{ testimonial.quote }}</p>
+          <p class="text-base text-gray-700 italic md:text-lg">{{ testimonial.content }}</p>
         </div>
+
+        <div
+          v-if="testimonial.note && testimonial.note >= 1 && testimonial.note <= 5"
+          class="flex items-center mb-4"
+        >
+          <IconStarFilled
+            v-for="n in testimonial.note"
+            :key="`filled-${n}`"
+            class="h-5 w-5 text-yellow-400"
+          />
+          <IconStar
+            v-for="n in 5 - testimonial.note"
+            :key="`empty-${n}`"
+            class="h-5 w-5 text-gray-300"
+          />
+        </div>
+
         <div class="flex items-center mt-6">
           <div class="w-12 h-12 rounded-full overflow-hidden mr-4 flex-shrink-0">
-            <img :src="testimonial.image" :alt="testimonial.author" class="w-full h-full object-cover" />
+            <img
+              :src="
+                testimonial.avatar ||
+                `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(
+                  testimonial.author,
+                )}`
+              "
+              :alt="testimonial.author"
+              class="w-full h-full object-cover"
+            />
           </div>
           <div>
             <div class="font-bold text-gray-900">{{ testimonial.author }}</div>
@@ -62,69 +99,98 @@
 
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
-import { IconQuote, IconLoader } from '@tabler/icons-vue'
-import { usePartnerStore } from '@/stores/partners';
-import type { Partner } from '@/types';
+import { IconQuote, IconStar, IconStarFilled } from '@tabler/icons-vue'
+import { usePartnerStore } from '@/stores/partners'
+import { useTestimonyStore } from '@/stores/testimonies'
+import type { Partner, Testimony } from '@/types'
 
-const partnerStore = usePartnerStore();
-
-const testimonials = [
-  {
-    quote: "PGS nous a aidés à optimiser notre suivi des ventes et des achats. Grâce aux rapports automatiques et à la facturation centralisée, nous avons augmenté nos revenus de 15 % en seulement six mois.",
-    author: "Archimède Codjovi",
-    role: "Responsable des Ventes",
-    company: "Univers Plus",
-    image: "https://api.pgs.ctrlengine.com/api/v1/superadmin/document/SBaxuhjp8LK"
-  },
-  {
-    quote: "La fonctionnalité de recrutement de PGS a complètement transformé notre processus. Publier des offres, organiser des tests en ligne et suivre les candidatures n’a jamais été aussi simple. Nous attirons maintenant des talents plus rapidement.",
-    author: "Raymondo Pironio",
-    role: "Fondateur",
-    company: "Wood Picture",
-    image: "https://api.pgs.ctrlengine.com/api/v1/superadmin/document/gwCDpeZr8cy"
-  }
-]
+const partnerStore = usePartnerStore()
+const testimonyStore = useTestimonyStore()
 
 // Fonction pour mélanger un tableau
-const shuffleArray = (array: Partner[]): Partner[] => {
-  const shuffled = [...array];
+const shuffleArray = <T>(array: T[]): T[] => {
+  const shuffled = [...array]
   for (let i = shuffled.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    const j = Math.floor(Math.random() * (i + 1))
+    ;[shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
   }
-  return shuffled;
-};
+  return shuffled
+}
 
-// Crée une liste de partenaires uniques basée sur leur nom
+// Liste de partenaires
 const uniquePartners = computed<Partner[]>(() => {
-  const seenNames = new Set<string>();
-  const unique: Partner[] = [];
+  const seenNames = new Set<string>()
+  const unique: Partner[] = []
   for (const partner of partnerStore.partners) {
-    const normalizedName = partner.name.trim().toLowerCase();
+    const normalizedName = partner.name.trim().toLowerCase()
     if (!seenNames.has(normalizedName)) {
-      seenNames.add(normalizedName);
-      unique.push(partner);
+      seenNames.add(normalizedName)
+      unique.push(partner)
     }
   }
-  return unique;
-});
+  return unique
+})
 
-// Sélectionne 4 partenaires aléatoires parmi les uniques
+// Sélectionne 6 partenaires aléatoires
 const randomPartners = computed<Partner[]>(() => {
   if (uniquePartners.value.length === 0) {
-    return [];
+    return []
   }
-  return shuffleArray(uniquePartners.value).slice(0, 6);
-});
+  return shuffleArray(uniquePartners.value).slice(0, 6)
+})
 
-// Gère les erreurs de chargement d'image
+// Erreurs de chargement d'image pour les partenaires
 const handleImageError = (event: Event, partnerName: string) => {
-  const target = event.target as HTMLImageElement;
-  target.src = `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(partnerName)}`;
-  target.alt = `Logo de ${partnerName} non disponible`;
-};
+  const target = event.target as HTMLImageElement
+  target.src = `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(
+    partnerName,
+  )}`
+  target.alt = `Logo de ${partnerName} non disponible`
+}
+
+// Liste de témoignages
+const uniquePublishedTestimonies = computed<Testimony[]>(() => {
+  const publishedTestimonies = testimonyStore.testimonies.filter((t) => t.isPublished)
+  const seenAuthors = new Set<string>()
+  const unique: Testimony[] = []
+  for (const testimony of publishedTestimonies) {
+    const normalizedAuthor = testimony.author.trim().toLowerCase()
+    if (!seenAuthors.has(normalizedAuthor)) {
+      seenAuthors.add(normalizedAuthor)
+      unique.push(testimony)
+    }
+  }
+  return unique
+})
+
+// Sélectionne 4 témoignages aléatoires
+const randomTestimonies = computed<Testimony[]>(() => {
+  const allPublishedUnique = uniquePublishedTestimonies.value
+  if (allPublishedUnique.length === 0) {
+    return []
+  }
+
+  const featured = shuffleArray(allPublishedUnique.filter((t) => t.isFeatured))
+  const nonFeatured = shuffleArray(allPublishedUnique.filter((t) => !t.isFeatured))
+
+  const selected: Testimony[] = []
+  const countToSelect = 4
+
+  // Priorise les témoignages "featured"
+  for (let i = 0; i < featured.length && selected.length < countToSelect; i++) {
+    selected.push(featured[i])
+  }
+
+  // Complète avec des témoignages non "featured"
+  for (let i = 0; i < nonFeatured.length && selected.length < countToSelect; i++) {
+    selected.push(nonFeatured[i])
+  }
+
+  return shuffleArray(selected)
+})
 
 onMounted(() => {
-  partnerStore.fetchPartners(1, 100, true); 
-});
+  partnerStore.fetchPartners(1, 100, true)
+  testimonyStore.fetchTestimonies(1, 100, true)
+})
 </script>

@@ -18,6 +18,8 @@ export interface Solution {
   faq?: { question: string; answer: string }[];
   tutorials?: { title: string; description: string; time: string; link: string; thumbnail?: string; }[];
   wiki?: PlateformWiki[];
+  partners?: Partner[];
+  testimonies?: Testimony[];
   createdAt: string;
   updatedAt: string;
 }
@@ -74,6 +76,39 @@ export interface PlateformWiki {
   order?: number; 
 }
 
+export interface Partner {
+  id: string;
+  name: string;
+  website: string;
+  logo: string;
+  createdAt: string;
+  updatedAt: string;
+  platforms: {
+    id: string;
+    name: string;
+    slug: string;
+  }[];
+}
+
+export interface Testimony {
+  id: string;
+  author: string;
+  company?: string;
+  role?: string;
+  content: string;
+  note?: number;
+  avatar?: string;
+  isPublished: boolean;
+  isFeatured: boolean;
+  createdAt: string;
+  updatedAt: string;
+  platform: {
+    id: string;
+    name: string;
+    slug: string;
+  }[];
+}
+
 
 // ===============================================
 // BLOG
@@ -118,24 +153,6 @@ export interface Article {
   updatedAt: string; 
   author: Author; 
   category: Category; 
-}
-
-
-// ===============================================
-// COMMUNAUTE
-// ===============================================
-export interface Partner {
-  id: string;
-  name: string;
-  website: string;
-  logo: string;
-  createdAt: string;
-  updatedAt: string;
-  platforms: {
-    id: string;
-    name: string;
-    slug: string;
-  }[];
 }
 
 

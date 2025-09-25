@@ -103,12 +103,13 @@ const navLinks = [
   { to: '/events', text: 'Événements' },
   { to: '/blogs', text: 'Articles' },
   { to: '/about', text: 'À propos' },
-  { to: '/help', text: 'Ressources' }
+  { to: '/help', text: 'Ressources' },
+  { to: '/submit-testimony', text: 'Donner mon avis' } 
 ];
 
 const openContactModal = () => {
   showContactModal.value = true;
-  isMenuOpen.value = false; // Ferme le menu mobile si ouvert
+  isMenuOpen.value = false; 
 };
 
 const closeContactModal = () => {
