@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
-import type { Solution, PlateformDoc, PlateformFaq, PlateformTutorial, PlateformWiki } from '@/types';
+import type { Solution, PlateformDoc, PlateformFaq, PlateformTutorial, PlateformWiki, Partner, Testimony } from '@/types';
 import { useRuntimeConfig } from '#app';
 
 export const useSolutionStore = defineStore('solutions', () => {
@@ -136,7 +136,11 @@ export const useSolutionStore = defineStore('solutions', () => {
         success: boolean;
         message: string;
         data: Solution;
-      }>(`${API_BASE_URL}/solution/platform/${identifier}`);
+      }>(`${API_BASE_URL}/solution/platform/${identifier}`, {
+        params: {
+          populate: 'partners,testimonies,docs,faq,tutorials,wiki'
+        }
+      });
 
       currentSolution.value = response.data;
       return response.data;

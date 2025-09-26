@@ -44,11 +44,11 @@
             : 'bg-white',
         ]"
       >
-        <div v-if="testimonial.platform && testimonial.platform.length > 0" class="mb-2">
+        <div v-if="testimonial.platform" class="mb-2">
           <span
             class="inline-block px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800"
           >
-            {{ testimonial.platform[0].name }}
+            {{ testimonial.platform.name }}
           </span>
         </div>
 
@@ -148,49 +148,40 @@ const handleImageError = (event: Event, partnerName: string) => {
   target.alt = `Logo de ${partnerName} non disponible`
 }
 
-// Liste de témoignages
-const uniquePublishedTestimonies = computed<Testimony[]>(() => {
-  const publishedTestimonies = testimonyStore.testimonies.filter((t) => t.isPublished)
-  const seenAuthors = new Set<string>()
-  const unique: Testimony[] = []
-  for (const testimony of publishedTestimonies) {
-    const normalizedAuthor = testimony.author.trim().toLowerCase()
-    if (!seenAuthors.has(normalizedAuthor)) {
-      seenAuthors.add(normalizedAuthor)
-      unique.push(testimony)
+// Logique révisée pour les témoignages
+const randomTestimonies = computed<Testimony[]>(() => {
+  const allPublishedTestimonies = testimonyStore.testimonies.filter(t => t.isPublished);
+  if (allPublishedTestimonies.length === 0) {
+    return [];
+  }
+
+  const featured = allPublishedTestimonies.filter(t => t.isFeatured);
+  const nonFeatured = allPublishedTestimonies.filter(t => !t.isFeatured);
+
+  const selected: Testimony[] = [];
+  const countToSelect = 4; 
+
+  // Ajouter tous les témoignages "featured" disponibles, jusqu'à la limite
+  for (let i = 0; i < featured.length && selected.length < countToSelect; i++) {
+    selected.push(featured[i]);
+  }
+
+  // Si la limite n'est pas atteinte, ajouter des témoignages "non-featured" aléatoirement
+  if (selected.length < countToSelect) {
+    const remainingSlots = countToSelect - selected.length;
+    const shuffledNonFeatured = shuffleArray(nonFeatured);
+
+    for (let i = 0; i < remainingSlots && i < shuffledNonFeatured.length; i++) {
+      selected.push(shuffledNonFeatured[i]);
     }
   }
-  return unique
-})
 
-// Sélectionne 4 témoignages aléatoires
-const randomTestimonies = computed<Testimony[]>(() => {
-  const allPublishedUnique = uniquePublishedTestimonies.value
-  if (allPublishedUnique.length === 0) {
-    return []
-  }
+  // Mélanger le résultat final pour une présentation dynamique
+  return shuffleArray(selected);
+});
 
-  const featured = shuffleArray(allPublishedUnique.filter((t) => t.isFeatured))
-  const nonFeatured = shuffleArray(allPublishedUnique.filter((t) => !t.isFeatured))
-
-  const selected: Testimony[] = []
-  const countToSelect = 4
-
-  // Priorise les témoignages "featured"
-  for (let i = 0; i < featured.length && selected.length < countToSelect; i++) {
-    selected.push(featured[i])
-  }
-
-  // Complète avec des témoignages non "featured"
-  for (let i = 0; i < nonFeatured.length && selected.length < countToSelect; i++) {
-    selected.push(nonFeatured[i])
-  }
-
-  return shuffleArray(selected)
-})
-
-onMounted(() => {
-  partnerStore.fetchPartners(1, 100, true)
-  testimonyStore.fetchTestimonies(1, 100, true)
+onMounted(async () => {
+  await partnerStore.fetchPartners(1, 100, true)
+  await testimonyStore.fetchTestimonies(1, 100, true, true, null) 
 })
 </script>

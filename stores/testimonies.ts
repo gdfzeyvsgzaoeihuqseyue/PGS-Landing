@@ -19,11 +19,21 @@ export const useTestimonyStore = defineStore('testimonies', () => {
    * @param page Le numéro de la page à récupérer (ignoré si all est true).
    * @param limit Le nombre de témoignages par page (ignoré si all est true).
    * @param all Si true, tente de récupérer tous les témoignages.
+   * @param isPublished Filtrer par les témoignages publiés.
+   * @param isFeatured Filtrer par les témoignages mis en avant.
    */
-  async function fetchTestimonies(page: number = 1, limit: number = 10, all: boolean = false) {
+  async function fetchTestimonies(page: number = 1, limit: number = 10, all: boolean = false, isPublished: boolean | null = null, isFeatured: boolean | null = null) {
     loading.value = true;
     error.value = null;
     try {
+      const params: { [key: string]: any } = { page, limit: all ? 100 : limit };
+      if (isPublished !== null) {
+        params.isPublished = isPublished;
+      }
+      if (isFeatured !== null) {
+        params.isFeatured = isFeatured;
+      }
+
       if (all) {
         let allFetchedTestimonies: Testimony[] = [];
         let currentPage = 1;
@@ -40,7 +50,7 @@ export const useTestimonyStore = defineStore('testimonies', () => {
             totalPages: number;
             data: Testimony[];
           }>(`${API_BASE_URL}/solution/testimony`, {
-            params: { page: currentPage, limit: initialLimit }
+            params: { ...params, page: currentPage, limit: initialLimit }
           });
 
           allFetchedTestimonies = allFetchedTestimonies.concat(response.data);
@@ -60,7 +70,7 @@ export const useTestimonyStore = defineStore('testimonies', () => {
           totalPages: number;
           data: Testimony[];
         }>(`${API_BASE_URL}/solution/testimony`, {
-          params: { page, limit }
+          params: params
         });
 
         testimonies.value = response.data;
@@ -84,16 +94,22 @@ export const useTestimonyStore = defineStore('testimonies', () => {
     content: string;
     note?: number;
     avatar?: string;
-    platformId?: string[] | null;
+    platformId?: string | null;
   }) {
     submissionLoading.value = true;
     submissionError.value = null;
     submissionSuccess.value = false;
     try {
       const payload = {
-        ...testimonyData,
+        author: testimonyData.author,
+        company: testimonyData.company,
+        role: testimonyData.role,
+        content: testimonyData.content,
+        note: testimonyData.note,
+        avatar: testimonyData.avatar,
         isPublished: false,
         isFeatured: false,
+        platformId: testimonyData.platformId,
       };
 
       const response = await $fetch(`${API_BASE_URL}/solution/testimony`, {

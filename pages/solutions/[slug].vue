@@ -60,7 +60,7 @@
                 </NuxtLink>
                 <p class="text-sm">{{ item.description }}</p>
               </div>
-              <p v-if="filteredFaqs.length === 0 && wikiSearchQuery" class="text-sm text-gray-500">
+              <p v-if="filteredWikis.length === 0 && wikiSearchQuery" class="text-sm text-gray-500">
                 Aucune lien trouvée pour votre recherche.
               </p>
             </template>
@@ -208,7 +208,7 @@
 import { computed, ref, onMounted, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import { useSolutionStore } from '@/stores/solutions';
-import { IconArrowLeft, IconCheck, IconBook, IconVideo, IconLoader, IconArrowBack } from '@tabler/icons-vue'; // Added IconArrowBack
+import { IconArrowLeft, IconCheck, IconBook, IconVideo, IconLoader, IconArrowBack } from '@tabler/icons-vue';
 
 const route = useRoute();
 const slug = route.params.slug as string;
@@ -222,9 +222,6 @@ const wikiSearchQuery = ref('');
 // Charger les solutions
 onMounted(async () => {
   await solutionStore.fetchSolutionByIdentifier(slug);
-  if (solutionStore.solutions.length === 0) {
-    await solutionStore.fetchSolutions(undefined, undefined, true);
-  }
 });
 
 watch(() => route.params.slug, async (newSlug) => {
@@ -332,7 +329,6 @@ useHead(() => ({
 <style scoped>
 .hero-bg-responsive {
   background-size: contain;
-  /* Default for mobile: image is fully contained */
   background-repeat: no-repeat;
   background-position: center;
 }
@@ -342,7 +338,6 @@ useHead(() => ({
   /* md breakpoint */
   .hero-bg-responsive {
     background-size: cover;
-    /* On larger screens, cover the area */
   }
 }
 </style>

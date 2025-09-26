@@ -83,11 +83,7 @@ export interface Partner {
   logo: string;
   createdAt: string;
   updatedAt: string;
-  platforms: {
-    id: string;
-    name: string;
-    slug: string;
-  }[];
+  platform: PlatformInfo;
 }
 
 export interface Testimony {
@@ -102,11 +98,7 @@ export interface Testimony {
   isFeatured: boolean;
   createdAt: string;
   updatedAt: string;
-  platform: {
-    id: string;
-    name: string;
-    slug: string;
-  }[];
+  platform: PlatformInfo;
 }
 
 

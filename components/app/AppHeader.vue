@@ -104,7 +104,6 @@ const navLinks = [
   { to: '/blogs', text: 'Articles' },
   { to: '/about', text: 'À propos' },
   { to: '/help', text: 'Ressources' },
-  { to: '/submit-testimony', text: 'Donner mon avis' } 
 ];
 
 const openContactModal = () => {

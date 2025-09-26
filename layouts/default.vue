@@ -5,4 +5,5 @@
     <slot />
   </main>
   <AppFooter />
+  <GlobalFeedbackButton />
 </template>

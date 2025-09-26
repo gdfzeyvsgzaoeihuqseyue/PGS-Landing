@@ -61,41 +61,32 @@
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">Plateforme(s) concernée(s)</label>
             <div class="relative">
-              <div class="flex items-center mb-2">
-                <input type="checkbox" id="allPlatforms" v-model="selectAllPlatforms"
-                  class="h-4 w-4 text-primary border-gray-300 rounded focus:ring-primary" />
-                <label for="allPlatforms" class="ml-2 block text-sm text-gray-900">Toutes les plateformes</label>
+              <div class="relative">
+                <input type="text" v-model="platformSearchQuery" @focus="showPlatformDropdown = true"
+                  @blur="hidePlatformDropdown" placeholder="Rechercher une plateforme..."
+                  class="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary pr-10" />
+                <IconSearch class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
               </div>
 
-              <div v-if="!selectAllPlatforms">
-                <div class="relative">
-                  <input type="text" v-model="platformSearchQuery" @focus="showPlatformDropdown = true"
-                    @blur="hidePlatformDropdown" placeholder="Rechercher une plateforme..."
-                    class="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary pr-10" />
-                  <IconSearch class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
-                </div>
-
-                <div v-if="selectedPlatformNames.length > 0" class="mt-2 flex flex-wrap gap-2">
-                  <span v-for="name in selectedPlatformNames" :key="name"
-                    class="px-2 py-1 bg-primary text-white text-xs rounded-full">
-                    {{ name }}
-                  </span>
-                </div>
-
-                <ul v-if="showPlatformDropdown && filteredPlatforms.length > 0"
-                  class="absolute z-10 w-full bg-white border border-gray-300 rounded-md shadow-lg mt-1 max-h-60 overflow-y-auto">
-                  <li v-for="platform in filteredPlatforms" :key="platform.id"
-                    @mousedown.prevent="togglePlatformSelection(platform.id)"
-                    class="px-4 py-2 cursor-pointer hover:bg-gray-100 flex items-center justify-between">
-                    <span>{{ platform.name }}</span>
-                    <IconCheck v-if="form.platformIds.includes(platform.id)" class="h-5 w-5 text-primary" />
-                  </li>
-                </ul>
-                <p v-else-if="showPlatformDropdown && platformSearchQuery && filteredPlatforms.length === 0"
-                  class="absolute z-10 w-full bg-white border border-gray-300 rounded-md shadow-lg mt-1 px-4 py-2 text-gray-500">
-                  Aucune plateforme trouvée.
-                </p>
+              <div v-if="selectedPlatformName" class="mt-2 flex flex-wrap gap-2">
+                <span class="px-2 py-1 bg-primary text-white text-xs rounded-full">
+                  {{ selectedPlatformName }}
+                </span>
               </div>
+
+              <ul v-if="showPlatformDropdown && filteredPlatforms.length > 0"
+                class="absolute z-10 w-full bg-white border border-gray-300 rounded-md shadow-lg mt-1 max-h-60 overflow-y-auto">
+                <li v-for="platform in filteredPlatforms" :key="platform.id"
+                  @mousedown.prevent="togglePlatformSelection(platform.id)"
+                  class="px-4 py-2 cursor-pointer hover:bg-gray-100 flex items-center justify-between">
+                  <span>{{ platform.name }}</span>
+                  <IconCheck v-if="form.platformId === platform.id" class="h-5 w-5 text-primary" />
+                </li>
+              </ul>
+              <p v-else-if="showPlatformDropdown && platformSearchQuery && filteredPlatforms.length === 0"
+                class="absolute z-10 w-full bg-white border border-gray-300 rounded-md shadow-lg mt-1 px-4 py-2 text-gray-500">
+                Aucune plateforme trouvée.
+              </p>
             </div>
           </div>
 
@@ -139,20 +130,11 @@ const form = ref({
   content: '',
   note: 0,
   avatar: '',
-  platformIds: [] as string[],
+  platformId: null as string | null, // platformId est maintenant une chaîne ou null
 });
 
-const selectAllPlatforms = ref(false);
 const platformSearchQuery = ref('');
 const showPlatformDropdown = ref(false);
-
-// Watcher pour gérer la sélection de "Toutes les plateformes"
-watch(selectAllPlatforms, (newValue) => {
-  if (newValue) {
-    form.value.platformIds = [];
-    platformSearchQuery.value = '';
-  }
-});
 
 // Filtrer les plateformes basées sur la recherche
 const filteredPlatforms = computed(() => {
@@ -165,23 +147,22 @@ const filteredPlatforms = computed(() => {
   );
 });
 
-// Noms des plateformes sélectionnées pour l'affichage
-const selectedPlatformNames = computed(() => {
-  return form.value.platformIds.map(id => {
-    const platform = solutionStore.solutions.find(s => s.id === id);
+// Nom de la plateforme sélectionnée pour l'affichage
+const selectedPlatformName = computed(() => {
+  if (form.value.platformId) {
+    const platform = solutionStore.solutions.find(s => s.id === form.value.platformId);
     return platform ? platform.name : '';
-  }).filter(Boolean);
+  }
+  return '';
 });
 
 // Toggle la sélection d'une plateforme individuelle
 const togglePlatformSelection = (platformId: string) => {
-  const index = form.value.platformIds.indexOf(platformId);
-  if (index > -1) {
-    form.value.platformIds.splice(index, 1);
+  if (form.value.platformId === platformId) {
+    form.value.platformId = null;
   } else {
-    form.value.platformIds.push(platformId);
+    form.value.platformId = platformId;
   }
-  selectAllPlatforms.value = false;
 };
 
 // Masquer la liste déroulante
@@ -205,7 +186,7 @@ const handleSubmit = async () => {
       content: form.value.content,
       note: form.value.note > 0 ? form.value.note : undefined,
       avatar: form.value.avatar || undefined,
-      platformId: selectAllPlatforms.value ? null : (form.value.platformIds.length > 0 ? form.value.platformIds : null),
+      platformId: form.value.platformId,
     };
     await testimonyStore.submitTestimony(payload);
     form.value = {
@@ -215,9 +196,8 @@ const handleSubmit = async () => {
       content: '',
       note: 0,
       avatar: '',
-      platformIds: [],
+      platformId: null,
     };
-    selectAllPlatforms.value = false;
     platformSearchQuery.value = '';
   } catch (error) {
   }
