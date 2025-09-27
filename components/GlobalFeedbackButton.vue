@@ -2,9 +2,9 @@
   <div>
     <!-- Bouton flottant -->
     <button @click="showModal = true"
-      class="fixed bottom-6 right-6 bg-primary text-white p-4 rounded-full shadow-lg hover:bg-secondary transition-all duration-300 transform hover:scale-110 z-50"
+      class="fixed bottom-6 right-6 bg-primary text-white p-4 rounded-full shadow-lg transition-all duration-300 transform hover:scale-110 z-50"
       aria-label="Ouvrir le menu d'aide et de feedback">
-      <IconMessageCircle class="h-7 w-7" />
+      <IconMessageCircle class="h-4 w-4" />
     </button>
 
     <!-- Modale -->

@@ -14,10 +14,19 @@ export const usePartnerStore = defineStore('partners', () => {
   /**
    * Récupère une liste paginée ou tous les partenaires depuis l'API.
    * @param page Le numéro de la page à récupérer (ignoré si all est true).
-   * @param limit Le nombre de partenaires par page (ignoré si all est true).
+   * @param limit Le nombre de partenaires à renvoyer par page (ignoré si all est true).
    * @param all Si true, tente de récupérer tous les partenaires.
+   * @param forceFetch Si true, force le rechargement des données même si elles sont déjà présentes.
    */
-  async function fetchPartners(page: number = 1, limit: number = 10, all: boolean = false) {
+  async function fetchPartners(page: number = 1, limit: number = 10, all: boolean = false, forceFetch: boolean = false) {
+    // Logique de cache spécifique pour l'appel de Partners.vue (qui demande tous les partenaires)
+    const isPartnersCall = all === true;
+
+    if (!forceFetch && partners.value.length > 0 && !loading.value && !error.value && isPartnersCall) {
+      console.log('Using cached partners data.');
+      return; // Utilise les données en cache pour cette combinaison de filtres
+    }
+
     loading.value = true;
     error.value = null;
     try {
@@ -65,8 +74,11 @@ export const usePartnerStore = defineStore('partners', () => {
     } catch (err: any) {
       error.value = 'Erreur lors du chargement des partenaires: ' + (err.data?.message || err.message);
       console.error(error.value, err);
+      loading.value = false; // S'assurer que loading est false même en cas d'erreur
+      throw err; // Re-throw pour propager l'erreur si nécessaire
     } finally {
       loading.value = false;
+      console.log('Fetch partners finished. Loading set to false.');
     }
   }
 
@@ -77,3 +89,4 @@ export const usePartnerStore = defineStore('partners', () => {
     fetchPartners,
   };
 });
+

@@ -21,8 +21,17 @@ export const useTestimonyStore = defineStore('testimonies', () => {
    * @param all Si true, tente de récupérer tous les témoignages.
    * @param isPublished Filtrer par les témoignages publiés.
    * @param isFeatured Filtrer par les témoignages mis en avant.
+   * @param forceFetch Si true, force le rechargement des données même si elles sont déjà présentes.
    */
-  async function fetchTestimonies(page: number = 1, limit: number = 10, all: boolean = false, isPublished: boolean | null = null, isFeatured: boolean | null = null) {
+  async function fetchTestimonies(page: number = 1, limit: number = 10, all: boolean = false, isPublished: boolean | null = null, isFeatured: boolean | null = null, forceFetch: boolean = false) {
+    // Logique de cache spécifique pour l'appel de Partners.vue (qui demande tous les témoignages publiés)
+    const isPartnersCall = all === true && isPublished === true && isFeatured === null;
+
+    if (!forceFetch && testimonies.value.length > 0 && !loading.value && !error.value && isPartnersCall) {
+      console.log('Using cached testimonies data.');
+      return; // Utilise les données en cache pour cette combinaison de filtres
+    }
+
     loading.value = true;
     error.value = null;
     try {
@@ -38,7 +47,7 @@ export const useTestimonyStore = defineStore('testimonies', () => {
         let allFetchedTestimonies: Testimony[] = [];
         let currentPage = 1;
         let totalPages = 1;
-        const initialLimit = 100;
+        const initialLimit = 100; 
 
         do {
           const response = await $fetch<{
@@ -78,8 +87,11 @@ export const useTestimonyStore = defineStore('testimonies', () => {
     } catch (err: any) {
       error.value = 'Erreur lors du chargement des témoignages: ' + (err.data?.message || err.message);
       console.error(error.value, err);
+      loading.value = false; // S'assurer que loading est false même en cas d'erreur
+      throw err; // Re-throw pour propager l'erreur si nécessaire
     } finally {
       loading.value = false;
+      console.log('Fetch testimonies finished. Loading set to false.');
     }
   }
 
@@ -109,7 +121,7 @@ export const useTestimonyStore = defineStore('testimonies', () => {
         avatar: testimonyData.avatar,
         isPublished: false,
         isFeatured: false,
-        platformId: testimonyData.platformId,
+        platform: testimonyData.platformId,
       };
 
       const response = await $fetch(`${API_BASE_URL}/solution/testimony`, {
@@ -118,8 +130,6 @@ export const useTestimonyStore = defineStore('testimonies', () => {
       });
 
       submissionSuccess.value = true;
-      // Optionnellement, rafraîchir les témoignages pour mettre à jour la liste
-      // await fetchTestimonies(1, 100, true);
       return response;
     } catch (err: any) {
       submissionError.value = 'Erreur lors de la soumission du témoignage: ' + (err.data?.message || err.message);
@@ -142,3 +152,4 @@ export const useTestimonyStore = defineStore('testimonies', () => {
     submitTestimony,
   };
 });
+

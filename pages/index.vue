@@ -203,7 +203,7 @@ onMounted(() => {
 });
 
 useHead({
-  title: 'Solutions numériques pour les PME africaines',
+  title: 'Pro Gestion Soft - Solutions numériques pour les PME africaines',
 })
 </script>
 
