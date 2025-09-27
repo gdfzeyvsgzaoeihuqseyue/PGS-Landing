@@ -59,7 +59,7 @@
           </div>
 
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Plateforme(s) concernée(s)</label>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Plateforme concernée</label>
             <div class="relative">
               <div class="relative">
                 <input type="text" v-model="platformSearchQuery" @focus="showPlatformDropdown = true"
@@ -69,8 +69,9 @@
               </div>
 
               <div v-if="selectedPlatformName" class="mt-2 flex flex-wrap gap-2">
-                <span class="px-2 py-1 bg-primary text-white text-xs rounded-full">
+                <span class="px-2 py-1 bg-primary text-white text-xs rounded-full flex items-center gap-1">
                   {{ selectedPlatformName }}
+                  <span v-if="wasPreSelected" class="text-xs opacity-75">(auto)</span>
                 </span>
               </div>
 
@@ -116,10 +117,12 @@
 
 <script setup lang="ts">
 import { ref, onMounted, watch, computed } from 'vue';
+import { useRoute } from 'vue-router';
 import { useTestimonyStore } from '@/stores/testimonies';
 import { useSolutionStore } from '@/stores/solutions';
 import { IconStar, IconStarFilled, IconLoader, IconCheck, IconAlertCircle, IconInfoCircle, IconSearch } from '@tabler/icons-vue';
 
+const route = useRoute();
 const testimonyStore = useTestimonyStore();
 const solutionStore = useSolutionStore();
 
@@ -130,11 +133,12 @@ const form = ref({
   content: '',
   note: 0,
   avatar: '',
-  platformId: null as string | null, // platformId est maintenant une chaîne ou null
+  platformId: null as string | null,
 });
 
 const platformSearchQuery = ref('');
 const showPlatformDropdown = ref(false);
+const wasPreSelected = ref(false);
 
 // Filtrer les plateformes basées sur la recherche
 const filteredPlatforms = computed(() => {
@@ -156,10 +160,31 @@ const selectedPlatformName = computed(() => {
   return '';
 });
 
+// Fonction pour pré-sélectionner une plateforme depuis l'URL
+const preSelectPlatformFromUrl = () => {
+  const platformParam = route.query.platform as string;
+  
+  if (platformParam && solutionStore.solutions.length > 0) {
+    const platform = solutionStore.solutions.find(s => 
+      s.slug?.toLowerCase() === platformParam.toLowerCase() || 
+      s.name.toLowerCase() === platformParam.toLowerCase()
+    );
+    
+    if (platform) {
+      form.value.platformId = platform.id;
+      wasPreSelected.value = true;
+      console.log(`✅ Plateforme "${platform.name}" pré-sélectionnée depuis l'URL`);
+    } else {
+      console.warn(`⚠️ Plateforme "${platformParam}" non trouvée`);
+    }
+  }
+};
+
 // Toggle la sélection d'une plateforme individuelle
 const togglePlatformSelection = (platformId: string) => {
   if (form.value.platformId === platformId) {
     form.value.platformId = null;
+    wasPreSelected.value = false;
   } else {
     form.value.platformId = platformId;
   }
@@ -172,9 +197,17 @@ const hidePlatformDropdown = () => {
   }, 150);
 };
 
+// Pré-sélectionner quand les solutions sont chargées
+watch(() => solutionStore.solutions.length, (newLength) => {
+  if (newLength > 0 && !form.value.platformId) {
+    preSelectPlatformFromUrl();
+  }
+});
+
 // Récupérer les solutions au montage pour la sélection de plateforme
-onMounted(() => {
-  solutionStore.fetchSolutions(undefined, undefined, true);
+onMounted(async () => {
+  await solutionStore.fetchSolutions(undefined, undefined, true);
+  preSelectPlatformFromUrl();
 });
 
 const handleSubmit = async () => {
@@ -189,6 +222,8 @@ const handleSubmit = async () => {
       platformId: form.value.platformId,
     };
     await testimonyStore.submitTestimony(payload);
+    
+    // Reset du formulaire après succès
     form.value = {
       author: '',
       role: '',
@@ -199,6 +234,7 @@ const handleSubmit = async () => {
       platformId: null,
     };
     platformSearchQuery.value = '';
+    wasPreSelected.value = false;
   } catch (error) {
   }
 };
