@@ -203,7 +203,7 @@ onMounted(() => {
 });
 
 useHead({
-  title: 'Acceuil',
+  title: 'Solutions numériques pour les PME africaines',
 })
 </script>
 
