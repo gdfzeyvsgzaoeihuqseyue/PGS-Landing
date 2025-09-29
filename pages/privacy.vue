@@ -12,7 +12,7 @@
         <p class="mt-2 text-sm text-gray-500">Dernière mise à jour : 1er septembre 2025</p>
         <!-- Fichier PDF -->
         <div class="mt-6">
-          <button @click.prevent="downloadPdf" download="PGS_Mentions_Legales.pdf"
+          <button @click.prevent="handleDownload" download="PGS_Mentions_Legales.pdf"
             class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-primary hover:bg-secondary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition">
             <IconDownload class="h-5 w-5 mr-2" />
             Télécharger la Politique de Protection (PDF)
@@ -61,7 +61,7 @@
           class="lg:col-span-3 bg-white rounded-xl shadow-lg p-8 md:p-12 lg:p-16 animate-fade-in-delay">
 
           <div class="space-y-10">
-            <h2 id="politique-de-confidentialite" class="text-2xl sm:text-3xl font-bold text-primary mb-4">
+            <h2 class="text-2xl sm:text-3xl font-bold text-primary mb-4">
               1. POLITIQUE DE CONFIDENTIALITE
             </h2>
             <p class="text-base sm:text-lg leading-relaxed mb-4">
@@ -69,7 +69,7 @@
               obtenir des informations détaillées sur vos obligations légales.
             </p>
 
-            <h3 id="introduction" class="text-xl sm:text-2xl font-bold text-gray-900 mb-4">
+            <h3 class="text-xl sm:text-2xl font-bold text-gray-900 mb-4">
               1. INTRODUCTION
             </h3>
             <p class="text-base sm:text-lg leading-relaxed mb-2">
@@ -100,8 +100,7 @@
               affilier à nous après que ces modifications ont été affichées.
             </p>
 
-            <h2 id="donnees-personnelles-que-nous-recueillons-et-comment-nous-les-utilisons"
-              class="text-2xl sm:text-3xl font-bold text-primary mb-4">
+            <h2 class="text-2xl sm:text-3xl font-bold text-primary mb-4">
               2. DONNEES PERSONNELLES QUE NOUS RECUEILLONS ET COMMENT NOUS LES UTILISONS
             </h2>
             <p class="text-base sm:text-lg leading-relaxed mb-2">
@@ -111,7 +110,7 @@
               l’amélioration, la personnalisation, la commercialisation et le développement des services, la promotion
               de la sûreté et de la sécurité, et le recrutement et l’évaluation des candidats.
             </p>
-            <h3 id="informations-que-vous-nous-fournissez" class="text-xl sm:text-2xl font-bold text-gray-900 mb-4">
+            <h3 class="text-xl sm:text-2xl font-bold text-gray-900 mb-4">
               2. Informations que vous nous fournissez
             </h3>
             <ul class="list-disc pl-5 space-y-2 text-base sm:text-lg leading-relaxed mb-4">
@@ -162,8 +161,7 @@
               </li>
             </ul>
 
-            <h3 id="comment-nous-utilisons-les-donnees-que-vous-nous-fournissez"
-              class="text-xl sm:text-2xl font-bold text-gray-900 mb-4">
+            <h3 class="text-xl sm:text-2xl font-bold text-gray-900 mb-4">
               3. Comment nous utilisons les données que vous nous fournissez :
             </h3>
             <ul class="list-disc pl-5 space-y-2 text-base sm:text-lg leading-relaxed mb-4">
@@ -193,8 +191,7 @@
               </li>
             </ul>
 
-            <h3 id="informations-que-nous-recueillons-automatiquement"
-              class="text-xl sm:text-2xl font-bold text-gray-900 mb-4">
+            <h3 class="text-xl sm:text-2xl font-bold text-gray-900 mb-4">
               4. Informations que nous recueillons automatiquement :
             </h3>
             <ul class="list-disc pl-5 space-y-2 text-base sm:text-lg leading-relaxed mb-4">
@@ -237,7 +234,7 @@
               « désabonnement » figurant dans la communication concernée.
             </p>
 
-            <h2 id="comment-partageons-nous-vos-informations" class="text-2xl sm:text-3xl font-bold text-primary mb-4">
+            <h2 class="text-2xl sm:text-3xl font-bold text-primary mb-4">
               3. COMMENT PARTAGEONS-NOUS VOS INFORMATIONS ?
             </h2>
             <p class="text-base sm:text-lg leading-relaxed mb-2">
@@ -270,7 +267,7 @@
               avant de partager vos données avec nos sponsors à leurs propres fins.
             </p>
 
-            <h2 id="controle-de-votre-compte-et-de-vos-droits" class="text-2xl sm:text-3xl font-bold text-primary mb-4">
+            <h2 class="text-2xl sm:text-3xl font-bold text-primary mb-4">
               4. CONTROLE DE VOTRE COMPTE ET DE VOS DROITS
             </h2>
             <p class="text-base sm:text-lg leading-relaxed mb-2">
@@ -305,8 +302,7 @@
               de déposer une plainte concernant vos données personnelles auprès d’une autorité de contrôle compétente.
             </p>
 
-            <h2 id="comment-nous-protegeons-et-conservons-vos-renseignements-personnels"
-              class="text-2xl sm:text-3xl font-bold text-primary mb-4">
+            <h2 class="text-2xl sm:text-3xl font-bold text-primary mb-4">
               5. COMMENT NOUS PROTEGEONS ET CONSERVONS VOS RENSEIGNEMENTS PERSONNELS
             </h2>
             <p class="text-base sm:text-lg leading-relaxed mb-2">
@@ -331,7 +327,7 @@
               imposées par la loi applicable.
             </p>
 
-            <h2 id="enfants" class="text-2xl sm:text-3xl font-bold text-primary mb-4">
+            <h2 class="text-2xl sm:text-3xl font-bold text-primary mb-4">
               6. ENFANTS
             </h2>
             <p class="text-base sm:text-lg leading-relaxed mb-4">
@@ -345,7 +341,7 @@
                 class="text-primary hover:underline">legal@progestionsoft.com</a>.
             </p>
 
-            <h2 id="transferts-internationaux" class="text-2xl sm:text-3xl font-bold text-primary mb-4">
+            <h2 class="text-2xl sm:text-3xl font-bold text-primary mb-4">
               7. TRANSFERTS INTERNATIONAUX
             </h2>
             <p class="text-base sm:text-lg leading-relaxed mb-2">
@@ -363,7 +359,7 @@
                 class="text-primary hover:underline">legal@progestionsoft.com</a>.
             </p>
 
-            <h2 id="liens-vers-d-autres-sites-web" class="text-2xl sm:text-3xl font-bold text-primary mb-4">
+            <h2 class="text-2xl sm:text-3xl font-bold text-primary mb-4">
               8. LIENS VERS D’AUTRES SITES WEB
             </h2>
             <p class="text-base sm:text-lg leading-relaxed mb-4">
@@ -377,7 +373,7 @@
               peuvent être offerts par leur entremise, ou de toute autre utilisation des sites.
             </p>
 
-            <h2 id="contactez-nous" class="text-2xl sm:text-3xl font-bold text-primary mb-4">
+            <h2 class="text-2xl sm:text-3xl font-bold text-primary mb-4">
               9. CONTACTEZ-NOUS
             </h2>
             <p class="text-base sm:text-lg leading-relaxed mb-2">
@@ -393,10 +389,10 @@
                   class="text-primary hover:underline">legal@progestionsoft.com</a></li>
             </ul>
 
-            <h2 id="politique-de-traitement-des-donnees" class="text-2xl sm:text-3xl font-bold text-primary mb-4 mt-10">
+            <h2 class="text-2xl sm:text-3xl font-bold text-primary mb-4 mt-10">
               2. POLITIQUE DE TRAITEMENT DES DONNEES
             </h2>
-            <h3 id="introduction-et-portee" class="text-xl sm:text-2xl font-bold text-gray-900 mb-4">
+            <h3 class="text-xl sm:text-2xl font-bold text-gray-900 mb-4">
               1. INTRODUCTION ET PORTEE
             </h3>
             <p class="text-base sm:text-lg leading-relaxed mb-2">
@@ -418,7 +414,7 @@
               vérifier s’il a été mis à jour.
             </p>
 
-            <h3 id="definitions" class="text-xl sm:text-2xl font-bold text-gray-900 mb-4">
+            <h3 class="text-xl sm:text-2xl font-bold text-gray-900 mb-4">
               2. DEFINITIONS
             </h3>
             <p class="text-base sm:text-lg leading-relaxed mb-2">
@@ -443,7 +439,7 @@
               </li>
             </ul>
 
-            <h3 id="roles-des-parties" class="text-xl sm:text-2xl font-bold text-gray-900 mb-4">
+            <h3 class="text-xl sm:text-2xl font-bold text-gray-900 mb-4">
               3. ROLES DES PARTIES
             </h3>
             <p class="text-base sm:text-lg leading-relaxed mb-2">
@@ -462,7 +458,7 @@
               personnelles et des bases sur lesquelles elles sont collectées auprès de la personne concernée.
             </p>
 
-            <h3 id="nature-finalite-et-duree-du-traitement" class="text-xl sm:text-2xl font-bold text-gray-900 mb-4">
+            <h3 class="text-xl sm:text-2xl font-bold text-gray-900 mb-4">
               4. NATURE, FINALITE ET DUREE DU TRAITEMENT
             </h3>
             <p class="text-base sm:text-lg leading-relaxed mb-2">
@@ -481,7 +477,7 @@
               partir des catégories suivantes de sujets de données : Utilisateurs externes des comptes.
             </p>
 
-            <h3 id="transferts-transfrontaliers" class="text-xl sm:text-2xl font-bold text-gray-900 mb-4">
+            <h3 class="text-xl sm:text-2xl font-bold text-gray-900 mb-4">
               5. TRANSFERTS TRANSFRONTALIERS
             </h3>
             <p class="text-base sm:text-lg leading-relaxed mb-4">
@@ -491,7 +487,7 @@
               peuvent être transférées de ce centre vers tout autre centre à notre seule discrétion.
             </p>
 
-            <h3 id="sous-processeurs" class="text-xl sm:text-2xl font-bold text-gray-900 mb-4">
+            <h3 class="text-xl sm:text-2xl font-bold text-gray-900 mb-4">
               6. SOUS-PROCESSEURS
             </h3>
             <p class="text-base sm:text-lg leading-relaxed mb-2">
@@ -519,7 +515,7 @@
               aux Données Personnelles de l’utilisateur.
             </p>
 
-            <h3 id="evaluations-de-securite-et-d-impact" class="text-xl sm:text-2xl font-bold text-gray-900 mb-4">
+            <h3 class="text-xl sm:text-2xl font-bold text-gray-900 mb-4">
               7. ÉVALUATIONS DE SECURITE ET D’IMPACT
             </h3>
             <p class="text-base sm:text-lg leading-relaxed mb-2">
@@ -540,8 +536,7 @@
               de régulation.
             </p>
 
-            <h3 id="atteinte-a-la-protection-des-donnees-personnelles"
-              class="text-xl sm:text-2xl font-bold text-gray-900 mb-4">
+            <h3 class="text-xl sm:text-2xl font-bold text-gray-900 mb-4">
               8. ATTEINTE A LA PROTECTION DES DONNEES PERSONNELLES
             </h3>
             <p class="text-base sm:text-lg leading-relaxed mb-2">
@@ -571,7 +566,7 @@
                 naissance à cette atteinte aux données personnelles.</li>
             </ul>
 
-            <h3 id="demandes-des-personnes-concernees" class="text-xl sm:text-2xl font-bold text-gray-900 mb-4">
+            <h3 class="text-xl sm:text-2xl font-bold text-gray-900 mb-4">
               9. DEMANDES DES PERSONNES CONCERNEES
             </h3>
             <p class="text-base sm:text-lg leading-relaxed mb-2">
@@ -588,7 +583,7 @@
               préalable de l’utilisateur.
             </p>
 
-            <h3 id="verification-et-inspection" class="text-xl sm:text-2xl font-bold text-gray-900 mb-4">
+            <h3 class="text-xl sm:text-2xl font-bold text-gray-900 mb-4">
               10. VERIFICATION ET INSPECTION
             </h3>
             <p class="text-base sm:text-lg leading-relaxed mb-2">
@@ -610,8 +605,7 @@
                 commerciales de PGS.</li>
             </ul>
 
-            <h3 id="suppression-ou-retour-des-donnees-personnelles-de-l-utilisateur"
-              class="text-xl sm:text-2xl font-bold text-gray-900 mb-4">
+            <h3 class="text-xl sm:text-2xl font-bold text-gray-900 mb-4">
               11. SUPPRESSION OU RETOUR DES DONNEES PERSONNELLES DE L’UTILISATEUR
             </h3>
             <p class="text-base sm:text-lg leading-relaxed">
@@ -628,101 +622,21 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, nextTick } from 'vue';
-import { IconList } from '@tabler/icons-vue';
+import { ref } from 'vue';
+import { IconList, IconDownload } from '@tabler/icons-vue';
 import { useSharedFiles } from '~/stores/sharedFiles'
+import { useToc } from '~/composables/useToc';
+import { downloadFile, scrollToSection } from '~/utils/legalFn';
 
 const sharedFiles = useSharedFiles()
-
-const tableOfContents = ref<{ id: string; text: string }[]>([]);
-const activeSectionId = ref('');
+const { tableOfContents, activeSectionId } = useToc('privacy-content');
 const showMobileToc = ref(false);
 
-// Slugify function (manual implementation as nuxt-slugify is a module)
-const slugify = (text: string) => {
-  return text
-    .toString()
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .toLowerCase()
-    .trim()
-    .replace(/\s+/g, '-')
-    .replace(/[^\w-]+/g, '')
-    .replace(/--+/g, '-');
-};
-
-// Scroll to section function
-const scrollToSection = (id: string) => {
-  const element = document.getElementById(id);
-  if (element) {
-    element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  }
-};
-
-// Handle scroll event to update active section
-const handleScroll = () => {
-  const scrollY = window.scrollY;
-  const sections = tableOfContents.value.map(item => document.getElementById(item.id)).filter(Boolean) as HTMLElement[];
-
-  let currentActiveId = '';
-  for (let i = sections.length - 1; i >= 0; i--) {
-    const section = sections[i];
-    // Adjust offset to trigger active state slightly before section reaches top
-    if (section.offsetTop <= scrollY + 100) {
-      currentActiveId = section.id;
-      break;
-    }
-  }
-  activeSectionId.value = currentActiveId;
-};
-
-// Téléchargement
-const downloadPdf = async () => {
-  const pdfUrl = sharedFiles.paths.pdf.privacy;
+const handleDownload = () => {
+  const url = sharedFiles.paths.pdf.legal;
   const fileName = 'PGS_Protection-des-données.pdf';
-
-  try {
-    const response = await fetch(pdfUrl);
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    const blob = await response.blob();
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.style.display = 'none';
-    a.href = url;
-    a.download = fileName;
-    document.body.appendChild(a);
-    a.click();
-    window.URL.revokeObjectURL(url);
-    a.remove();
-  } catch (error) {
-    console.error('Erreur lors du téléchargement du PDF:', error);
-    alert('Impossible de télécharger le fichier. Veuillez réessayer plus tard.');
-  }
+  downloadFile(url, fileName);
 };
-
-onMounted(() => {
-  nextTick(() => {
-    const contentContainer = document.getElementById('privacy-content');
-    if (contentContainer) {
-      // Select h2 and h3 elements for TOC
-      const headings = contentContainer.querySelectorAll('h2, h3');
-      headings.forEach((heading) => {
-        const text = heading.textContent || '';
-        const id = slugify(text);
-        heading.id = id; // Assign ID to the heading element
-        tableOfContents.value.push({ id, text });
-      });
-    }
-    handleScroll(); // Set initial active section
-    window.addEventListener('scroll', handleScroll);
-  });
-});
-
-onUnmounted(() => {
-  window.removeEventListener('scroll', handleScroll);
-});
 
 // SEO
 useHead({
@@ -749,7 +663,8 @@ useHead({
   animation-delay: 0.4s;
 }
 
-h2[id], h3[id] {
+h2[id],
+h3[id] {
   scroll-margin-top: 100px;
 }
 </style>

@@ -11,21 +11,21 @@ export default {
   theme: {
     extend: {
       colors: {
-        primary: '#1E88E5',
-        secondary: '#0D47A1',
-        accent: '#FDD835',
+        primary: '#0072ff',
+        secondary: '#02358b',
+        accent: '#ffea00',
         success: '#43A047',
         warning: '#FB8C00',
         danger: '#E53935',
         info: '#26C6DA',
         background: '#FAFAFA',
         surface: '#FFFFFF',
-        textPrimary: '#212121',
+        textPrimary: '#323c4f',
         textSecondary: '#616161'
       },
       fontFamily: {
-        sans: ['Delius', 'sans-serif'],
-        heading: ['Macondo', 'sans-serif']
+        sans: ['Amaranth', 'sans-serif'],
+        heading: ['Macondo', 'sans-serif'],
       },
       animation: {
         scroll: 'scroll 30s linear infinite',

@@ -43,7 +43,7 @@ export default defineNuxtConfig({
     families: {
       'Inter': [400, 500, 600, 700],
       'Poppins': [600, 700],
-      'Delius': [400],
+      'Amaranth': [400, 700],
     }
   },
   app: {

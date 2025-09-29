@@ -50,21 +50,10 @@
             <p class="text-base text-gray-700 italic md:text-lg">{{ testimonial.content }}</p>
           </div>
 
-          <!-- ✅ Système d'étoiles avec gestion des demi-étoiles -->
           <div v-if="testimonial.note && testimonial.note >= 0 && testimonial.note <= 5" class="flex items-center mb-4">
-            <template v-for="index in 5" :key="index">
-              <!-- Étoile pleine -->
-              <IconStarFilled v-if="index <= Math.floor(testimonial.note)" class="h-5 w-5 text-yellow-400" />
-              <!-- Demi-étoile avec CSS clip -->
-              <div v-else-if="index === Math.ceil(testimonial.note) && hasHalfStar(testimonial.note)"
-                class="relative inline-block">
-                <!-- Étoile vide en arrière-plan -->
-                <IconStar class="h-5 w-5 text-gray-300" />
-                <!-- Étoile pleine clippée à 50% -->
-                <IconStarFilled class="h-5 w-5 text-yellow-400 absolute top-0 left-0"
-                  style="clip-path: inset(0 50% 0 0);" />
-              </div>
-              <!-- Étoile vide -->
+            <template v-for="n in 5" :key="n">
+              <IconStarFilled v-if="n <= Math.floor(testimonial.note)" class="h-5 w-5 text-yellow-400" />
+              <IconStarHalfFilled v-else-if="n - 0.5 === testimonial.note" class="h-5 w-5 text-yellow-400" />
               <IconStar v-else class="h-5 w-5 text-gray-300" />
             </template>
           </div>
@@ -86,7 +75,7 @@
         </div>
       </div>
     </div>
-    <!-- Message si aucun partenaire ou témoignage n'est disponible après chargement -->
+    <!-- Message d'absence -->
     <div v-else class="text-center py-10 text-gray-500">
       <p>Aucun partenaire ou témoignage à afficher pour le moment.</p>
     </div>
@@ -95,19 +84,13 @@
 
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
-import { IconQuote, IconStar, IconStarFilled, IconLoader } from '@tabler/icons-vue'
+import { IconQuote, IconStar, IconStarFilled, IconStarHalfFilled, IconLoader } from '@tabler/icons-vue'
 import { usePartnerStore } from '@/stores/partners'
 import { useTestimonyStore } from '@/stores/testimonies'
 import type { Partner, Testimony } from '@/types'
 
 const partnerStore = usePartnerStore()
 const testimonyStore = useTestimonyStore()
-
-// Fonction pour vérifier s'il y a une demi-étoile
-const hasHalfStar = (rating: number): boolean => {
-  const decimal = rating % 1
-  return decimal > 0 && decimal < 1
-}
 
 // Fonction pour mélanger un tableau
 const shuffleArray = <T>(array: T[]): T[] => {
@@ -119,7 +102,7 @@ const shuffleArray = <T>(array: T[]): T[] => {
   return shuffled
 }
 
-// Liste de partenaires
+// Liste de partenaires uniques
 const uniquePartners = computed<Partner[]>(() => {
   const seenNames = new Set<string>()
   const unique: Partner[] = []

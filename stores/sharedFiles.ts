@@ -13,10 +13,10 @@ export const useSharedFiles = defineStore('sharedFiles', () => {
   const paths = {
     // IMAGES
     logo: {
-      dc: `${SHARED_URL}/Logos/PGS-DC.png`,
-      dw: `${SHARED_URL}/Logos/PGS-DW.png`,
-      mc: `${SHARED_URL}/Logos/PGS-MC.png`,
-      mw: `${SHARED_URL}/Logos/PGS-MW.png`,
+      dc: `${SHARED_URL}/_General/Logos/PGS-DC.png`,
+      dw: `${SHARED_URL}/_General/Logos/PGS-DW.png`,
+      mc: `${SHARED_URL}/_General/Logos/PGS-MC.png`,
+      mw: `${SHARED_URL}/_General/Logos/PGS-MW.png`,
     },
     page: {
       indexHero: `${SHARED_URL}/PGS_Landing/indexHero.png`,
@@ -24,25 +24,27 @@ export const useSharedFiles = defineStore('sharedFiles', () => {
       aboutPicture: `${SHARED_URL}/PGS_Landing/aboutPicture.png`,
     },
     team: {
-      SteveAster: `${SHARED_URL}/Team/SteveAster.png`,
-      Marcias: `${SHARED_URL}/Team/Marcias.png`,
-      Delluc: `${SHARED_URL}/Team/Delluc.png`,
-      Charmaine: `${SHARED_URL}/Team/Charmaine.png`,
+      SteveAster: `${SHARED_URL}/_General/Team/SteveAster.png`,
+      Marcias: `${SHARED_URL}/_General/Team/Marcias.png`,
+      Delluc: `${SHARED_URL}/_General/Team/Delluc.png`,
+      Charmaine: `${SHARED_URL}/_General/Team/Charmaine.png`,
     },
     general: {
-      error403: `${SHARED_URL}/General/Error403.png`,
-      error404: `${SHARED_URL}/General/Error404.png`,
-      error500: `${SHARED_URL}/General/Error500.png`,
+      error403: `${SHARED_URL}/_General/Error/403.png`,
+      error404: `${SHARED_URL}/_General/Error/404.png`,
+      error500: `${SHARED_URL}/_General/Error/500.png`,
     },
+
+    //PDF
     pdf: {
-      legal: `${SHARED_URL}/PDF/PGS_Legal.pdf`,
-      terms: `${SHARED_URL}/PDF/PGS_Terms.pdf`,
-      privacy: `${SHARED_URL}/PDF/PGS_Privacy.pdf`,
+      legal: `${SHARED_URL}/_Docs/PDF/PGS_Legal.pdf`,
+      terms: `${SHARED_URL}/_Docs/PDF/PGS_Terms.pdf`,
+      privacy: `${SHARED_URL}/_Docs/PDF/PGS_Privacy.pdf`,
     },
 
     //JSON
     data: {
-      footer: `${SHARED_URL}/JSON/custum.json`
+      footer: `${SHARED_URL}/Docs/JSON/custum.json`
     }
   };
 

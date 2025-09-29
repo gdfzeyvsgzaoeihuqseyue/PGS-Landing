@@ -12,7 +12,7 @@
         <p class="mt-2 text-sm text-gray-500">Dernière mise à jour : 1er septembre 2025</p>
         <!-- Fichier PDF -->
         <div class="mt-6">
-          <button @click.prevent="downloadPdf" download="PGS_Mentions_Legales.pdf"
+          <button @click.prevent="handleDownload" download="PGS_Mentions_Legales.pdf"
             class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-primary hover:bg-secondary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition">
             <IconDownload class="h-5 w-5 mr-2" />
             Télécharger les CGU (PDF)
@@ -618,98 +618,21 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, nextTick } from 'vue';
-import { IconList } from '@tabler/icons-vue';
+import { ref } from 'vue';
+import { IconList, IconDownload } from '@tabler/icons-vue';
 import { useSharedFiles } from '~/stores/sharedFiles'
+import { useToc } from '~/composables/useToc';
+import { downloadFile, scrollToSection } from '~/utils/legalFn';
 
 const sharedFiles = useSharedFiles()
-const tableOfContents = ref<{ id: string; text: string }[]>([]);
-const activeSectionId = ref('');
+const { tableOfContents, activeSectionId } = useToc('terms-content');
 const showMobileToc = ref(false);
 
-// Slug
-const slugify = (text: string) => {
-  return text
-    .toString()
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .toLowerCase()
-    .trim()
-    .replace(/\s+/g, '-')
-    .replace(/[^\w-]+/g, '')
-    .replace(/--+/g, '-');
-};
-
-// Scroll
-const scrollToSection = (id: string) => {
-  const element = document.getElementById(id);
-  if (element) {
-    element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  }
-};
-
-const handleScroll = () => {
-  const scrollY = window.scrollY;
-  const sections = tableOfContents.value.map(item => document.getElementById(item.id)).filter(Boolean) as HTMLElement[];
-
-  let currentActiveId = '';
-  for (let i = sections.length - 1; i >= 0; i--) {
-    const section = sections[i];
-    if (section.offsetTop <= scrollY + 100) {
-      currentActiveId = section.id;
-      break;
-    }
-  }
-  activeSectionId.value = currentActiveId;
-};
-
-// Téléchargement
-const downloadPdf = async () => {
-  const pdfUrl = sharedFiles.paths.pdf.legal;
+const handleDownload = () => {
+  const url = sharedFiles.paths.pdf.terms;
   const fileName = 'PGS_Conditions-Générales-d-Utilisation.pdf';
-
-  try {
-    const response = await fetch(pdfUrl);
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    const blob = await response.blob();
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.style.display = 'none';
-    a.href = url;
-    a.download = fileName;
-    document.body.appendChild(a);
-    a.click();
-    window.URL.revokeObjectURL(url);
-    a.remove();
-  } catch (error) {
-    console.error('Erreur lors du téléchargement du PDF:', error);
-    alert('Impossible de télécharger le fichier. Veuillez réessayer plus tard.');
-  }
+  downloadFile(url, fileName);
 };
-
-onMounted(() => {
-  // Generer TOC
-  nextTick(() => {
-    const contentContainer = document.getElementById('terms-content');
-    if (contentContainer) {
-      const headings = contentContainer.querySelectorAll('h2');
-      headings.forEach((heading) => {
-        const text = heading.textContent || '';
-        const id = slugify(text);
-        heading.id = id;
-        tableOfContents.value.push({ id, text });
-      });
-    }
-    handleScroll();
-    window.addEventListener('scroll', handleScroll);
-  });
-});
-
-onUnmounted(() => {
-  window.removeEventListener('scroll', handleScroll);
-});
 
 useHead({
   title: 'Conditions Générales d\'Utilisation',
