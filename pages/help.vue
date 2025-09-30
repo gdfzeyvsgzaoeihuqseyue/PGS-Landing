@@ -123,8 +123,8 @@
               <IconLoader class="animate-spin h-10 w-10 text-primary mx-auto" />
               <p class="mt-2 text-gray-600">Chargement de la documentation...</p>
             </div>
-            <div v-else-if="solutionStore.error" class="text-center py-10 text-red-500">
-              <p>Erreur: {{ solutionStore.error }}</p>
+            <div v-else-if="solutionStore.error" class="text-center py-10">
+              <p>Nous n'avons pas réussi à charger les documents</p>
             </div>
             <div v-else-if="filteredAndPagedDocsBySolution.length > 0"
               class="relative grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-3 gap-8 items-stretch">
@@ -194,8 +194,8 @@
               <IconLoader class="animate-spin h-10 w-10 text-primary mx-auto" />
               <p class="mt-2 text-gray-600">Chargement des FAQs...</p>
             </div>
-            <div v-else-if="solutionStore.error" class="text-center py-10 text-red-500">
-              <p>Erreur: {{ solutionStore.error }}</p>
+            <div v-else-if="solutionStore.error" class="text-center py-10">
+              <p>Nous n'avons pas réussi à charger les FAQs</p>
             </div>
             <div v-else-if="displayedFaqs.length > 0" class="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div class="bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer"
@@ -240,8 +240,8 @@
               <p class="mt-2 text-gray-600">Chargement des tutoriels...</p>
             </div>
 
-            <div v-else-if="solutionStore.error" class="text-center py-10 text-red-500">
-              <p>Erreur: {{ solutionStore.error }}</p>
+            <div v-else-if="solutionStore.error" class="text-center py-10">
+              <p>Nous n'avons pas réussi à charger les tutoriels</p>
             </div>
 
             <div v-else-if="filteredAndPagedTutorials.length > 0"

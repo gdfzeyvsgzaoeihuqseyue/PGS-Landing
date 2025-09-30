@@ -44,7 +44,7 @@ export const useSharedFiles = defineStore('sharedFiles', () => {
 
     //JSON
     data: {
-      footer: `${SHARED_URL}/Docs/JSON/custum.json`
+      footer: `${SHARED_URL}/_Docs/JSON/custum.json`
     }
   };
 

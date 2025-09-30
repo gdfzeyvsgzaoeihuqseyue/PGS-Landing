@@ -134,8 +134,8 @@
         </div>
 
         <!-- Erreur -->
-        <div v-else-if="error" class="bg-red-50 p-4 rounded-md">
-          <p class="text-red-700">{{ error }}</p>
+        <div v-else-if="error" class="text-center py-10">
+          <p>Nous n'avons pas réussi à charger les liens wiki</p>
         </div>
 
         <!-- Contenu -->

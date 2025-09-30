@@ -3,7 +3,7 @@
     <div class="container mx-auto px-4 md:px-8 lg:px-12">
       <header class="text-center mb-8 sm:mb-12 py-6 mt-6 sm:mt-8">
         <h1 class="text-3xl sm:text-5xl font-extrabold text-gray-900 leading-tight">
-          <span class="text-primary">Conditions</span> Générales d'Utilisation
+          <span class="text-primary">Conditions Générales</span> d'Utilisation
         </h1>
         <p class="mt-2 sm:mt-4 text-base sm:text-xl max-w-2xl mx-auto">
           En utilisant les Services de PRO GESTION SOFT (PGS), vous acceptez les présentes Conditions d’utilisation.

@@ -121,7 +121,7 @@ export const useTestimonyStore = defineStore('testimonies', () => {
         avatar: testimonyData.avatar,
         isPublished: false,
         isFeatured: false,
-        platform: testimonyData.platformId,
+        platformId: testimonyData.platformId,
       };
 
       const response = await $fetch(`${API_BASE_URL}/solution/testimony`, {
@@ -152,4 +152,3 @@ export const useTestimonyStore = defineStore('testimonies', () => {
     submitTestimony,
   };
 });
-

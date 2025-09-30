@@ -24,7 +24,7 @@ export function useToc(contentId: string) {
     nextTick(() => {
       const contentContainer = document.getElementById(contentId);
       if (contentContainer) {
-        const headings = contentContainer.querySelectorAll('h2');
+        const headings = contentContainer.querySelectorAll('h2, h3');
         headings.forEach((heading) => {
           const text = heading.textContent || '';
           const id = slugify(text);
