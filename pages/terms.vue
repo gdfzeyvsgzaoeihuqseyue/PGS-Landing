@@ -12,7 +12,7 @@
         <p class="mt-2 text-sm text-gray-500">Dernière mise à jour : 1er septembre 2025</p>
         <!-- Fichier PDF -->
         <div class="mt-6">
-          <button @click.prevent="handleDownload" download="PGS_Mentions_Legales.pdf"
+          <button @click.prevent="handleDownload" download="PGS_Terms.pdf"
             class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-primary hover:bg-secondary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition">
             <IconDownload class="h-5 w-5 mr-2" />
             Télécharger les CGU (PDF)
@@ -630,7 +630,7 @@ const showMobileToc = ref(false);
 
 const handleDownload = () => {
   const url = sharedFiles.paths.pdf.terms;
-  const fileName = 'PGS_Conditions-Générales-d-Utilisation.pdf';
+  const fileName = 'PGS_Terms.pdf';
   downloadFile(url, fileName);
 };
 

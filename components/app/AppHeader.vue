@@ -103,7 +103,6 @@ const navLinks = [
   { to: '/events', text: 'Événements' },
   { to: '/blogs', text: 'Articles' },
   { to: '/about', text: 'À propos' },
-  { to: '/help', text: 'Ressources' },
 ];
 
 const openContactModal = () => {

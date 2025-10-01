@@ -12,7 +12,7 @@
       <div class="flex-1 min-w-0">
         <div class="flex items-start justify-between mb-2">
           <h3 class="text-lg font-semibold text-gray-900 hover:text-primary transition-colors">
-            <NuxtLink :to="`/wikilink/${link.slug}`">
+            <NuxtLink :to="`/wiki/${link.slug}`">
               {{ link.name }}
             </NuxtLink>
           </h3>
@@ -47,7 +47,7 @@
               :title="`Aller à ${link.name}`">
               Aller à {{ link.name }}
             </a>
-            <NuxtLink :to="`/wikilink/${link.slug}`"
+            <NuxtLink :to="`/wiki/${link.slug}`"
               class="border border-gray-300 text-gray-700 px-3 py-1 rounded text-xs font-medium hover:bg-gray-50">
               Détails
             </NuxtLink>

@@ -11,7 +11,7 @@
       <div class="text-4xl sm:text-6xl mb-4">🔗</div>
       <h1 class="text-xl sm:text-2xl font-bold text-gray-900 mb-4">Lien non trouvé</h1>
       <p class="text-gray-600 mb-8 px-4">Le lien que vous recherchez n'existe pas ou a été supprimé.</p>
-      <NuxtLink to="/wikilink"
+      <NuxtLink to="/wiki"
         class="bg-primary text-white px-4 sm:px-6 py-3 rounded-md hover:bg-secondary transition-colors text-sm sm:text-base">
         Retour au répertoire
       </NuxtLink>
@@ -27,7 +27,7 @@
           </li>
           <li>/</li>
           <li>
-            <NuxtLink to="/wikilink" class="hover:text-primary">Répertoire de Liens</NuxtLink>
+            <NuxtLink to="/wiki" class="hover:text-primary">Répertoire de Liens</NuxtLink>
           </li>
           <li>/</li>
           <li class="text-gray-900 font-medium truncate max-w-32 sm:max-w-none">{{ link.name }}</li>
@@ -114,7 +114,7 @@
               <IconExternalLink class="w-4 h-4 sm:w-5 sm:h-5" />
               Accéder à {{ link.platform?.name }}
             </a>
-            <NuxtLink to="/wikilink"
+            <NuxtLink to="/wiki"
               class="px-4 sm:px-6 py-3 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition-colors font-medium text-center text-sm sm:text-base">
               Retour au répertoire
             </NuxtLink>
@@ -128,7 +128,7 @@
           Liens similaires de {{ link.platform?.name }}
         </h2>
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4">
-          <NuxtLink v-for="similarLink in similarLinks" :key="similarLink.id" :to="`/wikilink/${similarLink.slug}`"
+          <NuxtLink v-for="similarLink in similarLinks" :key="similarLink.id" :to="`/wiki/${similarLink.slug}`"
             class="p-3 sm:p-4 border border-gray-200 rounded-lg hover:border-primary hover:shadow-md transition-all">
             <h3 class="font-medium text-gray-900 mb-2 text-sm sm:text-base line-clamp-1">{{ similarLink.name }}</h3>
             <p class="text-xs sm:text-sm text-gray-600 line-clamp-2">{{ similarLink.description }}</p>

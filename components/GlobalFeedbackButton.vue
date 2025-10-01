@@ -33,9 +33,9 @@
           <NuxtLink to="/help" @click="showModal = false"
             class="flex items-center p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
             <IconHelpCircle class="h-6 w-6 text-primary mr-3" />
-            <span>Centre de Ressources / Aide</span>
+            <span>Centre d'aide</span>
           </NuxtLink>
-          <NuxtLink to="/wikilink" @click="showModal = false"
+          <NuxtLink to="/wiki" @click="showModal = false"
             class="flex items-center p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
             <IconLink class="h-6 w-6 text-primary mr-3" />
             <span>Wikilinks (Liens utiles)</span>

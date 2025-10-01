@@ -3,7 +3,7 @@
     <!-- Hero Section -->
     <header class="text-center mb-12 py-6 mt-8">
       <h1 class="text-5xl font-extrabold text-gray-900 leading-tight">
-        <span class="text-primary">Centre</span> de Ressources
+        <span class="text-primary">Centre</span> d'aide
       </h1>
       <p class="mt-4 text-xl max-w-2xl mx-auto">
         Découvrez nos guides, documentation et ressources pour tirer le meilleur parti de nos solutions
@@ -25,7 +25,7 @@
 
             <!-- Bloc statistiques -->
             <div class="mb-8">
-              <h3 class="text-lg font-bold mb-4">Statistiques des ressources</h3>
+              <h3 class="text-lg font-bold mb-4">Statistiques</h3>
               <div class="grid grid-cols-2 gap-4 text-center">
                 <div>
                   <p class="text-2xl font-bold">{{ solutionStore.solutions.length }}</p>
@@ -515,7 +515,7 @@ watch([searchQueryTutorials, selectedCategoryTutorials], () => {
 
 
 useHead(() => ({
-  title: 'Centre de Ressources',
+  title: 'Centre d\aide',
   meta: [
     { name: 'description', content: 'Accédez à la documentation, aux FAQ et aux tutoriels vidéo pour toutes les solutions ProGestionSoft.' }
   ],

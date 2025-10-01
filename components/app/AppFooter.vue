@@ -51,11 +51,11 @@ import { NuxtLink } from '#components'
 // Sections de navigation avec activation/désactivation
 const navSections = [
   {
-    title: "Liens rapides",
+    title: "Ressources",
     links: [
       { name: "Solutions", to: "/solutions", disabled: true },
-      { name: "Evénements", to: "/events", disabled: true },
-      { name: "Wikilinks", to: "/wikilink" }
+      { name: "Aide", to: "/help", disabled: true },
+      { name: "Wikilinks", to: "/wiki", disabled: true }
     ]
   },
   {

@@ -181,7 +181,7 @@ const showMobileToc = ref(false);
 
 const handleDownload = () => {
   const url = sharedFiles.paths.pdf.legal;
-  const fileName = 'PGS_Mentions-legales.pdf';
+  const fileName = 'PGS_Mentions_Legales.pdf';
   downloadFile(url, fileName);
 };
 
