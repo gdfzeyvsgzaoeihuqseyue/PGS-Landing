@@ -16,7 +16,7 @@ export default defineNuxtRouteMiddleware((to, from) => {
     ].map(route => withoutTrailingSlash(route));
 
     const isEventsRoute = normalizedPath.startsWith('/events');
-    const isWikiRoute = normalizedPath.startsWith('/events');
+    const isWikiRoute = normalizedPath.startsWith('/wiki');
     const isPrivate = privateRoutes.includes(normalizedPath);
 
     // Bloquer toutes les routes non accessibles

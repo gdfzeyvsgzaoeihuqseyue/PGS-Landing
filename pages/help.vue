@@ -257,8 +257,10 @@
               <div v-for="tutorial in filteredAndPagedTutorials" :key="tutorial.id" class="group relative bg-white rounded-xl shadow-lg overflow-hidden p-6 border-2 transition-all duration-300
                 hover:shadow-xl hover:scale-105 border-transparent hover:border-primary">
                 <!-- Badge plateforme -->
-                <div class="flex items-center gap-2 absolute top-4 right-4 px-2 py-1 text-xs font-semibold rounded-full bg-primary/30 text-blue-800 shadow-sm z-50">
-                  <img :src="tutorial.platform?.logo" :alt="`Logo ${tutorial.platform.name}`" class="w-5 h-5 rounded-full" />
+                <div
+                  class="flex items-center gap-2 absolute top-4 right-4 px-2 py-1 text-xs font-semibold rounded-full bg-primary/30 text-blue-800 shadow-sm z-50">
+                  <img :src="tutorial.platform?.logo" :alt="`Logo ${tutorial.platform.name}`"
+                    class="w-5 h-5 rounded-full" />
                   <span class="text-xs font-medium text-primary px-2 py-1 rounded-full">
                     {{ tutorial.platform.name }}
                   </span>
@@ -283,7 +285,8 @@
                 </div>
               </div>
               <!-- Bouton droit -->
-              <button @click="scrollTutorials(1)" :disabled="tutorialStartIndex + itemsPerScroll >= filteredTutorials.length" class="absolute right-0 top-1/2 -translate-y-1/2 bg-white p-2 rounded-full shadow-md z-10
+              <button @click="scrollTutorials(1)"
+                :disabled="tutorialStartIndex + itemsPerScroll >= filteredTutorials.length" class="absolute right-0 top-1/2 -translate-y-1/2 bg-white p-2 rounded-full shadow-md z-10
              disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100 transition-colors">
                 <IconChevronRight class="w-6 h-6 text-gray-700" />
               </button>
@@ -397,7 +400,7 @@ const docsBySolution = computed(() => {
       docs: selectedDocs
     };
   });
-  return results;
+  return results.filter(item => item.docs.length > 0);
 });
 
 const filteredAndPagedDocsBySolution = computed(() => {
