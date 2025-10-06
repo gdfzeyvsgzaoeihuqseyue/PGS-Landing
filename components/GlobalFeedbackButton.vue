@@ -8,37 +8,77 @@
     </button>
 
     <!-- Modale -->
-    <div v-if="showModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+    <div v-if="showModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"
+      @click.self="showModal = false">
       <div class="bg-white rounded-lg max-w-md w-full p-6 relative">
         <button @click="showModal = false" class="absolute top-3 right-3 text-gray-500 hover:text-gray-700">
           <IconX class="h-6 w-6" />
         </button>
         <h2 class="text-2xl font-bold mb-6 text-center">Besoin d'aide ou de nous contacter ?</h2>
         <div class="space-y-4">
+          
+          <!-- Assistant IA PGS -->
+          <button @click="openChatbot"
+            class="w-full flex items-center justify-between p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+            <div class="flex items-center">
+              <IconBrain class="h-6 w-6 text-primary mr-3" />
+              <span>Assistant IA PGS</span>
+            </div>
+          </button>
+
+          <!-- ChatGPT Externe -->
+          <a :href="chatgptUrl" target="_blank" rel="noopener noreferrer"
+            class="w-full flex items-center justify-between p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+            <div class="flex items-center">
+              <IconRobot class="h-6 w-6 text-primary mr-3" />
+              <span>Demander à ChatGPT</span>
+            </div>
+            <IconExternalLink class="h-4 w-4 text-gray-400" />
+          </a>
+
+          <!-- Témoignage -->
           <NuxtLink to="/submit-testimony" @click="showModal = false"
-            class="flex items-center p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
-            <IconStar class="h-6 w-6 text-primary mr-3" />
-            <span>Donner un avis / Témoignage</span>
+            class="w-full flex items-center justify-between p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+            <div class="flex items-center">
+              <IconStar class="h-6 w-6 text-primary mr-3" />
+              <span>Donner un avis / Témoignage</span>
+            </div>
           </NuxtLink>
+
+          <!-- Mentions Légales -->
           <NuxtLink to="/legal" @click="showModal = false"
-            class="flex items-center p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
-            <IconFileText class="h-6 w-6 text-primary mr-3" />
-            <span>Mentions Légales</span>
+            class="w-full flex items-center justify-between p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+            <div class="flex items-center">
+              <IconFileText class="h-6 w-6 text-primary mr-3" />
+              <span>Mentions Légales</span>
+            </div>
           </NuxtLink>
+
+          <!-- CGU -->
           <NuxtLink to="/terms" @click="showModal = false"
-            class="flex items-center p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
-            <IconFileDescription class="h-6 w-6 text-primary mr-3" />
-            <span>Conditions Générales d'Utilisation</span>
+            class="w-full flex items-center justify-between p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+            <div class="flex items-center">
+              <IconFileDescription class="h-6 w-6 text-primary mr-3" />
+              <span>Conditions Générales d'Utilisation</span>
+            </div>
           </NuxtLink>
+
+          <!-- Centre d'aide -->
           <NuxtLink to="/help" @click="showModal = false"
-            class="flex items-center p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
-            <IconHelpCircle class="h-6 w-6 text-primary mr-3" />
-            <span>Centre d'aide</span>
+            class="w-full flex items-center justify-between p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+            <div class="flex items-center">
+              <IconHelpCircle class="h-6 w-6 text-primary mr-3" />
+              <span>Centre d'aide</span>
+            </div>
           </NuxtLink>
+
+          <!-- Wikilinks -->
           <NuxtLink to="/wiki" @click="showModal = false"
-            class="flex items-center p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
-            <IconLink class="h-6 w-6 text-primary mr-3" />
-            <span>Wikilinks (Liens utiles)</span>
+            class="w-full flex items-center justify-between p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+            <div class="flex items-center">
+              <IconLink class="h-6 w-6 text-primary mr-3" />
+              <span>Wikilinks (Liens utiles)</span>
+            </div>
           </NuxtLink>
         </div>
       </div>
@@ -47,9 +87,40 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
-import { IconMessageCircle, IconX, IconStar, IconFileText, IconFileDescription, IconHelpCircle, IconLink } from '@tabler/icons-vue';
+import { ref, computed } from 'vue';
+import { useChatbotStore } from '@/stores/chatbot';
+import { 
+  IconMessageCircle, 
+  IconX, 
+  IconStar, 
+  IconFileText, 
+  IconFileDescription, 
+  IconHelpCircle, 
+  IconLink,
+  IconBrain,
+  IconRobot,
+  IconExternalLink
+} from '@tabler/icons-vue';
 
 const showModal = ref(false);
-</script>
+const chatbotStore = useChatbotStore();
 
+// Construire l'URL ChatGPT avec le contexte de la page actuelle
+const chatgptUrl = computed(() => {
+  const currentUrl = typeof window !== 'undefined' ? window.location.href : '';
+  const pageTitle = typeof document !== 'undefined' ? document.title : '';
+  
+  const customText = `Peux-tu analyser et résumer le contenu de cette page web ? Voici les informations :
+Titre de la page : ${pageTitle}
+URL : ${currentUrl}
+
+Merci de me donner un résumé clair et concis des informations principales présentées sur cette page.`;
+  
+  return `https://chatgpt.com/?q=${encodeURIComponent(customText)}`;
+});
+
+const openChatbot = () => {
+  showModal.value = false;
+  chatbotStore.toggleChatbot();
+};
+</script>

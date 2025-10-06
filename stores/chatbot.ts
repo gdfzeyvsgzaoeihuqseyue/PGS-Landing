@@ -39,24 +39,27 @@ export const useChatbotStore = defineStore('chatbot', () => {
     // Keywords pour Gemini (génération d'images, visuel)
     const geminiKeywords = [
       'image', 'photo', 'illustration', 'dessin', 'visuel', 
-      'graphique', 'schéma', 'diagramme', 'génère', 'crée une image'
+      'graphique', 'schéma', 'diagramme', 'génère', 'crée une image',
+      'créer une image', 'dessine', 'génération'
     ];
     
-    // Keywords pour Mistral (code, recherche, analyse)
+    // Keywords pour Mistral (code, recherche, analyse, questions générales)
     const mistralKeywords = [
       'code', 'fonction', 'algorithme', 'recherche', 'cherche',
-      'trouve', 'web', 'internet', 'documentation'
+      'trouve', 'web', 'internet', 'documentation', 'comment',
+      'quoi', 'quel', 'pourquoi', 'expliquer', 'aide'
     ];
 
     const hasGeminiKeyword = geminiKeywords.some(kw => lowerContent.includes(kw));
     const hasMistralKeyword = mistralKeywords.some(kw => lowerContent.includes(kw));
 
-    // Si les deux ou aucun, préférer Mistral (plus polyvalent)
-    if (hasMistralKeyword || (!hasGeminiKeyword && !hasMistralKeyword)) {
-      return 'mistral';
+    // Si demande explicite de génération d'image, utiliser Gemini
+    if (hasGeminiKeyword) {
+      return 'gemini';
     }
 
-    return 'gemini';
+    // Sinon, utiliser Mistral (plus rapide et polyvalent)
+    return 'mistral';
   };
 
   // Envoyer un message
@@ -77,20 +80,28 @@ export const useChatbotStore = defineStore('chatbot', () => {
     isLoading.value = true;
 
     try {
-      // Déterminer l'agent à utiliser
+      // Déterminer l'agent à utiliser - FIX DU BUG ICI
       let selectedAgent: 'mistral' | 'gemini';
       
       if (forcedAgent) {
+        // Si un agent est forcé, l'utiliser
         selectedAgent = forcedAgent;
       } else if (config.value.agent === 'auto') {
+        // Si mode auto, détecter le meilleur agent
         selectedAgent = detectBestAgent(content);
+        console.log(`Mode Auto: Agent sélectionné = ${selectedAgent}`);
       } else {
-        selectedAgent = config.value.agent;
+        // Sinon, utiliser l'agent configuré (mistral ou gemini)
+        // FIX: On s'assure de bien utiliser la valeur sélectionnée
+        selectedAgent = config.value.agent as 'mistral' | 'gemini';
+        console.log(`Mode Manuel: Agent sélectionné = ${selectedAgent}`);
       }
 
       const endpoint = selectedAgent === 'gemini' 
         ? '/api/chatbot/gemini' 
         : '/api/chatbot/mistral';
+
+      console.log(`Envoi vers endpoint: ${endpoint}`);
 
       const response = await $fetch(endpoint, {
         method: 'POST',
@@ -121,14 +132,22 @@ export const useChatbotStore = defineStore('chatbot', () => {
       await saveConversationToPGSAPI();
 
       return assistantMessage;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error sending message:', error);
       
-      // Message d'erreur
+      // Message d'erreur plus détaillé
+      let errorContent = 'Désolé, une erreur est survenue. Veuillez réessayer.';
+      
+      if (error.statusCode === 500) {
+        errorContent = 'Erreur de connexion avec le service IA. Veuillez vérifier votre configuration API.';
+      } else if (error.message) {
+        errorContent = `Erreur: ${error.message}`;
+      }
+      
       const errorMessage: ChatMessage = {
         id: `error_${Date.now()}`,
         role: 'assistant',
-        content: 'Désolé, une erreur est survenue. Veuillez réessayer.',
+        content: errorContent,
         agent: 'system',
         timestamp: new Date().toISOString(),
       };
