@@ -101,7 +101,7 @@ const isMenuOpen = ref(false);
 const navLinks = [
   { to: '/solutions', text: 'Solutions' },
   { to: '/events', text: 'Événements' },
-  { to: '/blogs', text: 'Articles' },
+  { to: '/blog', text: 'Articles' },
   { to: '/about', text: 'À propos' },
 ];
 

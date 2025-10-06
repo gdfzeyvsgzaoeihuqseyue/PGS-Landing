@@ -8,50 +8,53 @@ type FooterData = {
 export const useSharedFiles = defineStore('sharedFiles', () => {
   const runtimeConfig = useRuntimeConfig();
   const SHARED_URL = runtimeConfig.public.pgsSharedFiles;
+  const GNR_IMG = `${SHARED_URL}/_General/Images`;
+  const GNR_DOC = `${SHARED_URL}/_General/Docs`;
+  const APP_IMG = `${SHARED_URL}/PGS_Landing`;
 
   // Chemins des fichiers
   const paths = {
     // IMAGES
     logo: {
-      dc: `${SHARED_URL}/_General/Logos/PGS-DC.png`,
-      dw: `${SHARED_URL}/_General/Logos/PGS-DW.png`,
-      mc: `${SHARED_URL}/_General/Logos/PGS-MC.png`,
-      mw: `${SHARED_URL}/_General/Logos/PGS-MW.png`,
+      dc: `${GNR_IMG}/Logos/PGS-DC.png`,
+      dw: `${GNR_IMG}/Logos/PGS-DW.png`,
+      mc: `${GNR_IMG}/Logos/PGS-MC.png`,
+      mw: `${GNR_IMG}/Logos/PGS-MW.png`,
     },
     page: {
-      indexHero: `${SHARED_URL}/PGS_Landing/indexHero.png`,
-      indexAbout: `${SHARED_URL}/PGS_Landing/indexAbout.png`,
-      aboutPicture: `${SHARED_URL}/PGS_Landing/aboutPicture.png`,
+      indexHero: `${APP_IMG}/indexHero.png`,
+      indexAbout: `${APP_IMG}/indexAbout.png`,
+      aboutPicture: `${APP_IMG}/aboutPicture.png`,
     },
     team: {
-      SteveAster: `${SHARED_URL}/_General/Team/SteveAster.png`,
-      Marcias: `${SHARED_URL}/_General/Team/Marcias.png`,
-      Delluc: `${SHARED_URL}/_General/Team/Delluc.png`,
-      Charmaine: `${SHARED_URL}/_General/Team/Charmaine.png`,
+      SteveAster: `${GNR_IMG}/Team/SteveAster.png`,
+      Marcias: `${GNR_IMG}/Team/Marcias.png`,
+      Delluc: `${GNR_IMG}/Team/Delluc.png`,
+      Charmaine: `${GNR_IMG}/Team/Charmaine.png`,
     },
     general: {
-      error403: `${SHARED_URL}/_General/Error/403.png`,
-      error404: `${SHARED_URL}/_General/Error/404.png`,
-      error500: `${SHARED_URL}/_General/Error/500.png`,
+      error403: `${GNR_IMG}/Error/403.png`,
+      error404: `${GNR_IMG}/Error/404.png`,
+      error500: `${GNR_IMG}/Error/500.png`,
     },
 
     //PDF
     pdf: {
-      legal: `${SHARED_URL}/_Docs/PDF/PGS_Legal.pdf`,
-      terms: `${SHARED_URL}/_Docs/PDF/PGS_Terms.pdf`,
-      privacy: `${SHARED_URL}/_Docs/PDF/PGS_Privacy.pdf`,
+      legal: `${GNR_DOC}/PDF/PGS_Legal.pdf`,
+      terms: `${GNR_DOC}/PDF/PGS_Terms.pdf`,
+      privacy: `${GNR_DOC}/PDF/PGS_Privacy.pdf`,
     },
 
     //JSON
     data: {
-      footer: `${SHARED_URL}/_Docs/JSON/custum.json`
+      footer: `${GNR_DOC}/JSON/custum.json`
     }
   };
 
   // Getter pour les données JSON
   async function getFooterData() {
     try {
-      return await $fetch<{ brand: string; brandUrl: string }>(paths.data.footer);
+      return await $fetch<FooterData>(paths.data.footer);
     } catch (err) {
       return {
         brand: 'PGS SARL',

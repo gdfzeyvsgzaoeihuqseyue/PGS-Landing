@@ -12,11 +12,11 @@
 
       <!-- Boutons -->
       <div class="mt-6 flex flex-col sm:flex-row justify-center gap-4 text-white">
-        <NuxtLink to="/blogs/cat" 
+        <NuxtLink to="/blog/cat" 
           class="px-4 py-2 bg-primary rounded-lg hover:bg-secondary transition">
           Voir toutes les catégories
         </NuxtLink>
-        <NuxtLink to="/blogs/author" 
+        <NuxtLink to="/blog/author" 
           class="px-4 py-2 bg-secondary rounded-lg hover:bg-primary transition">
           Voir tous les auteurs
         </NuxtLink>

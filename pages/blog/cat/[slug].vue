@@ -1,39 +1,27 @@
 <template>
   <main class="min-h-screen bg-gray-50">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <template v-if="author">
+      <template v-if="category">
         <!-- En-tête -->
         <header
           class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center mb-12 mt-8 flex flex-col sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <img :src="authorAvatarUrl" :alt="author.name" @error="handleAvatarError"
-              class="w-32 h-32 rounded-full mx-auto mb-4 object-cover border-4 border-primary shadow-lg" />
             <h1 class="text-5xl font-extrabold text-gray-900 leading-tight">
-              Articles de <span class="text-primary">{{ author.name }}</span>
+              Articles dans <span class="text-primary capitalize">{{ category.name }}</span>
             </h1>
-            <p v-if="author.role" class="mt-2 text-xl text-gray-600">{{ author.role }}</p>
-            <p v-if="author.bio" class="mt-4 text-lg max-w-2xl mx-auto text-gray-700">{{ author.bio }}</p>
-            <div class="mt-4 flex justify-center space-x-4" v-if="author.social">
-              <a v-if="author.social.twitter" :href="author.social.twitter" target="_blank" rel="noopener noreferrer"
-                class="text-gray-400 hover:text-blue-400 transition-colors">
-                <IconBrandTwitter class="h-6 w-6" />
-              </a>
-              <a v-if="author.social.linkedin" :href="author.social.linkedin" target="_blank" rel="noopener noreferrer"
-                class="text-gray-400 hover:text-blue-700 transition-colors">
-                <IconBrandLinkedin class="h-6 w-6" />
-              </a>
-            </div>
+            <p class="mt-4 text-lg max-w-2xl mx-auto text-gray-700">Découvrez tous nos articles sur le thème de la <span
+                class="font-bold">{{ category.name }}</span>.</p>
           </div>
 
           <!-- Boutons -->
-          <div class="mt-4 sm:mt-0">
+          <div class="mt-4 sm:mt-0"> <!-- Ajout de marge pour l'empilement sur mobile -->
             <button @click="$router.back()"
               class="my-2 sm:my-6 flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-gray-700 bg-white hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition">
               <IconArrowLeft class="h-5 w-5 mr-2" />
               Retour
             </button>
 
-            <NuxtLink to="/blogs"
+            <NuxtLink to="/blog"
               class="my-2 sm:my-6 flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary hover:bg-secondary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition">
               <IconArrowBack class="h-5 w-5 mr-2" />
               Toutes les actualités
@@ -58,12 +46,12 @@
                 <h3 class="text-lg font-bold mb-4">Statistiques</h3>
                 <div class="space-y-4">
                   <div>
-                    <p class="text-sm text-gray-500">Articles de cet auteur</p>
-                    <p class="text-2xl font-bold">{{ articlesBySelectedAuthor.length }}</p>
+                    <p class="text-sm text-gray-500">Articles dans cette catégorie</p>
+                    <p class="text-2xl font-bold">{{ initialCategoryArticles.length }}</p>
                   </div>
                   <div>
-                    <p class="text-sm text-gray-500">Vues totales pour cet auteur</p>
-                    <p class="text-2xl font-bold">{{ totalAuthorViews.toLocaleString() }}</p>
+                    <p class="text-sm text-gray-500">Vues totales de cette catégorie</p>
+                    <p class="text-2xl font-bold">{{ totalCategoryViews.toLocaleString() }}</p>
                   </div>
                   <div>
                     <p class="text-sm text-gray-500">Nombre de mots écrits</p>
@@ -85,12 +73,12 @@
                 </div>
 
                 <div>
-                  <h3 class="text-lg font-bold mb-3">Catégories</h3>
+                  <h3 class="text-lg font-bold mb-3">Auteurs</h3>
                   <ul class="space-y-2">
-                    <li v-for="catName in uniqueCategoriesOfAuthor" :key="catName">
+                    <li v-for="authId in uniqueAuthorIdsOfCategory" :key="authId">
                       <label class="flex items-center space-x-2 cursor-pointer">
-                        <input type="checkbox" v-model="selectedCategories" :value="catName" class="rounded text-primary">
-                        <span>{{ catName }} ({{ getArticleCountForCategory(catName) }})</span>
+                        <input type="checkbox" v-model="selectedAuthorIds" :value="authId" class="rounded text-primary">
+                        <span>{{ authorStore.getAuthorById(authId)?.name || 'Inconnu' }} ({{ getArticleCountForAuthor(authId) }})</span>
                       </label>
                     </li>
                   </ul>
@@ -129,12 +117,12 @@
             </button>
 
             <!-- Chargement / Erreur -->
-            <div v-if="authorStore.loading || articleStore.loading" class="text-center py-10">
+            <div v-if="categoryStore.loading || articleStore.loading || authorStore.loading" class="text-center py-10">
               <IconLoader class="animate-spin h-10 w-10 text-primary mx-auto" />
               <p class="mt-2 text-gray-600">Chargement des articles...</p>
             </div>
-            <div v-else-if="authorStore.error || articleStore.error" class="text-center py-10 text-red-500">
-              <p>Nous n'avons pas réussi à charger les articles de cet autheur</p>
+            <div v-else-if="categoryStore.error || articleStore.error || authorStore.error" class="text-center py-10">
+              <p>Nous n'avons pas réussi à charger les articles de cette catégorie</p>
             </div>
 
             <!-- Liste des articles -->
@@ -145,7 +133,8 @@
             <!-- Message d'absence d'article -->
             <div v-else class="bg-white rounded-xl shadow-md p-8 text-center">
               <IconMoodConfuzed class="h-16 w-16 mx-auto mb-4" />
-              <h3 class="text-xl font-medium text-gray-900 mb-2">Aucun article trouvé pour cet auteur avec ces filtres
+              <h3 class="text-xl font-medium text-gray-900 mb-2">Aucun article trouvé dans cette catégorie avec ces
+                filtres
               </h3>
               <p class="text-gray-600 mb-4">Essayez de modifier vos critères de recherche</p>
               <button @click="resetFilters"
@@ -156,7 +145,7 @@
 
             <!-- Pagination -->
             <div v-if="filteredArticles.length > itemsPerPage" class="mt-8 flex justify-center">
-              <nav class="inline-flex flex-wrap rounded-md shadow">
+              <nav class="inline-flex flex-wrap rounded-md shadow"> <!-- Ajout de flex-wrap -->
                 <button @click="currentPage--" :disabled="currentPage === 1"
                   class="px-3 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50">
                   Précédent
@@ -179,9 +168,9 @@
       <div v-else class="text-center bg-white rounded-xl shadow-md p-8 md:p-12">
         <h2 class="text-6xl font-extrabold text-gray-800 mb-4">Oups !</h2>
         <p class="text-lg text-gray-600 mb-8">
-          Désolé, l'auteur que vous recherchez n'existe pas ou n'a pas encore publié d'articles.
+          Désolé, la catégorie que vous recherchez n'existe pas ou n'a pas encore d'articles.
         </p>
-        <NuxtLink to="/blogs"
+        <NuxtLink to="/blog"
           class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-primary hover:bg-secondary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition">
           <IconArrowBack class="mr-2 -mr-1 h-5 w-5" />
           Voir toutes les actualités
@@ -194,21 +183,22 @@
 <script setup lang="ts">
 import { ref, computed, watch, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
-import { useArticleStore, useAuthorStore } from '@/stores';
-import type { Author as AuthorType } from '@/types';
-import { IconArrowBack, IconArrowLeft, IconX, IconFilter, IconSearch, IconMoodConfuzed, IconBrandTwitter, IconBrandLinkedin, IconLoader } from '@tabler/icons-vue';
+import { useArticleStore, useCategoryStore, useAuthorStore } from '@/stores';
+import type { Category as CategoryType } from '@/types';
+import { IconArrowBack, IconArrowLeft, IconX, IconFilter, IconSearch, IconMoodConfuzed, IconLoader } from '@tabler/icons-vue';
 
 // Stores
 const articleStore = useArticleStore();
+const categoryStore = useCategoryStore();
 const authorStore = useAuthorStore();
 
 // Variables réactives
 const route = useRoute();
-const authorSlug = route.params.slug as string;
+const categorySlug = route.params.slug as string;
 
 const showSidebar = ref(false);
 const searchQuery = ref('');
-const selectedCategories = ref<string[]>([]); 
+const selectedAuthorIds = ref<string[]>([]); // IDs sont maintenant des strings
 const sortBy = ref('newest');
 const dateRange = ref({
   start: '',
@@ -221,40 +211,36 @@ const itemsPerPage = 6;
 // Fetch data on component mount
 onMounted(async () => {
   await Promise.all([
-    authorStore.fetchAuthors(),
-    articleStore.fetchArticles()
+    categoryStore.fetchCategories(),
+    articleStore.fetchArticles(),
+    authorStore.fetchAuthors()
   ]);
 });
 
-// Récupération de l'auteur
-const author = computed<AuthorType | undefined>(() => authorStore.getAuthorBySlug(authorSlug));
+// Récupération de la catégorie
+const category = computed<CategoryType | undefined>(() => categoryStore.getCategoryBySlug(categorySlug));
 
-// Gérer des erreurs d'image d'avatar
-const authorAvatarUrl = computed(() => author.value?.avatar || '');
-
-const handleAvatarError = (event: Event) => {
-  const target = event.target as HTMLImageElement;
-  const authorName = author.value?.name || 'unknown';
-  target.src = `https://api.dicebear.com/9.x/initials/svg?seed=${encodeURIComponent(authorName)}`;
-};
-
-// Articles de l'auteur sélectionné
-const articlesBySelectedAuthor = computed(() => {
-  // Vérifie si l'auteur existe avant de filtrer les articles
-  if (!author.value) return [];
-  return articleStore.articles.filter(article => article.author.id === author.value?.id);
+// Articles initialement liés à cette catégorie
+const initialCategoryArticles = computed(() => {
+  // Vérifie si la catégorie existe avant de filtrer les articles
+  if (!category.value) return [];
+  return articleStore.articles.filter(article => article.category.id === category.value?.id);
 });
 
-// Catégories uniques des articles de cet auteur
-const uniqueCategoriesOfAuthor = computed(() => {
-  const categoriesSet = new Set<string>();
-  articlesBySelectedAuthor.value.forEach(article => categoriesSet.add(article.category.name));
-  return Array.from(categoriesSet).sort();
+// Auteurs uniques des articles de cette catégorie
+const uniqueAuthorIdsOfCategory = computed(() => {
+  const authorIdsSet = new Set<string>(); // IDs sont maintenant des strings
+  initialCategoryArticles.value.forEach(article => authorIdsSet.add(article.author.id));
+  return Array.from(authorIdsSet).sort((a, b) => {
+    const nameA = authorStore.getAuthorById(a)?.name || '';
+    const nameB = authorStore.getAuthorById(b)?.name || '';
+    return nameA.localeCompare(nameB);
+  });
 });
 
 // Filtrage et tri
 const filteredArticles = computed(() => {
-  let filtered = [...articlesBySelectedAuthor.value];
+  let filtered = [...initialCategoryArticles.value];
 
   // Filtrer par recherche
   if (searchQuery.value) {
@@ -267,9 +253,9 @@ const filteredArticles = computed(() => {
     );
   }
 
-  // Filtrer par catégories sélectionnées
-  if (selectedCategories.value.length > 0) {
-    filtered = filtered.filter(article => selectedCategories.value.includes(article.category.name));
+  // Filtrer par auteurs sélectionnés
+  if (selectedAuthorIds.value.length > 0) {
+    filtered = filtered.filter(article => selectedAuthorIds.value.includes(article.author.id));
   }
 
   // Filtrer par plage de dates
@@ -287,20 +273,20 @@ const filteredArticles = computed(() => {
     filtered.sort((a, b) => b.views - a.views);
   } else if (sortBy.value === 'oldest') {
     filtered.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
-  } else { 
+  } else { // 'newest' par défaut
     filtered.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
   }
 
   return filtered;
 });
 
-// Vues totales pour les articles de cet auteur
-const totalAuthorViews = computed(() =>
-  articlesBySelectedAuthor.value.reduce((sum, article) => sum + (article.views || 0), 0)
+// Vues totales pour les articles de cette catégorie
+const totalCategoryViews = computed(() =>
+  initialCategoryArticles.value.reduce((sum, article) => sum + (article.views || 0), 0) 
 );
 
-const getArticleCountForCategory = (categoryName: string) => {
-  return articlesBySelectedAuthor.value.filter(article => article.category.name === categoryName).length;
+const getArticleCountForAuthor = (authorId: string) => {
+  return filteredArticles.value.filter(article => article.author.id === authorId).length;
 };
 
 const totalWords = computed(() => {
@@ -337,22 +323,21 @@ const visiblePages = computed(() => {
   return pages;
 });
 
-// Réinitialiser les filtres
+// Fonctions utilitaires
 function resetFilters() {
   searchQuery.value = '';
-  selectedCategories.value = [];
+  selectedAuthorIds.value = [];
   dateRange.value = { start: '', end: '' };
   sortBy.value = 'newest';
   currentPage.value = 1;
 }
 
-// Réinitialiser la page actuelle à 1
-watch([searchQuery, selectedCategories, dateRange, sortBy], () => {
+watch([searchQuery, selectedAuthorIds, dateRange, sortBy], () => {
   currentPage.value = 1;
 });
 
 // SEO
 useHead(() => ({
-  title: author.value ? `Articles de ${author.value.name}` : 'Auteur non trouvé',
+  title: category.value ? `Articles dans ${category.value.name}` : 'Catégorie non trouvée',
 }));
 </script>

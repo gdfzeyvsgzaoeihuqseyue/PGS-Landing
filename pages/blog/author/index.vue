@@ -102,7 +102,7 @@
           <div v-else-if="filteredAndSortedAuthors.length > 0"
             class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <!-- Carte auteur -->
-            <NuxtLink v-for="author in paginatedAuthors" :key="author.id" :to="`/blogs/author/${author.slug}`"
+            <NuxtLink v-for="author in paginatedAuthors" :key="author.id" :to="`/blog/author/${author.slug}`"
               class="block bg-white rounded-xl shadow-md p-6 hover:shadow-lg text-center">
               <img :src="author.avatar || 'https://api.dicebear.com/9.x/avataaars/svg?seed=' + author.name"
                 :alt="author.name" class="w-24 h-24 rounded-full object-cover mx-auto mb-4 border-2 border-primary">

@@ -47,9 +47,10 @@
 
 <script setup lang="ts">
 import { NuxtLink } from '#components'
+import type { NavLink, NavSection } from '@/types';
 
 // Sections de navigation avec activation/désactivation
-const navSections = [
+const navSections: NavSection[] = [
   {
     title: "Ressources",
     links: [

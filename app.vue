@@ -4,6 +4,7 @@
       <NuxtPage />
     </NuxtLayout>
     <NewsletterModal />
+    <ChatbotWidget />
   </div>
 </template>
 

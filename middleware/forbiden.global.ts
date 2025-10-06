@@ -1,31 +1,28 @@
-import { useRuntimeConfig } from '#app';
-import { withoutTrailingSlash } from 'ufo';
-import { createError } from '#app';
+import { useRuntimeConfig, createError, abortNavigation } from '#app'
+import { withoutTrailingSlash } from 'ufo'
 
-export default defineNuxtRouteMiddleware((to, from) => {
-  const config = useRuntimeConfig();
-  const isBetaMode = config.public.betaMode;
-
-  // Normalisation du chemin
-  const normalizedPath = withoutTrailingSlash(to.path);
+export default defineNuxtRouteMiddleware((to) => {
+  const config = useRuntimeConfig()
+  const isBetaMode = config.public?.betaMode
+  const normalizedPath = withoutTrailingSlash(to.path)
 
   if (isBetaMode) {
     // Routes privées générales
-    const privateRoutes = [
-      '/nothing', '/help'
-    ].map(route => withoutTrailingSlash(route));
+    const privateRoutes = ['/nothing', '/help'].map(r => withoutTrailingSlash(r))
+    const isEventsRoute = normalizedPath.startsWith('/events')
+    const isWikiRoute = normalizedPath.startsWith('/wiki')
+    const isPrivate = privateRoutes.includes(normalizedPath)
 
-    const isEventsRoute = normalizedPath.startsWith('/events');
-    const isWikiRoute = normalizedPath.startsWith('/wiki');
-    const isPrivate = privateRoutes.includes(normalizedPath);
-
-    // Bloquer toutes les routes non accessibles
+    // Bloquer les routes interdites
     if (isEventsRoute || isWikiRoute || isPrivate) {
-      throw createError({
+      const err = createError({
         statusCode: 403,
-        statusMessage: "Accès Interdit",
+        statusMessage: 'Accès Interdit',
         fatal: true,
-      });
+      })
+
+      if (process.server) throw err
+      return abortNavigation(err)
     }
   }
-});
+})

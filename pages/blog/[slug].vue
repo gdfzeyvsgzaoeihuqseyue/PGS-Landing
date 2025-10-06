@@ -29,13 +29,13 @@
 
           <!-- Catégorie, titre, auteur, date -->
           <div class="absolute bottom-0 left-0 p-4 md:p-8 text-white w-full">
-            <NuxtLink :to="`/blogs/cat/${article.category.slug}`" class="inline-block px-3 py-1 bg-primary text-white text-xs font-medium rounded-full mb-2 hover:bg-secondary transition">
+            <NuxtLink :to="`/blog/cat/${article.category.slug}`" class="inline-block px-3 py-1 bg-primary text-white text-xs font-medium rounded-full mb-2 hover:bg-secondary transition">
               {{ article.category.name }}
             </NuxtLink>
             <h1 class="text-2xl sm:text-3xl md:text-4xl font-bold mb-2 leading-tight">{{ article.title }}</h1>
             <div class="flex flex-wrap items-center text-white/90 text-sm sm:text-base">
               <!-- Auteur -->
-              <NuxtLink :to="`/blogs/author/${article.author.slug}`" class="flex items-center group">
+              <NuxtLink :to="`/blog/author/${article.author.slug}`" class="flex items-center group">
                 <img :src="authorAvatarUrl" :alt="article.author.name"
                   class="w-6 h-6 sm:w-8 sm:h-8 rounded-full mr-2" />
                 <span class="font-medium hover:underline">{{ article.author.name }}</span>
@@ -60,16 +60,21 @@
           </div>
 
           <!-- Statistiques -->
-          <div class="flex justify-between items-center">
+          <div class="flex justify-between items-center flex-wrap gap-4">
             <div class="flex items-center space-x-4">
-              <button @click="handleLike" class="flex items-center hover:text-primary" :class="{ 'text-secondary': isLiked }">
+              <button @click="handleLike" class="flex items-center hover:text-primary transition" :class="{ 'text-secondary': isLiked }">
                 <IconHeart class="h-5 w-5 mr-1" />
                 <span>{{ likes }}</span>
               </button>
 
-              <button @click="showComments = !showComments" class="flex items-center hover:text-primary">
+              <button @click="showComments = !showComments" class="flex items-center hover:text-primary transition">
                 <IconMessageDots class="h-5 w-5 mr-1" />
                 <span>{{ comments }}</span>
+              </button>
+
+              <button @click="shareArticle" class="flex items-center hover:text-primary transition" title="Partager cet article">
+                <IconShare class="h-5 w-5 mr-1" />
+                <span class="hidden sm:inline">Partager</span>
               </button>
             </div>
 
@@ -113,7 +118,7 @@
         <p class="text-lg mb-8">
           Désolé, l'article que vous recherchez n'existe pas ou a été supprimé.
         </p>
-        <NuxtLink to="/blogs" class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-primary hover:bg-primary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition">
+        <NuxtLink to="/blog" class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-primary hover:bg-primary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition">
           <IconArrowBack class="mr-2 -mr-1 h-5 w-5" />
           Retour aux actualités
         </NuxtLink>
@@ -126,7 +131,7 @@
 import { ref, computed, onMounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useArticleStore, useAuthorStore } from '@/stores' 
-import { IconArrowLeft, IconArrowBack, IconHeart, IconMessageDots, IconLoader } from '@tabler/icons-vue'
+import { IconArrowLeft, IconArrowBack, IconHeart, IconMessageDots, IconLoader, IconShare } from '@tabler/icons-vue'
 
 const route = useRoute()
 const slug = route.params.slug as string
@@ -182,6 +187,40 @@ const addComment = () => {
     commentList.value.unshift(newComment.value)
     comments.value++
     newComment.value = ''
+  }
+}
+
+// Partage de l'article
+const shareArticle = async () => {
+  if (!article.value) return
+  
+  const articleUrl = window.location.href
+  
+  if (navigator.share) {
+    try {
+      await navigator.share({
+        title: article.value.title,
+        text: `Découvrez cet article : ${article.value.title}`,
+        url: articleUrl
+      })
+    } catch (err) {
+      if (err instanceof Error && err.name !== 'AbortError') {
+        console.error('Erreur lors du partage:', err)
+      }
+      copyArticleUrl()
+    }
+  } else {
+    copyArticleUrl()
+  }
+}
+
+const copyArticleUrl = async () => {
+  try {
+    const articleUrl = window.location.href
+    await navigator.clipboard.writeText(articleUrl)
+    alert('Lien copié dans le presse-papiers !')
+  } catch (err) {
+    console.error('Erreur lors de la copie:', err)
   }
 }
 

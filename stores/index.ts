@@ -1,6 +1,7 @@
 export * from './articles'
 export * from './authors'
 export * from './categories'
+export * from './chatbot'
 export * from './events'
 export * from './partners'
 export * from './siteInfo'

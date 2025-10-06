@@ -30,6 +30,9 @@ export default defineNuxtConfig({
   },
 
   runtimeConfig: {
+    mistralApiKey: process.env.MISTRAL_API_KEY,
+    geminiApiKey: process.env.GEMINI_API_KEY,
+    
     public: {
       pgsBaseAPI: process.env.PGS_API_URL,
       pgsSharedFiles: process.env.PGS_SHARED_FILES,
