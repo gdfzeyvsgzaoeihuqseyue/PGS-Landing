@@ -16,9 +16,9 @@
                 <IconBrain class="w-6 h-6 text-primary" />
               </div>
               <div>
-                <h3 class="font-bold">Assistant PGS</h3>
+                <h3 class="font-bold">NOAH AI</h3>
                 <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-white text-primary border border-primary/20 animate-pulse">
-                  Bêta
+                  Assistant PGS
                 </span>
               </div>
             </div>
@@ -139,11 +139,11 @@ watch(() => chatbotStore.messages.length, () => {
 const getAgentDescription = () => {
   const agent = chatbotStore.config.agent;
   if (agent === 'gemini') {
-    return 'Propulsé par Genius (Gemini)';
+    return 'Genius est encore expérimental et peut faire des erreurs';
   } else if (agent === 'mistral') {
-    return 'Propulsé par Mimic (Mistral)';
+    return 'Mimic est encore expérimental et peut faire des erreurs';
   } else {
-    return 'Propulsé par IA Multi-Agent';
+    return 'PGS Assistant est encore expérimental et peut faire des erreurs';
   }
 };
 

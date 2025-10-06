@@ -22,7 +22,7 @@
             class="w-full flex items-center justify-between p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
             <div class="flex items-center">
               <IconBrain class="h-6 w-6 text-primary mr-3" />
-              <span>Assistant IA PGS</span>
+              <span>Discuter avec NOAH AI BOT</span>
             </div>
           </button>
 
