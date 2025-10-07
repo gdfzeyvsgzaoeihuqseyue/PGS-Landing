@@ -16,12 +16,12 @@
         </button>
         <h2 class="text-2xl font-bold mb-6 text-center">Besoin d'aide ou de nous contacter ?</h2>
         <div class="space-y-4">
-          
+
           <!-- Assistant IA PGS -->
           <button @click="openChatbot"
             class="w-full flex items-center justify-between p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
             <div class="flex items-center">
-              <IconBrain class="h-6 w-6 text-primary mr-3" />
+              <img src="https://cdn-icons-png.flaticon.com/512/4712/4712139.png" alt="NOAH AI" class="h-6 w-6 mr-3" />
               <span>Discuter avec NOAH AI BOT</span>
             </div>
           </button>
@@ -30,7 +30,7 @@
           <a :href="chatgptUrl" target="_blank" rel="noopener noreferrer"
             class="w-full flex items-center justify-between p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
             <div class="flex items-center">
-              <IconRobot class="h-6 w-6 text-primary mr-3" />
+              <IconBrandOpenai class="h-6 w-6 text-primary mr-3" />
               <span>Demander à ChatGPT</span>
             </div>
             <IconExternalLink class="h-4 w-4 text-gray-400" />
@@ -42,24 +42,6 @@
             <div class="flex items-center">
               <IconStar class="h-6 w-6 text-primary mr-3" />
               <span>Donner un avis / Témoignage</span>
-            </div>
-          </NuxtLink>
-
-          <!-- Mentions Légales -->
-          <NuxtLink to="/legal" @click="showModal = false"
-            class="w-full flex items-center justify-between p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
-            <div class="flex items-center">
-              <IconFileText class="h-6 w-6 text-primary mr-3" />
-              <span>Mentions Légales</span>
-            </div>
-          </NuxtLink>
-
-          <!-- CGU -->
-          <NuxtLink to="/terms" @click="showModal = false"
-            class="w-full flex items-center justify-between p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
-            <div class="flex items-center">
-              <IconFileDescription class="h-6 w-6 text-primary mr-3" />
-              <span>Conditions Générales d'Utilisation</span>
             </div>
           </NuxtLink>
 
@@ -88,34 +70,26 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue';
-import { useChatbotStore } from '@/stores/chatbot';
-import { 
-  IconMessageCircle, 
-  IconX, 
-  IconStar, 
-  IconFileText, 
-  IconFileDescription, 
-  IconHelpCircle, 
-  IconLink,
-  IconBrain,
-  IconRobot,
-  IconExternalLink
+import { useChatbotStore } from '@/stores/NoahBot';
+import {
+  IconBrandOpenai, IconMessageCircle, IconX,
+  IconStar, IconHelpCircle, IconLink, IconExternalLink
 } from '@tabler/icons-vue';
 
 const showModal = ref(false);
 const chatbotStore = useChatbotStore();
 
-// Construire l'URL ChatGPT avec le contexte de la page actuelle
+// Construire l'URL ChatGPTy
 const chatgptUrl = computed(() => {
   const currentUrl = typeof window !== 'undefined' ? window.location.href : '';
   const pageTitle = typeof document !== 'undefined' ? document.title : '';
-  
+
   const customText = `Peux-tu analyser et résumer le contenu de cette page web ? Voici les informations :
 Titre de la page : ${pageTitle}
 URL : ${currentUrl}
 
 Merci de me donner un résumé clair et concis des informations principales présentées sur cette page.`;
-  
+
   return `https://chatgpt.com/?q=${encodeURIComponent(customText)}`;
 });
 

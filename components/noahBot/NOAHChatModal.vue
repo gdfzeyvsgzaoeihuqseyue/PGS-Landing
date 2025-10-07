@@ -1,23 +1,24 @@
 <template>
   <!-- Modale du Chatbot -->
   <Transition name="modal-fade">
-    <div v-if="chatbotStore.isOpen" 
+    <div v-if="chatbotStore.isOpen"
       class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"
       @click.self="chatbotStore.toggleChatbot">
-      
+
       <Transition name="modal-scale">
         <div v-if="chatbotStore.isOpen"
           class="w-full max-w-2xl h-[700px] bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden border border-gray-200">
-          
+
           <!-- Header -->
           <div class="bg-gradient-to-r from-primary to-secondary p-4 text-white flex justify-between items-center">
             <div class="flex items-center space-x-3">
               <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center">
-                <IconBrain class="w-6 h-6 text-primary" />
+                <img src="https://cdn-icons-png.flaticon.com/512/4712/4712139.png" alt="NOAH AI" class="w-6 h-6" />
               </div>
               <div>
                 <h3 class="font-bold">NOAH AI</h3>
-                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-white text-primary border border-primary/20 animate-pulse">
+                <span
+                  class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-white text-primary border border-primary/20 animate-pulse">
                   Assistant PGS
                 </span>
               </div>
@@ -47,7 +48,8 @@
               <strong>Mimic:</strong> Rapidité, efficacité, solutions concrètes et actionnables.
             </span>
             <span v-else>
-              <strong>Auto:</strong> Intelligence adaptative qui sélectionne automatiquement le meilleur agent selon votre besoin.
+              <strong>Auto:</strong> Intelligence adaptative qui sélectionne automatiquement le meilleur agent selon
+              votre besoin.
             </span>
           </div>
 
@@ -59,19 +61,12 @@
               <p class="font-semibold mb-2">Bonjour! Comment puis-je vous aider?</p>
               <p class="text-sm">Posez-moi des questions sur PRO GESTION SOFT</p>
 
-              <!-- Suggestions -->
+              <!-- Suggestions dynamiques -->
               <div class="mt-6 space-y-2">
-                <button @click="sendQuickMessage('Quelles sont vos solutions?')"
+                <button v-for="(suggestion, index) in currentSuggestions" :key="index"
+                  @click="sendQuickMessage(suggestion)"
                   class="w-full text-left px-4 py-2 bg-white rounded-lg hover:bg-gray-100 transition text-sm">
-                  Quelles sont vos solutions?
-                </button>
-                <button @click="sendQuickMessage('Comment fonctionne SuitOps?')"
-                  class="w-full text-left px-4 py-2 bg-white rounded-lg hover:bg-gray-100 transition text-sm">
-                  Comment fonctionne SuitOps?
-                </button>
-                <button @click="sendQuickMessage('Générer une image d\'illustration')"
-                  class="w-full text-left px-4 py-2 bg-white rounded-lg hover:bg-gray-100 transition text-sm">
-                  Générer une image d'illustration
+                  {{ suggestion }}
                 </button>
               </div>
             </div>
@@ -82,7 +77,7 @@
             <!-- Loading Indicator -->
             <div v-if="chatbotStore.isLoading" class="flex items-start space-x-2">
               <div class="w-8 h-8 bg-primary rounded-full flex items-center justify-center flex-shrink-0">
-                <IconBrain class="w-5 h-5 text-white" />
+                <img src="https://cdn-icons-png.flaticon.com/512/4712/4712139.png" alt="NOAH AI" class="w-5 h-5" />
               </div>
               <div class="bg-white p-3 rounded-lg shadow-sm">
                 <div class="flex space-x-1">
@@ -120,19 +115,27 @@
 
 <script setup lang="ts">
 import { ref, nextTick, onMounted, watch } from 'vue';
-import { useChatbotStore } from '@/stores/chatbot';
-import { IconBrain, IconX, IconSparkles, IconSend, IconRestore } from '@tabler/icons-vue';
+import { useChatbotStore } from '@/stores/NoahBot';
+import { getRandomSuggestions } from '@/utils/chatSuggestions';
+import { ChatMessage } from '@/components/noahBot'
+import { IconX, IconSparkles, IconSend, IconRestore } from '@tabler/icons-vue';
 
 const chatbotStore = useChatbotStore();
 const messageInput = ref<string>('');
 const messagesContainer = ref<HTMLElement | null>(null);
+const currentSuggestions = ref<string[]>([]);
 
 onMounted(() => {
   chatbotStore.initConversation(window.location.pathname);
+  // Générer des suggestions aléatoires à l'ouverture
+  currentSuggestions.value = getRandomSuggestions(3);
 });
 
-// Scroll au bas quand nouveaux messages
-watch(() => chatbotStore.messages.length, () => {
+// Regénérer des suggestions quand la conversation est réinitialisée
+watch(() => chatbotStore.messages.length, (newLength) => {
+  if (newLength === 0) {
+    currentSuggestions.value = getRandomSuggestions(3);
+  }
   scrollToBottom();
 });
 
@@ -158,7 +161,6 @@ const handleSendMessage = async () => {
     await scrollToBottom();
   } catch (error) {
     console.error('Error sending message:', error);
-    // Restaurer le message en cas d'erreur
     messageInput.value = message;
   }
 };
@@ -172,6 +174,7 @@ const handleReset = () => {
   if (confirm('Voulez-vous vraiment réinitialiser la conversation?')) {
     chatbotStore.resetConversation();
     chatbotStore.initConversation(window.location.pathname);
+    currentSuggestions.value = getRandomSuggestions(3);
   }
 };
 

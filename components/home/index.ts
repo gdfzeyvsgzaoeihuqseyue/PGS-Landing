@@ -1,3 +1,3 @@
-import Community from './Community';
+import Community from './Community.vue';
 
 export { Community };

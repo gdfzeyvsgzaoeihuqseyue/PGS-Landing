@@ -9,6 +9,8 @@
 </template>
 
 <script setup lang="ts">
+import { NOAHChatModal } from '@/components/noahBot'
+
 const runtimeConfig = useRuntimeConfig();
 const sharedFilesUrl = runtimeConfig.public.pgsSharedFiles;
 
@@ -23,7 +25,7 @@ useHead({
       name: 'description',
       content: 'Pro Gestion Soft développe des solutions numériques innovantes pour accompagner les PME africaines dans leur transformation digitale.'
     },
-    
+
     // Open Graph (Facebook, LinkedIn)
     { property: 'og:title', content: 'Pro Gestion Soft - Solutions numériques pour les PME africaines' },
     { property: 'og:description', content: 'Découvrez l’écosystème PGS : des outils innovants pour digitaliser votre entreprise.' },

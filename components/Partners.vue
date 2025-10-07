@@ -22,7 +22,7 @@
       <p>Erreur lors du chargement : {{ partnerStore.error || testimonyStore.error }}</p>
     </div>
 
-    <!-- Contenu principal (partenaires et témoignages) -->
+    <!-- Partenaires -->
     <div v-else-if="randomPartners.length > 0 || randomTestimonies.length > 0">
       <div v-if="randomPartners.length > 0" class="flex flex-wrap justify-center gap-8 mb-16">
         <div v-for="partner in randomPartners" :key="partner.id" :title="partner.name"
@@ -32,6 +32,7 @@
         </div>
       </div>
 
+       <!-- Témoignages -->
       <div v-if="randomTestimonies.length > 0" class="grid grid-cols-1 md:grid-cols-2 gap-8">
         <div v-for="testimonial in randomTestimonies" :key="testimonial.id" :class="[
           'p-8 rounded-xl shadow-lg transition-all duration-300 ease-in-out',
