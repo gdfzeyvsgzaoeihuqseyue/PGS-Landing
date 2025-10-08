@@ -16,7 +16,6 @@
         </button>
         <h2 class="text-2xl font-bold mb-6 text-center">Besoin d'aide ou de nous contacter ?</h2>
         <div class="space-y-4">
-
           <!-- Assistant IA PGS -->
           <button @click="openChatbot"
             class="w-full flex items-center justify-between p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
@@ -79,7 +78,7 @@ import {
 const showModal = ref(false);
 const chatbotStore = useChatbotStore();
 
-// Construire l'URL ChatGPTy
+// URL ChatGPT
 const chatgptUrl = computed(() => {
   const currentUrl = typeof window !== 'undefined' ? window.location.href : '';
   const pageTitle = typeof document !== 'undefined' ? document.title : '';

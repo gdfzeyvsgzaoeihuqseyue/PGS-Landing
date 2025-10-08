@@ -14,7 +14,7 @@ export interface WebSearchResult {
 
 export interface ChatMessage {
   id: string;
-  role: 'user' | 'assistant' | 'system';
+  role: 'user' | 'assistant';
   content: string;
   agent?: 'mistral' | 'gemini' | 'system';
   metadata?: {
@@ -38,6 +38,8 @@ export interface ChatMessage {
       status: 'success' | 'failed';
       result?: any;
     }>;
+    edit_count?: number;
+    regeneration_count?: number;
   };
   images?: string[];
   timestamp: string;

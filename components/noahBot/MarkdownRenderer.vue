@@ -1,36 +1,51 @@
 <template>
   <div class="markdown-content prose prose-sm max-w-none">
-    <div v-html="sanitizedHtml"></div>
+    <div ref="contentRef" v-html="sanitizedHtml"></div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted } from 'vue';
+import { computed, onMounted, ref, nextTick } from 'vue';
 import { marked } from 'marked';
 import DOMPurify from 'dompurify';
 import hljs from 'highlight.js/lib/common';
 import 'highlight.js/styles/github-dark.css';
+import { IconCopy, IconCheck, IconDownload } from '@tabler/icons-vue';
+import { h, render } from 'vue';
 
 interface Props {
   content: string;
 }
 
 const props = defineProps<Props>();
+const contentRef = ref<HTMLElement | null>(null);
 
 const configureMarked = () => {
   const renderer = new marked.Renderer();
   
   renderer.code = ({ text, lang }: { text: string; lang?: string }) => {
+    const codeId = `code-${Math.random().toString(36).substr(2, 9)}`;
+    
     if (lang && hljs.getLanguage(lang)) {
       try {
         const highlighted = hljs.highlight(text, { language: lang }).value;
-        return `<pre><code class="hljs language-${lang}">${highlighted}</code></pre>`;
+        return `
+          <div class="code-block-wrapper relative group" data-code-id="${codeId}">
+            <pre class="code-block-content"><code class="hljs language-${lang}">${highlighted}</code></pre>
+            <div class="code-block-actions"></div>
+          </div>
+        `;
       } catch (err) {
         console.error('Highlight error:', err);
       }
     }
     const highlighted = hljs.highlightAuto(text).value;
-    return `<pre><code class="hljs">${highlighted}</code></pre>`;
+    return `
+      <div class="code-block-wrapper relative group" data-code-id="${codeId}">
+        <pre class="code-block-content"><code class="hljs">${highlighted}</code></pre>
+        <div class="code-block-actions"></div>
+      </div>
+    `;
   };
 
   marked.setOptions({
@@ -40,16 +55,90 @@ const configureMarked = () => {
   });
 };
 
-onMounted(() => {
+onMounted(async () => {
   configureMarked();
+  await nextTick();
+  attachCodeBlockActions();
 });
+
+// Attacher les actions aux blocs de code
+const attachCodeBlockActions = () => {
+  if (!contentRef.value) return;
+  
+  const codeBlocks = contentRef.value.querySelectorAll('.code-block-wrapper');
+  
+  codeBlocks.forEach((block) => {
+    const codeElement = block.querySelector('code');
+    const actionsContainer = block.querySelector('.code-block-actions');
+    
+    if (!codeElement || !actionsContainer) return;
+    
+    const codeText = codeElement.textContent || '';
+    
+    // Créer les boutons avec Vue
+    const ButtonsComponent = {
+      setup() {
+        const copied = ref(false);
+        
+        const copyCode = async () => {
+          try {
+            await navigator.clipboard.writeText(codeText);
+            copied.value = true;
+            setTimeout(() => {
+              copied.value = false;
+            }, 2000);
+          } catch (err) {
+            console.error('Failed to copy:', err);
+          }
+        };
+        
+        const downloadCode = () => {
+          const blob = new Blob([codeText], { type: 'text/plain' });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `code-${Date.now()}.txt`;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+        };
+        
+        return () => h('div', { 
+          class: 'absolute top-2 right-2 flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity' 
+        }, [
+          h('button', {
+            onClick: copyCode,
+            class: `px-3 py-1 rounded text-xs flex items-center space-x-1 transition ${copied.value ? 'bg-green-600' : 'bg-gray-700 hover:bg-gray-600'} text-white`,
+            title: 'Copier le code'
+          }, [
+            copied.value 
+              ? h(IconCheck, { class: 'w-3 h-3' })
+              : h(IconCopy, { class: 'w-3 h-3' }),
+            h('span', {}, copied.value ? 'Copié!' : 'Copier')
+          ]),
+          h('button', {
+            onClick: downloadCode,
+            class: 'bg-gray-700 hover:bg-gray-600 text-white px-3 py-1 rounded text-xs flex items-center space-x-1 transition',
+            title: 'Télécharger le code'
+          }, [
+            h(IconDownload, { class: 'w-3 h-3' }),
+            h('span', {}, 'Télécharger')
+          ])
+        ]);
+      }
+    };
+    
+    render(h(ButtonsComponent), actionsContainer as Element);
+  });
+};
 
 // Convertir et nettoyer le HTML
 const sanitizedHtml = computed(() => {
   try {
     const rawHtml = marked(props.content) as string;
     return DOMPurify.sanitize(rawHtml, {
-      ADD_ATTR: ['target', 'rel', 'class'],
+      ADD_ATTR: ['target', 'rel', 'class', 'data-code-id'],
       ALLOWED_TAGS: [
         'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
         'p', 'br', 'strong', 'em', 'u', 'del',
@@ -116,12 +205,19 @@ const sanitizedHtml = computed(() => {
   @apply bg-gray-100 px-1 py-0.5 rounded text-sm font-mono;
 }
 
-.markdown-content :deep(pre) {
-  @apply bg-gray-900 text-white p-4 rounded-lg overflow-x-auto mb-3 relative;
+.markdown-content :deep(.code-block-wrapper) {
+  @apply relative mb-3 overflow-hidden;
 }
 
-.markdown-content :deep(pre code) {
-  @apply bg-transparent p-0 text-sm;
+.markdown-content :deep(.code-block-content) {
+  @apply bg-gray-900 text-white p-4 rounded-lg overflow-x-auto;
+  max-width: 100%;
+}
+
+.markdown-content :deep(.code-block-content code) {
+  @apply bg-transparent p-0 text-sm font-mono block;
+  word-wrap: break-word;
+  white-space: pre-wrap;
 }
 
 .markdown-content :deep(blockquote) {
@@ -130,6 +226,8 @@ const sanitizedHtml = computed(() => {
 
 .markdown-content :deep(table) {
   @apply w-full border-collapse mb-3;
+  overflow-x: auto;
+  display: block;
 }
 
 .markdown-content :deep(th),

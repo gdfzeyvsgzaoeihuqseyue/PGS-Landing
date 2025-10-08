@@ -174,7 +174,7 @@ Contenu: ${pageContext.content}`;
               }
               
               if (item.type === 'tool_file' && item.tool === 'image_generation') {
-                const imageUrl = `/api/mistral-image/${item.file_id}`;
+                const imageUrl = `/api/files/${item.file_id}`;
                 images.push(imageUrl);
                 console.log('🖼️ [Mistral] Image générée détectée:', item.file_id);
                 console.log('🔗 [Mistral] URL proxy:', imageUrl);

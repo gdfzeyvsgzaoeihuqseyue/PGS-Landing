@@ -7,6 +7,9 @@ export default defineEventHandler(async (event: H3Event) => {
 
   const { messages, config: chatConfig, pageContext } = body;
 
+  console.log('🚀 [Gemini] Requête reçue');
+  console.log('📝 [Gemini] Nombre de messages:', messages?.length);
+
   const MODEL_ID = 'gemini-2.5-flash';
   const GENERATE_CONTENT_API = 'generateContent';
   const contents = [];
@@ -28,6 +31,7 @@ Tu dois:
 Titre: ${pageContext.title}
 URL: ${pageContext.url}
 Contenu: ${pageContext.content}`;
+    console.log('📄 [Gemini] Contexte de page ajouté');
   }
 
   contents.push({
@@ -62,10 +66,12 @@ Tu dois:
 
   if (chatConfig?.enableWebSearch) {
     tools.push({ googleSearch: {} });
+    console.log('🔍 [Gemini] Recherche web activée');
   }
 
   if (chatConfig?.enableCodeInterpreter) {
     tools.push({ codeExecution: {} });
+    console.log('💻 [Gemini] Interpréteur de code activé');
   }
 
   tools.push({ urlContext: {} });
@@ -103,6 +109,16 @@ Tu dois:
   };
 
   try {
+    if (!config.geminiApiKey) {
+      console.error('❌ [Gemini] GEMINI_API_KEY non configurée!');
+      throw createError({
+        statusCode: 500,
+        message: 'La clé API Gemini n\'est pas configurée',
+      });
+    }
+
+    console.log('🌐 [Gemini] Envoi de la requête à Gemini API...');
+
     const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL_ID}:${GENERATE_CONTENT_API}?key=${config.geminiApiKey}`;
 
     const response = await $fetch<GeminiAPIResponse>(apiUrl, {
@@ -113,6 +129,8 @@ Tu dois:
       body: requestBody,
     });
 
+    console.log('✅ [Gemini] Réponse reçue');
+
     let textContent = '';
     const images: string[] = [];
     const thinkingSteps: ThinkingStep[] = [];
@@ -120,15 +138,19 @@ Tu dois:
     const webSearchResults: WebSearchResult[] = [];
     let toolsExecuted: any[] = [];
 
-    // MODIFICATION: Vérifier que candidates existe avant d'y accéder
+    // Vérifier que candidates existe avant d'y accéder
     if (response.candidates && response.candidates.length > 0 && response.candidates[0]?.content?.parts) {
+      console.log('💬 [Gemini] Traitement des parts de contenu...');
+
       for (const part of response.candidates[0].content.parts) {
         if (part.text) {
           textContent += part.text;
+          console.log('📝 [Gemini] Texte ajouté:', part.text.substring(0, 50) + '...');
         }
 
         if (part.executableCode) {
           toolsUsed.push('code_interpreter');
+          console.log('🔧 [Gemini] Code exécutable détecté:', part.executableCode.language);
 
           thinkingSteps.push({
             step: thinkingSteps.length + 1,
@@ -143,6 +165,8 @@ Tu dois:
         }
 
         if (part.codeExecutionResult) {
+          console.log('✅ [Gemini] Résultat d\'exécution:', part.codeExecutionResult.outcome);
+
           toolsExecuted.push({
             name: 'code_execution',
             status: part.codeExecutionResult.outcome === 'OUTCOME_OK' ? 'success' : 'failed',
@@ -150,15 +174,21 @@ Tu dois:
           });
         }
       }
+    } else {
+      console.warn('⚠️ [Gemini] Aucun contenu dans la réponse');
     }
 
-    // MODIFICATION: Vérifier que candidates[0] existe avant d'accéder à groundingMetadata
+    // Vérifier que candidates[0] existe avant d'accéder à groundingMetadata
     const groundingMetadata = response.candidates?.[0]?.groundingMetadata;
     if (groundingMetadata) {
+      console.log('🔍 [Gemini] Métadonnées de grounding détectées');
+
       if (groundingMetadata.webSearchQueries && groundingMetadata.webSearchQueries.length > 0) {
         toolsUsed.push('web_search');
+        console.log('🌐 [Gemini] Requêtes web:', groundingMetadata.webSearchQueries.length);
 
         groundingMetadata.webSearchQueries.forEach(query => {
+          console.log('🔎 [Gemini] Recherche:', query);
           thinkingSteps.push({
             step: thinkingSteps.length + 1,
             description: `Recherche web: ${query}`,
@@ -170,8 +200,11 @@ Tu dois:
       }
 
       if (groundingMetadata.groundingChunks && groundingMetadata.groundingChunks.length > 0) {
+        console.log('📚 [Gemini] Sources web trouvées:', groundingMetadata.groundingChunks.length);
+
         groundingMetadata.groundingChunks.forEach(chunk => {
           if (chunk.web) {
+            console.log('🔗 [Gemini] Source:', chunk.web.title, '-', chunk.web.uri);
             webSearchResults.push({
               title: chunk.web.title || '',
               url: chunk.web.uri || '',
@@ -194,7 +227,7 @@ Tu dois:
       total_tokens: response.usageMetadata.totalTokenCount
     } : undefined;
 
-    return {
+    const result = {
       content: textContent || 'Désolé, je n\'ai pas pu générer une réponse.',
       agent: 'gemini',
       images: images,
@@ -209,9 +242,18 @@ Tu dois:
         usage: usage,
       },
     };
+
+    console.log('🎉 [Gemini] Réponse traitée avec succès');
+    console.log('📝 [Gemini] Contenu final length:', textContent.length);
+    console.log('🔧 [Gemini] Outils utilisés:', toolsUsed);
+
+    return result;
+
   } catch (error: any) {
-    console.error('Gemini API Error:', error);
-    console.error('Error details:', error.data);
+    console.error('❌ [Gemini API Error]:', error);
+    console.error('❌ [Gemini] Error message:', error.message);
+    console.error('❌ [Gemini] Error status:', error.statusCode);
+    console.error('❌ [Gemini] Error data:', JSON.stringify(error.data, null, 2));
 
     const errorMessage = error.data?.error?.message || error.message || 'Erreur inconnue';
 

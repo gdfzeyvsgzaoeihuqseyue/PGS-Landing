@@ -72,7 +72,8 @@
             </div>
 
             <!-- Messages -->
-            <ChatMessage v-for="message in chatbotStore.messages" :key="message.id" :message="message" />
+            <ChatMessage v-for="message in chatbotStore.messages" :key="message.id" :message="message"
+              @regenerate="handleRegenerate" @edit="handleEdit" />
 
             <!-- Loading Indicator -->
             <div v-if="chatbotStore.isLoading" class="flex items-start space-x-2">
@@ -92,23 +93,60 @@
           <!-- Input Area -->
           <div class="p-4 bg-white border-t">
             <form @submit.prevent="handleSendMessage" class="flex space-x-2">
-              <input v-model="messageInput" type="text" placeholder="Écrivez votre message..."
-                class="flex-1 px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary outline-none"
-                :disabled="chatbotStore.isLoading" />
-              <button type="submit" :disabled="!messageInput || chatbotStore.isLoading"
-                class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-secondary transition disabled:opacity-50 disabled:cursor-not-allowed">
+              <textarea v-model="messageInput" ref="textareaRef" placeholder="Démander à NOAH..."
+                class="flex-1 px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary outline-none resize-none"
+                :disabled="chatbotStore.isLoading" rows="1" @keydown="handleKeyDown" @input="autoResize"></textarea>
+              <button type="submit" :disabled="!messageInput.trim() || chatbotStore.isLoading"
+                class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-secondary transition disabled:opacity-50 disabled:cursor-not-allowed flex-shrink-0">
                 <IconSend class="w-5 h-5" />
               </button>
             </form>
             <div class="mt-2 flex justify-between items-center text-xs text-gray-500">
-              <span>{{ getAgentDescription() }}</span>
-              <button @click="handleReset" class="hover:text-primary transition">
+              <span>{{ getInputHint() }}</span>
+              <button @click="showResetConfirmation = true" class="hover:text-primary transition">
                 <IconRestore class="w-4 h-4" />
               </button>
             </div>
           </div>
         </div>
       </Transition>
+    </div>
+  </Transition>
+
+  <!-- Notification Toast -->
+  <Transition name="toast-fade">
+    <div v-if="showNotification"
+      class="fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-[60] flex items-center space-x-2">
+      <IconCheck class="w-5 h-5" />
+      <span>{{ notificationMessage }}</span>
+    </div>
+  </Transition>
+
+  <!-- Confirmation Modal -->
+  <Transition name="modal-fade">
+    <div v-if="showResetConfirmation"
+      class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-[70]">
+      <div class="bg-white rounded-2xl shadow-2xl p-6 max-w-sm w-full">
+        <div class="text-center">
+          <div class="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <IconAlertTriangle class="w-6 h-6 text-yellow-600" />
+          </div>
+          <h3 class="font-bold text-lg mb-2">Réinitialiser la conversation</h3>
+          <p class="text-gray-600 mb-6">
+            Êtes-vous sûr de vouloir réinitialiser la conversation ?
+          </p>
+          <div class="flex space-x-3">
+            <button @click="showResetConfirmation = false"
+              class="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition">
+              Annuler
+            </button>
+            <button @click="confirmReset"
+              class="flex-1 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition">
+              Réinitialiser
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
   </Transition>
 </template>
@@ -118,20 +156,24 @@ import { ref, nextTick, onMounted, watch } from 'vue';
 import { useChatbotStore } from '@/stores/NoahBot';
 import { getRandomSuggestions } from '@/utils/chatSuggestions';
 import { ChatMessage } from '@/components/noahBot'
-import { IconX, IconSparkles, IconSend, IconRestore } from '@tabler/icons-vue';
+import { IconX, IconSparkles, IconSend, IconRestore, IconCheck, IconAlertTriangle } from '@tabler/icons-vue';
 
 const chatbotStore = useChatbotStore();
 const messageInput = ref<string>('');
 const messagesContainer = ref<HTMLElement | null>(null);
+const textareaRef = ref<HTMLTextAreaElement | null>(null);
 const currentSuggestions = ref<string[]>([]);
+const isMobile = ref(false);
+const showNotification = ref(false);
+const notificationMessage = ref('');
+const showResetConfirmation = ref(false);
 
 onMounted(() => {
   chatbotStore.initConversation(window.location.pathname);
-  // Générer des suggestions aléatoires à l'ouverture
   currentSuggestions.value = getRandomSuggestions(3);
+  isMobile.value = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 });
 
-// Regénérer des suggestions quand la conversation est réinitialisée
 watch(() => chatbotStore.messages.length, (newLength) => {
   if (newLength === 0) {
     currentSuggestions.value = getRandomSuggestions(3);
@@ -139,22 +181,54 @@ watch(() => chatbotStore.messages.length, (newLength) => {
   scrollToBottom();
 });
 
-const getAgentDescription = () => {
-  const agent = chatbotStore.config.agent;
-  if (agent === 'gemini') {
-    return 'Genius est encore expérimental et peut faire des erreurs';
-  } else if (agent === 'mistral') {
-    return 'Mimic est encore expérimental et peut faire des erreurs';
-  } else {
-    return 'PGS Assistant est encore expérimental et peut faire des erreurs';
+const showToast = (message: string, duration: number = 3000) => {
+  notificationMessage.value = message;
+  showNotification.value = true;
+
+  setTimeout(() => {
+    showNotification.value = false;
+  }, duration);
+};
+
+const getInputHint = () => {
+  if (isMobile.value) {
+    return 'Entrer pour nouvelle ligne, bouton Envoyer pour envoyer';
+  }
+  return 'Entrer pour envoyer, Shift+Entrer pour nouvelle ligne';
+};
+
+const handleKeyDown = (event: KeyboardEvent) => {
+  if (event.key === 'Enter') {
+    if (isMobile.value) {
+      return;
+    } else {
+      if (event.shiftKey) {
+        return;
+      } else {
+        event.preventDefault();
+        handleSendMessage();
+      }
+    }
+  }
+};
+
+const autoResize = () => {
+  const textarea = textareaRef.value;
+  if (textarea) {
+    textarea.style.height = 'auto';
+    textarea.style.height = Math.min(textarea.scrollHeight, 150) + 'px';
   }
 };
 
 const handleSendMessage = async () => {
-  if (!messageInput.value || !messageInput.value.trim()) return;
+  if (!messageInput.value.trim() || chatbotStore.isLoading) return;
 
   const message = messageInput.value;
   messageInput.value = '';
+
+  if (textareaRef.value) {
+    textareaRef.value.style.height = 'auto';
+  }
 
   try {
     await chatbotStore.sendMessage(message);
@@ -170,12 +244,38 @@ const sendQuickMessage = async (message: string) => {
   await handleSendMessage();
 };
 
-const handleReset = () => {
-  if (confirm('Voulez-vous vraiment réinitialiser la conversation?')) {
-    chatbotStore.resetConversation();
-    chatbotStore.initConversation(window.location.pathname);
-    currentSuggestions.value = getRandomSuggestions(3);
+const handleRegenerate = async (messageId: string) => {
+  try {
+    await chatbotStore.regenerateMessage(messageId);
+    showToast('Message régénéré avec succès');
+  } catch (error) {
+    console.error('Error regenerating message:', error);
+    showToast('Erreur lors de la régénération', 5000);
   }
+};
+
+const handleEdit = async (messageId: string, newContent: string) => {
+  try {
+    await chatbotStore.editMessage(messageId, newContent);
+    showToast('Message modifié avec succès');
+  } catch (error) {
+    console.error('Error editing message:', error);
+    showToast('Erreur lors de la modification', 5000);
+  }
+};
+
+const handleReset = () => {
+  showResetConfirmation.value = true;
+};
+
+const confirmReset = () => {
+  showResetConfirmation.value = false;
+
+  // Exécuter la réinitialisation
+  chatbotStore.resetConversation();
+  chatbotStore.initConversation(window.location.pathname);
+  currentSuggestions.value = getRandomSuggestions(3);
+  showToast('Conversation réinitialisée');
 };
 
 const scrollToBottom = async () => {
@@ -206,5 +306,20 @@ const scrollToBottom = async () => {
 .modal-scale-leave-to {
   opacity: 0;
   transform: scale(0.9);
+}
+
+.toast-fade-enter-active,
+.toast-fade-leave-active {
+  transition: all 0.3s ease;
+}
+
+.toast-fade-enter-from {
+  opacity: 0;
+  transform: translateX(100%);
+}
+
+.toast-fade-leave-to {
+  opacity: 0;
+  transform: translateX(100%);
 }
 </style>

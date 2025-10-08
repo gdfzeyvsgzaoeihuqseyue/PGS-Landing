@@ -225,7 +225,19 @@ export const useChatbotStore = defineStore('chatbot', () => {
     messages.value = messages.value.slice(0, messageIndex);
 
     // Renvoyer le message
-    await sendMessage(userMessage.content);
+    const newMessage = await sendMessage(userMessage.content);
+    
+    // Incrémenter le compteur de régénération
+    if (newMessage) {
+      const currentCount = newMessage.metadata?.regeneration_count || 0;
+      if (!newMessage.metadata) {
+        newMessage.metadata = {};
+      }
+      newMessage.metadata.regeneration_count = currentCount + 1;
+      
+      // Sauvegarder
+      saveConversationHistory();
+    }
   };
 
   // Modifier un message utilisateur
@@ -233,8 +245,29 @@ export const useChatbotStore = defineStore('chatbot', () => {
     const messageIndex = messages.value.findIndex(m => m.id === messageId);
     if (messageIndex === -1) return;
 
+    const originalMessage = messages.value[messageIndex];
+    
+    // Incrémenter le compteur de modification
+    const editCount = (originalMessage.metadata?.edit_count || 0) + 1;
+
     // Supprimer ce message et tous les suivants
     messages.value = messages.value.slice(0, messageIndex);
+
+    // Créer le nouveau message avec le compteur
+    const userMessage: ChatMessage = {
+      id: `user_${Date.now()}`,
+      role: 'user',
+      content: newContent,
+      timestamp: new Date().toISOString(),
+      metadata: {
+        edit_count: editCount
+      }
+    };
+
+    messages.value.push(userMessage);
+    
+    // Sauvegarder avant d'envoyer
+    saveConversationHistory();
 
     // Envoyer le nouveau message
     await sendMessage(newContent);

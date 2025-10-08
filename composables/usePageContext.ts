@@ -1,4 +1,4 @@
-import type { PageContext } from '@/types/NoahBot';
+import type { PageContext } from '@/types';
 
 export const usePageContext = () => {
   /**
@@ -24,17 +24,10 @@ export const usePageContext = () => {
 
       // Supprimer les éléments non pertinents
       const selectorsToRemove = [
-        'script',
-        'style',
-        'nav',
-        'footer',
-        'header',
-        '.nav',
-        '.footer',
-        '.header',
-        '[role="navigation"]',
-        '[role="banner"]',
-        '[role="contentinfo"]'
+        'script', 'style', 'nav',
+        'footer', 'header',
+        '.nav', '.footer', '.header',
+        '[role="navigation"]', '[role="banner"]', '[role="contentinfo"]'
       ];
 
       selectorsToRemove.forEach(selector => {
