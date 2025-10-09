@@ -22,10 +22,10 @@ const contentRef = ref<HTMLElement | null>(null);
 
 const configureMarked = () => {
   const renderer = new marked.Renderer();
-  
+
   renderer.code = ({ text, lang }: { text: string; lang?: string }) => {
     const codeId = `code-${Math.random().toString(36).substr(2, 9)}`;
-    
+
     if (lang && hljs.getLanguage(lang)) {
       try {
         const highlighted = hljs.highlight(text, { language: lang }).value;
@@ -64,22 +64,22 @@ onMounted(async () => {
 // Attacher les actions aux blocs de code
 const attachCodeBlockActions = () => {
   if (!contentRef.value) return;
-  
+
   const codeBlocks = contentRef.value.querySelectorAll('.code-block-wrapper');
-  
+
   codeBlocks.forEach((block) => {
     const codeElement = block.querySelector('code');
     const actionsContainer = block.querySelector('.code-block-actions');
-    
+
     if (!codeElement || !actionsContainer) return;
-    
+
     const codeText = codeElement.textContent || '';
-    
+
     // Créer les boutons avec Vue
     const ButtonsComponent = {
       setup() {
         const copied = ref(false);
-        
+
         const copyCode = async () => {
           try {
             await navigator.clipboard.writeText(codeText);
@@ -91,28 +91,73 @@ const attachCodeBlockActions = () => {
             console.error('Failed to copy:', err);
           }
         };
-        
+
         const downloadCode = () => {
-          const blob = new Blob([codeText], { type: 'text/plain' });
+          // Détecter le langage du code depuis la classe du code element
+          const codeElement = block.querySelector('code');
+          let fileExtension = 'txt';
+          let mimeType = 'text/plain';
+
+          // Récupérer le langage depuis les classes du code
+          if (codeElement) {
+            const classes = codeElement.className.split(' ');
+            const langClass = classes.find(c => c.startsWith('language-'));
+            if (langClass) {
+              const lang = langClass.replace('language-', '');
+
+              // Mapping des langages vers extensions et types MIME
+              const langMapping: Record<string, { ext: string; mime: string }> = {
+                'javascript': { ext: 'js', mime: 'text/javascript' },
+                'typescript': { ext: 'ts', mime: 'text/typescript' },
+                'html': { ext: 'html', mime: 'text/html' },
+                'css': { ext: 'css', mime: 'text/css' },
+                'python': { ext: 'py', mime: 'text/x-python' },
+                'java': { ext: 'java', mime: 'text/x-java' },
+                'json': { ext: 'json', mime: 'application/json' },
+                'xml': { ext: 'xml', mime: 'application/xml' },
+                'sql': { ext: 'sql', mime: 'application/sql' },
+                'php': { ext: 'php', mime: 'text/x-php' },
+                'ruby': { ext: 'rb', mime: 'text/x-ruby' },
+                'go': { ext: 'go', mime: 'text/x-go' },
+                'rust': { ext: 'rs', mime: 'text/x-rust' },
+                'swift': { ext: 'swift', mime: 'text/x-swift' },
+                'kotlin': { ext: 'kt', mime: 'text/x-kotlin' },
+                'shell': { ext: 'sh', mime: 'text/x-shellscript' },
+                'bash': { ext: 'sh', mime: 'text/x-shellscript' },
+                'markdown': { ext: 'md', mime: 'text/markdown' },
+                'yaml': { ext: 'yaml', mime: 'text/yaml' },
+                'vue': { ext: 'vue', mime: 'text/x-vue' },
+                'jsx': { ext: 'jsx', mime: 'text/jsx' },
+                'tsx': { ext: 'tsx', mime: 'text/tsx' },
+              };
+
+              if (langMapping[lang]) {
+                fileExtension = langMapping[lang].ext;
+                mimeType = langMapping[lang].mime;
+              }
+            }
+          }
+
+          const blob = new Blob([codeText], { type: mimeType });
           const url = URL.createObjectURL(blob);
           const a = document.createElement('a');
           a.href = url;
-          a.download = `code-${Date.now()}.txt`;
+          a.download = `NOAHAI-Code-${Date.now()}.${fileExtension}`;
           document.body.appendChild(a);
           a.click();
           document.body.removeChild(a);
           URL.revokeObjectURL(url);
         };
-        
-        return () => h('div', { 
-          class: 'absolute top-2 right-2 flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity' 
+
+        return () => h('div', {
+          class: 'absolute top-2 right-2 flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity'
         }, [
           h('button', {
             onClick: copyCode,
             class: `px-3 py-1 rounded text-xs flex items-center space-x-1 transition ${copied.value ? 'bg-green-600' : 'bg-gray-700 hover:bg-gray-600'} text-white`,
             title: 'Copier le code'
           }, [
-            copied.value 
+            copied.value
               ? h(IconCheck, { class: 'w-3 h-3' })
               : h(IconCopy, { class: 'w-3 h-3' }),
             h('span', {}, copied.value ? 'Copié!' : 'Copier')
@@ -128,7 +173,7 @@ const attachCodeBlockActions = () => {
         ]);
       }
     };
-    
+
     render(h(ButtonsComponent), actionsContainer as Element);
   });
 };

@@ -14,8 +14,19 @@ export const useSolutionStore = defineStore('solutions', () => {
   const allTutorials = ref<PlateformTutorial[]>([]);
   const allWikis = ref<PlateformWiki[]>([]);
 
+  // États de chargement
+  const loadingStates = ref({
+    solutions: false,
+    docs: false,
+    faqs: false,
+    tutorials: false,
+    wikis: false,
+    currentSolution: false,
+  });
+
   const loading = ref(false);
   const error = ref<string | null>(null);
+  
   const pagination = ref({
     currentPage: 1,
     totalPages: 1,
@@ -63,6 +74,7 @@ export const useSolutionStore = defineStore('solutions', () => {
   }
 
   async function fetchSolutions(page: number = 1, limit: number = 10, all: boolean = false) {
+    loadingStates.value.solutions = true;
     loading.value = true;
     error.value = null;
     try {
@@ -123,11 +135,13 @@ export const useSolutionStore = defineStore('solutions', () => {
       error.value = 'Erreur lors du chargement des solutions: ' + (err.data?.message || err.message);
       console.error(error.value, err);
     } finally {
+      loadingStates.value.solutions = false;
       loading.value = false;
     }
   }
 
   async function fetchSolutionByIdentifier(identifier: string) {
+    loadingStates.value.currentSolution = true;
     loading.value = true;
     error.value = null;
     currentSolution.value = null;
@@ -149,12 +163,13 @@ export const useSolutionStore = defineStore('solutions', () => {
       console.error(error.value, err);
       return null;
     } finally {
+      loadingStates.value.currentSolution = false;
       loading.value = false;
     }
   }
 
   async function fetchPlateformDocs(page: number = 1, limit: number = 10, all: boolean = false) {
-    loading.value = true;
+    loadingStates.value.docs = true;
     error.value = null;
     try {
       if (solutions.value.length === 0) {
@@ -179,12 +194,12 @@ export const useSolutionStore = defineStore('solutions', () => {
       error.value = 'Erreur lors du chargement des documents: ' + (err.data?.message || err.message);
       console.error(error.value, err);
     } finally {
-      loading.value = false;
+      loadingStates.value.docs = false;
     }
   }
 
   async function fetchPlateformFaqs(page: number = 1, limit: number = 10, all: boolean = false) {
-    loading.value = true;
+    loadingStates.value.faqs = true;
     error.value = null;
     try {
       if (solutions.value.length === 0) {
@@ -209,12 +224,12 @@ export const useSolutionStore = defineStore('solutions', () => {
       error.value = 'Erreur lors du chargement des FAQs: ' + (err.data?.message || err.message);
       console.error(error.value, err);
     } finally {
-      loading.value = false;
+      loadingStates.value.faqs = false;
     }
   }
 
   async function fetchPlateformTutorials(page: number = 1, limit: number = 10, all: boolean = false) {
-    loading.value = true;
+    loadingStates.value.tutorials = true;
     error.value = null;
     try {
       // S'assurer que les solutions sont chargées
@@ -239,11 +254,12 @@ export const useSolutionStore = defineStore('solutions', () => {
       error.value = 'Erreur lors du chargement des tutoriels: ' + (err.data?.message || err.message);
       console.error(error.value, err);
     } finally {
-      loading.value = false;
+      loadingStates.value.tutorials = false;
     }
   }
 
   async function fetchPlateformWikis(page: number = 1, limit: number = 10, all: boolean = false, startLetter: string | null = null, platformId: string | null = null, loadMore: boolean = false) {
+    loadingStates.value.wikis = true;
     loading.value = true;
     error.value = null;
     try {
@@ -290,6 +306,7 @@ export const useSolutionStore = defineStore('solutions', () => {
       error.value = 'Erreur lors du chargement des wikis: ' + (err.data?.message || err.message);
       console.error(error.value, err);
     } finally {
+      loadingStates.value.wikis = false;
       loading.value = false;
     }
   }
@@ -302,6 +319,7 @@ export const useSolutionStore = defineStore('solutions', () => {
     allTutorials,
     allWikis,
     loading,
+    loadingStates,
     error,
     pagination,
     counts,

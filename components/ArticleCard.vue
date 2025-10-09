@@ -2,8 +2,10 @@
   <article class="group block bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow overflow-hidden">
     <!-- Image de l'article -->
     <div class="relative h-48 overflow-hidden bg-gray-100">
-      <img :src="articleImageUrl" :alt="article.title" @error="handleArticleImageError"
-        class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+      <NuxtLink :to="`/blog/${article.slug}`">
+        <img :src="articleImageUrl" :alt="article.title" @error="handleArticleImageError"
+          class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+      </NuxtLink>
 
       <!-- Badge de catégorie -->
       <NuxtLink :to="`/blog/cat/${article.category.slug}`"

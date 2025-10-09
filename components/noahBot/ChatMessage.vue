@@ -94,6 +94,7 @@
           <div v-if="message.role === 'user'" class="text-xs text-red-500"></div>
           <!-- Actions -->
           <MessageActions :content="message.content" :role="message.role" :message-id="message.id"
+            :is-last-user-message="isLastUserMessage" :is-last-assistant-message="isLastAssistantMessage"
             @regenerate="$emit('regenerate', message.id)" @edit="handleEdit" />
         </div>
       </div>
@@ -112,7 +113,11 @@ interface Props {
   message: ChatMessage;
 }
 
-const props = defineProps<Props>();
+const props = defineProps<{
+  message: ChatMessage;
+  isLastUserMessage?: boolean;
+  isLastAssistantMessage?: boolean;
+}>();
 const emit = defineEmits<{
   regenerate: [messageId: string];
   edit: [messageId: string, newContent: string];

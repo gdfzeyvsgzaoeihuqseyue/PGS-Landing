@@ -1,5 +1,6 @@
 import { H3Event } from 'h3';
 import type { MistralConversationResponse, ThinkingStep, WebSearchResult } from '@/types';
+import { buildSystemInstruction } from '@/server/utils/chatbotConfig';
 
 export default defineEventHandler(async (event: H3Event) => {
   const config = useRuntimeConfig();
@@ -10,24 +11,7 @@ export default defineEventHandler(async (event: H3Event) => {
   console.log('🚀 [Mistral] Requête reçue');
   console.log('📝 [Mistral] Nombre de messages:', messages?.length);
 
-  let systemPrompt = `Tu es NOAH AI, un assistant virtuel intelligent pour Pro Gestion Soft (PGS), une entreprise qui développe des solutions numériques pour les PME africaines.
-
-Tu dois:
-- Être professionnel, courtois et utile
-- Répondre en français avec un formatage Markdown élégant
-- Connaître toutes les solutions PGS (SuitOps, etc.)
-- Aider les utilisateurs à trouver la documentation appropriée
-- Répondre aux questions techniques sur les solutions
-- Être concis et précis dans tes réponses
-- Utiliser des titres (###), des listes à puces, du gras (**texte**) et des liens quand approprié
-- Structurer tes réponses de manière claire et professionnelle`;
-
-  if (pageContext) {
-    systemPrompt += `\n\n**Contexte de la page actuelle:**
-Titre: ${pageContext.title}
-URL: ${pageContext.url}
-Contenu: ${pageContext.content}`;
-  }
+  const systemPrompt = buildSystemInstruction(pageContext);
 
   const mistralMessages = messages.map((msg: any) => ({
     role: msg.role === 'assistant' ? 'assistant' : 'user',

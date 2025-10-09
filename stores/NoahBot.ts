@@ -211,6 +211,11 @@ export const useChatbotStore = defineStore('chatbot', () => {
     const messageIndex = messages.value.findIndex(m => m.id === messageId);
     if (messageIndex === -1) return;
 
+    const messageToRegenerate = messages.value[messageIndex];
+
+    // Récupérer le compteur actuel
+    const currentRegenerationCount = messageToRegenerate.metadata?.regeneration_count || 0;
+
     // Trouver le message utilisateur précédent
     let userMessageIndex = messageIndex - 1;
     while (userMessageIndex >= 0 && messages.value[userMessageIndex].role !== 'user') {
@@ -224,17 +229,23 @@ export const useChatbotStore = defineStore('chatbot', () => {
     // Supprimer le message à régénérer et tous les suivants
     messages.value = messages.value.slice(0, messageIndex);
 
-    // Renvoyer le message
-    const newMessage = await sendMessage(userMessage.content);
-    
-    // Incrémenter le compteur de régénération
+    // Envoyer le message avec le même agent si disponible
+    const forcedAgent = messageToRegenerate.agent as 'mistral' | 'gemini' | undefined;
+    const newMessage = await sendMessage(userMessage.content, forcedAgent);
+
+    // Incrémenter le compteur de régénération sur le nouveau message
     if (newMessage) {
-      const currentCount = newMessage.metadata?.regeneration_count || 0;
       if (!newMessage.metadata) {
         newMessage.metadata = {};
       }
-      newMessage.metadata.regeneration_count = currentCount + 1;
-      
+      newMessage.metadata.regeneration_count = currentRegenerationCount + 1;
+
+      // Mettre à jour dans le tableau
+      const lastIndex = messages.value.length - 1;
+      if (lastIndex >= 0 && messages.value[lastIndex].id === newMessage.id) {
+        messages.value[lastIndex] = newMessage;
+      }
+
       // Sauvegarder
       saveConversationHistory();
     }
@@ -246,7 +257,7 @@ export const useChatbotStore = defineStore('chatbot', () => {
     if (messageIndex === -1) return;
 
     const originalMessage = messages.value[messageIndex];
-    
+
     // Incrémenter le compteur de modification
     const editCount = (originalMessage.metadata?.edit_count || 0) + 1;
 
@@ -265,7 +276,7 @@ export const useChatbotStore = defineStore('chatbot', () => {
     };
 
     messages.value.push(userMessage);
-    
+
     // Sauvegarder avant d'envoyer
     saveConversationHistory();
 

@@ -7,14 +7,14 @@
     </button>
 
     <!-- Régénérer -->
-    <button v-if="role === 'assistant'" @click="$emit('regenerate')"
+    <button v-if="role === 'assistant' && isLastAssistantMessage" @click="$emit('regenerate')"
       class="p-1.5 rounded hover:bg-gray-100 transition-colors" title="Régénérer la réponse" :disabled="isRegenerating">
       <IconRefresh class="w-4 h-4 text-gray-600" :class="{ 'animate-spin': isRegenerating }" />
     </button>
 
     <!-- Modifier -->
-    <button v-if="role === 'user'" @click="handleEditToggle" class="p-1.5 rounded hover:bg-gray-100 transition-colors"
-      title="Modifier le message">
+    <button v-if="role === 'user' && isLastUserMessage" @click="handleEditToggle"
+      class="p-1.5 rounded hover:bg-gray-100 transition-colors" title="Modifier le message">
       <IconEdit class="w-4 h-4 text-gray-600" />
     </button>
 
@@ -55,6 +55,8 @@ interface Props {
   content: string;
   role: 'user' | 'assistant';
   messageId: string;
+  isLastUserMessage?: boolean;
+  isLastAssistantMessage?: boolean;
 }
 
 const props = defineProps<Props>();

@@ -1,5 +1,6 @@
 import { H3Event } from 'h3';
 import type { GeminiAPIResponse, ThinkingStep, WebSearchResult } from '@/types';
+import { buildSystemInstruction } from '@/server/utils/chatbotConfig';
 
 export default defineEventHandler(async (event: H3Event) => {
   const config = useRuntimeConfig();
@@ -14,46 +15,7 @@ export default defineEventHandler(async (event: H3Event) => {
   const GENERATE_CONTENT_API = 'generateContent';
   const contents = [];
 
-  let systemInstruction = `Tu es NOAH AI, un assistant virtuel intelligent pour Pro Gestion Soft (PGS), une entreprise qui développe des solutions numériques pour les PME africaines.
-
-Tu dois:
-- Être professionnel, courtois et utile
-- Répondre en français avec un formatage Markdown élégant
-- Connaître toutes les solutions PGS (SuitOps, etc.)
-- Aider les utilisateurs à trouver la documentation appropriée
-- Répondre aux questions techniques sur les solutions
-- Être concis et précis dans tes réponses
-- Utiliser des titres (###), des listes à puces, du gras (**texte**) et des liens quand approprié
-- Structurer tes réponses de manière claire et professionnelle`;
-
-  if (pageContext) {
-    systemInstruction += `\n\nContexte de la page actuelle:
-Titre: ${pageContext.title}
-URL: ${pageContext.url}
-Contenu: ${pageContext.content}`;
-    console.log('📄 [Gemini] Contexte de page ajouté');
-  }
-
-  contents.push({
-    role: 'user',
-    parts: [{
-      text: `Tu es un assistant virtuel intelligent pour Pro Gestion Soft (PGS), une entreprise qui développe des solutions numériques pour les PME africaines. 
-
-Tu dois:
-- Être professionnel, courtois et utile
-- Répondre en français
-- Connaître toutes les solutions PGS (SuitOps, etc.)
-- Aider les utilisateurs à trouver la documentation appropriée
-- Répondre aux questions techniques sur les solutions`
-    }]
-  });
-
-  contents.push({
-    role: 'model',
-    parts: [{
-      text: 'Compris! Je suis prêt à vous aider avec Pro Gestion Soft.'
-    }]
-  });
+  const systemInstruction = buildSystemInstruction(pageContext);
 
   for (const msg of messages) {
     contents.push({
