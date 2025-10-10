@@ -94,12 +94,13 @@
 
           <!-- Input Area -->
           <div class="p-4 bg-white border-t">
-            <form @submit.prevent="handleSendMessage" class="flex space-x-2">
+            <form @submit.prevent="handleSendMessage" class="flex items-end space-x-2">
               <textarea v-model="messageInput" ref="textareaRef" placeholder="Démander à NOAH..."
-                class="flex-1 px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary outline-none resize-none"
+                class="flex-1 px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary outline-none resize-none leading-relaxed max-h-[150px] overflow-y-auto"
                 :disabled="chatbotStore.isLoading" rows="1" @keydown="handleKeyDown" @input="autoResize"></textarea>
+
               <button type="submit" :disabled="!messageInput.trim() || chatbotStore.isLoading"
-                class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-secondary transition disabled:opacity-50 disabled:cursor-not-allowed flex-shrink-0">
+                class="bg-primary text-white px-4 h-[42px] rounded-lg hover:bg-secondary transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center">
                 <IconSend class="w-5 h-5" />
               </button>
             </form>

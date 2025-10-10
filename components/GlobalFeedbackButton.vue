@@ -8,9 +8,8 @@
     </button>
 
     <Transition name="menu-slide-in">
-      <div v-if="showModal"
-        class="fixed bottom-[100px] right-6 w-80 bg-white rounded-xl shadow-2xl flex flex-col z-40 border border-gray-100"
-        @click.self="showModal = false">
+      <div v-if="showModal" ref="menuRef"
+        class="fixed bottom-[100px] right-6 w-80 bg-white rounded-xl shadow-2xl flex flex-col z-40 border border-gray-100">
 
         <div class="p-4 border-b">
           <h2 class="text-lg font-bold text-gray-800">Menu d'aide et de contact</h2>
@@ -66,15 +65,28 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
 import { useChatbotStore } from '@/stores/NoahBot';
-import {
-  IconBrandOpenai, IconHelp, IconCircleChevronUp,
-  IconStar, IconHelpCircle, IconLink, IconExternalLink
-} from '@tabler/icons-vue';
+import { IconBrandOpenai, IconHelp, IconCircleChevronUp, IconStar, IconHelpCircle, IconLink, IconExternalLink } from '@tabler/icons-vue';
 
 const showModal = ref(false);
+const menuRef = ref<HTMLElement | null>(null);
 const chatbotStore = useChatbotStore();
+
+// Fermeture au clic extérieur
+const handleOutsideClick = (event: MouseEvent) => {
+  if (showModal.value && menuRef.value && !menuRef.value.contains(event.target as Node)) {
+    showModal.value = false;
+  }
+};
+
+onMounted(() => {
+  document.addEventListener('mousedown', handleOutsideClick);
+});
+
+onBeforeUnmount(() => {
+  document.removeEventListener('mousedown', handleOutsideClick);
+});
 
 // URL ChatGPT
 const chatgptUrl = computed(() => {
