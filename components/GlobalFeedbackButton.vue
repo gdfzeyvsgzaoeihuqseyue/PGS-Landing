@@ -18,10 +18,13 @@
         <div class="p-4 space-y-3 overflow-y-auto max-h-[400px]">
           <!-- NOAH AI -->
           <button @click="openNoahAI"
-            class="w-full flex items-center justify-start p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium">
-            <img src="https://cdn-icons-png.flaticon.com/512/4712/4712139.png" alt="NOAH AI"
-              class="h-5 w-5 mr-3 flex-shrink-0" />
-            <span>Discuter avec NOAH AI BOT</span>
+            class="w-full flex items-center justify-between p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium">
+            <div class="flex items-center">
+              <img src="https://cdn-icons-png.flaticon.com/512/4712/4712139.png" alt="NOAH AI"
+                class="h-5 w-5 mr-3 flex-shrink-0" />
+              <span>Discuter avec NOAH AI</span>
+            </div>
+            <IconSparkles class="h-4 w-4 text-gray-400" />
           </button>
 
           <!-- ChatGPT -->
@@ -67,7 +70,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
 import { useChatbotStore } from '@/stores/NoahBot';
-import { IconBrandOpenai, IconHelp, IconCircleChevronUp, IconStar, IconHelpCircle, IconLink, IconExternalLink } from '@tabler/icons-vue';
+import { IconSparkles, IconBrandOpenai, IconHelp, IconCircleChevronUp, IconStar, IconHelpCircle, IconLink, IconExternalLink } from '@tabler/icons-vue';
 
 const showModal = ref(false);
 const menuRef = ref<HTMLElement | null>(null);
