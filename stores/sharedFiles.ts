@@ -20,6 +20,7 @@ export const useSharedFiles = defineStore('sharedFiles', () => {
       dw: `${GNR_IMG}/Logos/PGS-DW.png`,
       mc: `${GNR_IMG}/Logos/PGS-MC.png`,
       mw: `${GNR_IMG}/Logos/PGS-MW.png`,
+      noah: `${GNR_IMG}/Logos/NOAH-MC.png`,
     },
     page: {
       indexHero: `${APP_IMG}/indexHero.png`,

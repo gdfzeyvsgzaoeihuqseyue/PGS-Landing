@@ -8,7 +8,7 @@
           message.role === 'user' ? 'bg-gray-300' : 'bg-primary'
         ]">
           <IconUser v-if="message.role === 'user'" class="w-5 h-5 text-gray-600" />
-          <img v-else src="https://cdn-icons-png.flaticon.com/512/4712/4712139.png" alt="NOAH AI" class="w-5 h-5" />
+          <img v-else :src="sharedFiles.paths.logo.noah" alt="NOAH AI" class="w-5 h-5" />
         </div>
       </div>
 
@@ -118,6 +118,9 @@ import { IconUser, IconSearch } from '@tabler/icons-vue';
 import MarkdownRenderer from './MarkdownRenderer.vue';
 import ThinkingSteps from './ThinkingSteps.vue';
 import MessageActions from './MessageActions.vue';
+import { useSharedFiles } from '~/stores/sharedFiles';
+
+const sharedFiles = useSharedFiles();
 
 interface Props {
   message: ChatMessage;

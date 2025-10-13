@@ -16,7 +16,7 @@
           <div class="bg-gradient-to-r from-primary to-secondary p-4 text-white flex justify-between items-center">
             <div class="flex items-center space-x-3">
               <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center">
-                <img src="https://cdn-icons-png.flaticon.com/512/4712/4712139.png" alt="NOAH AI" class="w-6 h-6" />
+                <img :src="sharedFiles.paths.logo.noah" alt="NOAH AI" class="w-6 h-6" />
               </div>
               <div>
                 <h3 class="font-bold">NOAH AI</h3>
@@ -107,7 +107,7 @@
             <!-- Loading Indicator -->
             <div v-if="chatbotStore.isLoading" class="flex items-start space-x-2">
               <div class="w-8 h-8 bg-primary rounded-full flex items-center justify-center flex-shrink-0">
-                <img src="https://cdn-icons-png.flaticon.com/512/4712/4712139.png" alt="NOAH AI" class="w-5 h-5" />
+                <img :src="sharedFiles.paths.logo.noah" alt="NOAH AI" class="w-5 h-5" />
               </div>
               <div class="bg-white p-3 rounded-lg shadow-sm">
                 <div class="flex space-x-1">
@@ -194,7 +194,9 @@ import { ChatMessage } from '@/components/noahBot'
 import { IconX, IconSparkles, IconSend, IconRestore, IconCheck, IconAlertTriangle, IconSettings } from '@tabler/icons-vue';
 import ConsentModal from './ConsentModal.vue';
 import BotSettingsPanel from './BotSettingsPanel.vue';
+import { useSharedFiles } from '~/stores/sharedFiles';
 
+const sharedFiles = useSharedFiles();
 const chatbotStore = useChatbotStore();
 const messageInput = ref<string>('');
 const messagesContainer = ref<HTMLElement | null>(null);
