@@ -1,4 +1,7 @@
 <template>
+  <!-- Modal de consentement -->
+  <ConsentModal />
+
   <!-- Modale du Chatbot -->
   <Transition name="modal-fade">
     <div v-if="chatbotStore.isOpen"
@@ -23,9 +26,17 @@
                 </span>
               </div>
             </div>
-            <button @click="chatbotStore.toggleChatbot" class="hover:bg-white/20 p-2 rounded-lg transition">
-              <IconX class="w-5 h-5" />
-            </button>
+            <div class="flex items-center space-x-2">
+              <!-- Bouton Settings -->
+              <button @click="showSettingsPanel = true" class="hover:bg-white/20 p-2 rounded-lg transition"
+                title="Paramètres">
+                <IconSettings class="w-5 h-5" />
+              </button>
+              <!-- Bouton Close -->
+              <button @click="chatbotStore.toggleChatbot" class="hover:bg-white/20 p-2 rounded-lg transition">
+                <IconX class="w-5 h-5" />
+              </button>
+            </div>
           </div>
 
           <!-- Agent Selector -->
@@ -53,8 +64,24 @@
             </span>
           </div>
 
-          <!-- Messages Container -->
-          <div ref="messagesContainer" class="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50">
+          <!-- Messages Container avec scroll infini -->
+          <div ref="messagesContainer" @scroll="handleScroll" class="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50">
+
+            <!-- Indicateur de chargement de plus de messages -->
+            <div v-if="chatbotStore.isLoadingMore" class="text-center py-2">
+              <div class="inline-flex items-center space-x-2 text-sm text-gray-500">
+                <div class="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
+                <span>Chargement de messages...</span>
+              </div>
+            </div>
+
+            <!-- Indicateur: Plus de messages disponibles -->
+            <div v-if="chatbotStore.hasMoreMessages && !chatbotStore.isLoadingMore" class="text-center py-2">
+              <button @click="chatbotStore.loadMoreMessages()" class="text-sm text-primary hover:underline">
+                Charger plus de messages
+              </button>
+            </div>
+
             <!-- Welcome Message -->
             <div v-if="chatbotStore.messages.length === 0" class="text-center text-gray-500 mt-20">
               <IconSparkles class="w-12 h-12 mx-auto mb-4 text-primary" />
@@ -95,17 +122,19 @@
           <!-- Input Area -->
           <div class="p-4 bg-white border-t">
             <form @submit.prevent="handleSendMessage" class="flex items-end space-x-2">
-              <textarea v-model="messageInput" ref="textareaRef" placeholder="Démander à NOAH..."
+              <textarea v-model="messageInput" ref="textareaRef" placeholder="Demander à NOAH..."
                 class="flex-1 px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary outline-none resize-none leading-relaxed max-h-[150px] overflow-y-auto"
-                :disabled="chatbotStore.isLoading" rows="1" @keydown="handleKeyDown" @input="autoResize"></textarea>
+                :disabled="chatbotStore.isLoading || !chatbotStore.termsAccepted" rows="1" @keydown="handleKeyDown"
+                @input="autoResize"></textarea>
 
-              <button type="submit" :disabled="!messageInput.trim() || chatbotStore.isLoading"
+              <button type="submit"
+                :disabled="!messageInput.trim() || chatbotStore.isLoading || !chatbotStore.termsAccepted"
                 class="bg-primary text-white px-4 h-[42px] rounded-lg hover:bg-secondary transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center">
                 <IconSend class="w-5 h-5" />
               </button>
             </form>
             <div class="mt-2 flex justify-between items-center text-xs text-gray-500">
-              <span>{{ getInputHint() }}</span>
+              <span v-html="getInputHint()"></span>
               <button @click="showResetConfirmation = true" class="hover:text-primary transition">
                 <IconRestore class="w-4 h-4" />
               </button>
@@ -115,6 +144,9 @@
       </Transition>
     </div>
   </Transition>
+
+  <!-- Settings Panel -->
+  <BotSettingsPanel :is-open="showSettingsPanel" @close="showSettingsPanel = false" @show-toast="showToast" />
 
   <!-- Notification Toast -->
   <Transition name="toast-fade">
@@ -159,7 +191,9 @@ import { ref, nextTick, onMounted, watch } from 'vue';
 import { useChatbotStore } from '@/stores/NoahBot';
 import { getRandomSuggestions } from '@/utils/chatSuggestions';
 import { ChatMessage } from '@/components/noahBot'
-import { IconX, IconSparkles, IconSend, IconRestore, IconCheck, IconAlertTriangle } from '@tabler/icons-vue';
+import { IconX, IconSparkles, IconSend, IconRestore, IconCheck, IconAlertTriangle, IconSettings } from '@tabler/icons-vue';
+import ConsentModal from './ConsentModal.vue';
+import BotSettingsPanel from './BotSettingsPanel.vue';
 
 const chatbotStore = useChatbotStore();
 const messageInput = ref<string>('');
@@ -170,6 +204,8 @@ const isMobile = ref(false);
 const showNotification = ref(false);
 const notificationMessage = ref('');
 const showResetConfirmation = ref(false);
+const showSettingsPanel = ref(false);
+const scrollContainer = ref<HTMLElement | null>(null);
 
 const isLastUserMessage = (index: number) => {
   const messages = chatbotStore.messages;
@@ -189,6 +225,27 @@ const isLastAssistantMessage = (index: number) => {
     }
   }
   return false;
+};
+
+// Détecter le scroll vers le haut pour charger plus de messages
+const handleScroll = async () => {
+  if (!messagesContainer.value) return;
+
+  const { scrollTop } = messagesContainer.value;
+
+  // Si on scroll vers le haut et qu'on est proche du début
+  if (scrollTop < 100 && chatbotStore.hasMoreMessages && !chatbotStore.isLoadingMore) {
+    const previousScrollHeight = messagesContainer.value.scrollHeight;
+
+    await chatbotStore.loadMoreMessages();
+
+    // Maintenir la position de scroll après le chargement
+    await nextTick();
+    if (messagesContainer.value) {
+      const newScrollHeight = messagesContainer.value.scrollHeight;
+      messagesContainer.value.scrollTop = newScrollHeight - previousScrollHeight + scrollTop;
+    }
+  }
 };
 
 onMounted(() => {
@@ -215,9 +272,9 @@ const showToast = (message: string, duration: number = 3000) => {
 
 const getInputHint = () => {
   if (isMobile.value) {
-    return 'Entrer pour nouvelle ligne, bouton Envoyer pour envoyer';
+    return 'NOAH Ai peut faire des erreurs';
   }
-  return 'Entrer pour envoyer, Shift+Entrer pour nouvelle ligne';
+  return 'Entrer pour envoyer, Shift+Entrer pour nouvelle ligne. \n NOAH Ai peut faire des erreurs';
 };
 
 const handleKeyDown = (event: KeyboardEvent) => {

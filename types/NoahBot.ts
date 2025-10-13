@@ -17,30 +17,7 @@ export interface ChatMessage {
   role: 'user' | 'assistant';
   content: string;
   agent?: 'mistral' | 'gemini' | 'system';
-  metadata?: {
-    tools_used?: string[];
-    thinking_steps?: ThinkingStep[];
-    web_search_results?: WebSearchResult[];
-    images?: string[];
-    code_snippets?: string[];
-    search_results?: any[];
-    model?: string;
-    has_images?: boolean;
-    finish_reason?: string;
-    usage?: {
-      prompt_tokens?: number;
-      completion_tokens?: number;
-      total_tokens?: number;
-    };
-    safety_ratings?: any[];
-    tools_executed?: Array<{
-      name: string;
-      status: 'success' | 'failed';
-      result?: any;
-    }>;
-    edit_count?: number;
-    regeneration_count?: number;
-  };
+  metadata?: ChatMessageMetadata;
   images?: string[];
   timestamp: string;
   isStreaming?: boolean;
@@ -136,5 +113,98 @@ export interface GeminiAPIResponse {
     promptTokenCount?: number;
     candidatesTokenCount?: number;
     totalTokenCount?: number;
+  };
+}
+
+export interface APIResponse {
+  content: string;
+  agent: string;
+  images?: string[];
+  metadata?: {
+    model?: string;
+    tools_used?: string[];
+    thinking_steps?: ThinkingStep[];
+    web_search_results?: WebSearchResult[];
+    tools_executed?: any[];
+    finish_reason?: string;
+    safety_ratings?: any[];
+    usage?: {
+      prompt_tokens?: number;
+      completion_tokens?: number;
+      total_tokens?: number;
+    };
+  };
+}
+
+export interface ChatbotAPIResponse {
+  content: string;
+  agent: 'mistral' | 'gemini' | 'system';
+  images?: string[];
+  metadata?: ChatMessageMetadata;
+}
+
+export interface ChatMessageMetadata {
+  model?: string;
+  tools_used?: string[];
+  thinking_steps?: ThinkingStep[];
+  web_search_results?: WebSearchResult[];
+  tools_executed?: Array<{
+    name: string;
+    status: 'success' | 'failed';
+    result?: any;
+  }>;
+  finish_reason?: string;
+  safety_ratings?: any[];
+  usage?: {
+    prompt_tokens?: number;
+    completion_tokens?: number;
+    total_tokens?: number;
+  };
+  edit_count?: number;
+  regeneration_count?: number;
+}
+
+export interface ConversationResponse {
+  conversation: {
+    id: number;
+    session_id: string;
+    context_page: string;
+    created_at: string;
+    updated_at: string;
+  };
+  messages: ChatMessage[];
+  has_more: boolean;
+  total_count: number;
+}
+
+export interface CreateConversationResponse {
+  conversation: {
+    id: number;
+    session_id: string;
+    context_page: string;
+    user_agent: string;
+    created_at: string;
+  };
+}
+
+export interface CreateMessageResponse {
+  message: {
+    id: number;
+    conversation_id: number;
+    role: 'user' | 'assistant';
+    content: string;
+    agent?: string;
+    created_at: string;
+  };
+}
+
+export interface UpdateStatsResponse {
+  stats: {
+    id: number;
+    conversation_id: number;
+    total_messages: number;
+    agent_used: string;
+    response_time: number;
+    updated_at: string;
   };
 }

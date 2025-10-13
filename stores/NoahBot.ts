@@ -1,15 +1,19 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
-import type { ChatMessage, ChatbotConfig } from '@/types';
+import type { ChatMessage, ChatbotConfig, ChatbotAPIResponse, ChatMessageMetadata } from '@/types';
 import { usePageContext } from '@/composables/usePageContext';
 
 export const useChatbotStore = defineStore('chatbot', () => {
-  // État local
   const messages = ref<ChatMessage[]>([]);
   const isOpen = ref(false);
   const isLoading = ref(false);
   const sessionId = ref<string>('');
+  const conversationId = ref<number | null>(null);
   const contextPage = ref<string>('');
+  const hasMoreMessages = ref(false);
+  const isLoadingMore = ref(false);
+  const currentPage = ref(1);
+  const termsAccepted = ref<boolean>(false);
 
   const config = ref<ChatbotConfig>({
     agent: 'auto',
@@ -22,52 +26,260 @@ export const useChatbotStore = defineStore('chatbot', () => {
 
   const { capturePageContext, isContextRelevant } = usePageContext();
 
+  // Vérifier si l'utilisateur a accepté les conditions
+  const checkTermsAcceptance = (): boolean => {
+    try {
+      const accepted = localStorage.getItem('noah_terms_accepted');
+      termsAccepted.value = accepted === 'true';
+      return termsAccepted.value;
+    } catch (error) {
+      console.error('Impossible de vérifier le statut de validation des conditions:', error);
+      return false;
+    }
+  };
+
+  // Accepter les conditions d'utilisation
+  const acceptTerms = async () => {
+    const runtimeConfig = useRuntimeConfig();
+    const pgsBaseAPI = runtimeConfig.public.pgsBaseAPI;
+
+    if (!pgsBaseAPI) {
+      console.warn('API PGS non configuré, stockage en localstorage uniquement');
+      localStorage.setItem('noah_terms_accepted', 'true');
+      termsAccepted.value = true;
+      return;
+    }
+
+    try {
+      if (!sessionId.value) {
+        sessionId.value = generateSessionId();
+      }
+
+      await $fetch(`${pgsBaseAPI}/chatbot/accept-terms`, {
+        method: 'POST',
+        body: {
+          sessionId: sessionId.value,
+          accepted: true,
+          timestamp: new Date().toISOString(),
+        },
+      });
+
+      localStorage.setItem('noah_terms_accepted', 'true');
+      termsAccepted.value = true;
+    } catch (error: any) {
+      console.error('Failed to accept terms:', error);
+      
+      // Stocker localement si l'API n'est pas disponible
+      if (error.statusCode === 400 || error.statusCode === 404 || error.statusCode === 500) {
+        console.warn('API PGS non disponible, stockage en local effectué');
+        localStorage.setItem('noah_terms_accepted', 'true');
+        termsAccepted.value = true;
+      } else {
+        throw error;
+      }
+    }
+  };
+
+  // Réinitialiser l'acceptation des conditions
+  const resetTermsAcceptance = async () => {
+    try {
+      localStorage.removeItem('noah_terms_accepted');
+      termsAccepted.value = false;
+    } catch (error) {
+      console.error('Impossible de rénitialiser les conditions:', error);
+    }
+  };
+
   // Générer un ID de session unique
   const generateSessionId = () => {
     return `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
   };
 
   // Initialiser une nouvelle conversation
-  const initConversation = (page?: string) => {
+  const initConversation = async (page?: string) => {
     if (!sessionId.value) {
       sessionId.value = generateSessionId();
       contextPage.value = page || window.location.pathname;
 
-      // Charger l'historique depuis localStorage
-      loadConversationHistory();
+      checkTermsAcceptance();
+
+      await loadConversationFromAPI();
     }
   };
 
-  // Charger l'historique depuis localStorage
-  const loadConversationHistory = () => {
+  // Charger la conversation depuis l'API
+  const loadConversationFromAPI = async () => {
+    const runtimeConfig = useRuntimeConfig();
+    const pgsBaseAPI = runtimeConfig.public.pgsBaseAPI;
+
+    if (!pgsBaseAPI) {
+      loadConversationHistoryLocal();
+      return;
+    }
+
+    try {
+      const response: any = await $fetch(`${pgsBaseAPI}/chatbot/conversations`, {
+        method: 'GET',
+        params: {
+          session_id: sessionId.value,
+          context_page: contextPage.value,
+          page: 1,
+          limit: 20,
+        },
+      });
+
+      if (response.conversation) {
+        conversationId.value = response.conversation.id;
+        messages.value = response.messages.reverse();
+        hasMoreMessages.value = response.has_more;
+        currentPage.value = 1;
+      } else {
+        loadConversationHistoryLocal();
+      }
+    } catch (error) {
+      console.warn('Impossible de charger la connversation depuis l\'API, utilisation du localStorage:', error);
+      loadConversationHistoryLocal();
+    }
+  };
+
+  // Charger plus de messages
+  const loadMoreMessages = async () => {
+    if (isLoadingMore.value || !hasMoreMessages.value) return;
+
+    const runtimeConfig = useRuntimeConfig();
+    const pgsBaseAPI = runtimeConfig.public.pgsBaseAPI;
+
+    if (!pgsBaseAPI || !conversationId.value) return;
+
+    isLoadingMore.value = true;
+
+    try {
+      const response: any = await $fetch(`${pgsBaseAPI}/chatbot/conversations`, {
+        method: 'GET',
+        params: {
+          conversation_id: conversationId.value,
+          page: currentPage.value + 1,
+          limit: 20,
+        },
+      });
+
+      if (response.messages && response.messages.length > 0) {
+        messages.value = [...response.messages.reverse(), ...messages.value];
+        hasMoreMessages.value = response.has_more;
+        currentPage.value += 1;
+      }
+    } catch (error) {
+      console.error('Impossible de charger plus de messages:', error);
+    } finally {
+      isLoadingMore.value = false;
+    }
+  };
+
+  // Charger l'historique depuis localStorage (fallback)
+  const loadConversationHistoryLocal = () => {
     try {
       const saved = localStorage.getItem(`noah_conversation_${contextPage.value}`);
       if (saved) {
         const parsed = JSON.parse(saved);
         if (parsed.messages && Array.isArray(parsed.messages)) {
-          messages.value = parsed.messages.slice(-50); // Limiter à 50 messages
+          messages.value = parsed.messages.slice(-50);
+          conversationId.value = parsed.conversation_id || null;
         }
       }
     } catch (error) {
-      console.error('Failed to load conversation history:', error);
+      console.error('Impossible de charger l\'historique de la cnversation:', error);
     }
   };
 
   // Sauvegarder l'historique dans localStorage
-  const saveConversationHistory = () => {
+  const saveConversationHistoryLocal = () => {
     try {
       const data = {
-        sessionId: sessionId.value,
-        messages: messages.value.slice(-50), // Limiter à 50 messages
+        session_id: sessionId.value,
+        conversation_id: conversationId.value,
+        messages: messages.value.slice(-50),
         timestamp: new Date().toISOString()
       };
       localStorage.setItem(`noah_conversation_${contextPage.value}`, JSON.stringify(data));
     } catch (error) {
-      console.error('Failed to save conversation history:', error);
+      console.error('Impossible de sauvegarder l\'histrique de la conversation:', error);
     }
   };
 
-  // Détecter l'agent approprié selon le contenu
+  // Créer une conversation dans l'API
+  const createConversationInAPI = async () => {
+    const runtimeConfig = useRuntimeConfig();
+    const pgsBaseAPI = runtimeConfig.public.pgsBaseAPI;
+
+    if (!pgsBaseAPI) return;
+
+    try {
+      const response: any = await $fetch(`${pgsBaseAPI}/chatbot/create-conversation`, {
+        method: 'POST',
+        body: {
+          session_id: sessionId.value,
+          context_page: contextPage.value,
+          user_agent: navigator.userAgent,
+        },
+      });
+
+      conversationId.value = response.conversation.id;
+      return response.conversation;
+    } catch (error) {
+      console.error('Impossible de créer la conversation:', error);
+    }
+  };
+
+  // Créer un message dans l'API
+  const createMessageInAPI = async (message: ChatMessage) => {
+    const runtimeConfig = useRuntimeConfig();
+    const pgsBaseAPI = runtimeConfig.public.pgsBaseAPI;
+
+    if (!pgsBaseAPI || !conversationId.value) return;
+
+    try {
+      await $fetch(`${pgsBaseAPI}/chatbot/create-message`, {
+        method: 'POST',
+        body: {
+          conversation_id: conversationId.value,
+          role: message.role,
+          content: message.content,
+          agent: message.agent,
+          metadata: message.metadata,
+          images: message.images,
+        },
+      });
+    } catch (error) {
+      console.warn('Impossible d\'ajouter un message:', error);
+    }
+  };
+
+  // Mettre à jour les statistiques
+  const updateStatsInAPI = async (statsData: {
+    total_messages: number;
+    agent_used: string;
+    response_time?: number;
+    tokens_used?: number;
+  }) => {
+    const runtimeConfig = useRuntimeConfig();
+    const pgsBaseAPI = runtimeConfig.public.pgsBaseAPI;
+
+    if (!pgsBaseAPI || !conversationId.value) return;
+
+    try {
+      await $fetch(`${pgsBaseAPI}/chatbot/update-stats`, {
+        method: 'POST',
+        body: {
+          conversation_id: conversationId.value,
+          ...statsData,
+        },
+      });
+    } catch (error) {
+      console.warn('Impossible de mettre à jour les statistiques:', error);
+    }
+  };
+
+  // Détection automatique du meilleur agent
   const detectBestAgent = (content: string): 'mistral' | 'gemini' => {
     const lowerContent = content.toLowerCase();
 
@@ -102,11 +314,18 @@ export const useChatbotStore = defineStore('chatbot', () => {
 
   // Envoyer un message
   const sendMessage = async (content: string, forcedAgent?: 'mistral' | 'gemini') => {
-    if (!sessionId.value) {
-      initConversation();
+    if (!termsAccepted.value) {
+      throw new Error('Terms not accepted');
     }
 
-    // Ajouter le message utilisateur
+    if (!sessionId.value) {
+      await initConversation();
+    }
+
+    if (!conversationId.value) {
+      await createConversationInAPI();
+    }
+
     const userMessage: ChatMessage = {
       id: `user_${Date.now()}`,
       role: 'user',
@@ -116,6 +335,8 @@ export const useChatbotStore = defineStore('chatbot', () => {
 
     messages.value.push(userMessage);
     isLoading.value = true;
+
+    await createMessageInAPI(userMessage);
 
     try {
       // Déterminer l'agent à utiliser
@@ -142,9 +363,7 @@ export const useChatbotStore = defineStore('chatbot', () => {
         ? '/api/chatbot/gemini'
         : '/api/chatbot/mistral';
 
-      console.log(`Envoi vers endpoint: ${endpoint}`);
-
-      const response = await $fetch(endpoint, {
+      const response = await $fetch<ChatbotAPIResponse>(endpoint, {
         method: 'POST',
         body: {
           messages: messages.value.map(m => ({
@@ -161,7 +380,7 @@ export const useChatbotStore = defineStore('chatbot', () => {
       const assistantMessage: ChatMessage = {
         id: `assistant_${Date.now()}`,
         role: 'assistant',
-        content: response.content,
+        content: response.content || '',
         agent: selectedAgent,
         metadata: response.metadata,
         images: response.images,
@@ -170,11 +389,16 @@ export const useChatbotStore = defineStore('chatbot', () => {
 
       messages.value.push(assistantMessage);
 
-      // Sauvegarder dans localStorage
-      saveConversationHistory();
+      await createMessageInAPI(assistantMessage);
 
-      // Optionnel: sauvegarder dans PGS API si nécessaire plus tard
-      await saveConversationToPGSAPI();
+      await updateStatsInAPI({
+        total_messages: messages.value.length,
+        agent_used: selectedAgent,
+        response_time: 0,
+        tokens_used: response.metadata?.usage?.total_tokens || 0,
+      });
+
+      saveConversationHistoryLocal();
 
       return assistantMessage;
     } catch (error: any) {
@@ -184,9 +408,9 @@ export const useChatbotStore = defineStore('chatbot', () => {
       let errorContent = 'Désolé, une erreur est survenue. Veuillez réessayer.';
 
       if (error.statusCode === 429) {
-        errorContent = 'Limite de requêtes atteinte. Veuillez patienter quelques instants.';
+        errorContent = 'Limite de requêtes atteinte. Veuillez patienter quelques instants ou changer d\'agent.';
       } else if (error.statusCode === 500) {
-        errorContent = 'Erreur de connexion avec le service IA. Veuillez vérifier votre configuration API.';
+        errorContent = 'Impossible de joindre le service IA. Veuillez contacter le support pour le lui notifier.';
       } else if (error.message) {
         errorContent = `Erreur: ${error.message}`;
       }
@@ -212,8 +436,6 @@ export const useChatbotStore = defineStore('chatbot', () => {
     if (messageIndex === -1) return;
 
     const messageToRegenerate = messages.value[messageIndex];
-
-    // Récupérer le compteur actuel
     const currentRegenerationCount = messageToRegenerate.metadata?.regeneration_count || 0;
 
     // Trouver le message utilisateur précédent
@@ -246,8 +468,7 @@ export const useChatbotStore = defineStore('chatbot', () => {
         messages.value[lastIndex] = newMessage;
       }
 
-      // Sauvegarder
-      saveConversationHistory();
+      saveConversationHistoryLocal();
     }
   };
 
@@ -257,8 +478,6 @@ export const useChatbotStore = defineStore('chatbot', () => {
     if (messageIndex === -1) return;
 
     const originalMessage = messages.value[messageIndex];
-
-    // Incrémenter le compteur de modification
     const editCount = (originalMessage.metadata?.edit_count || 0) + 1;
 
     // Supprimer ce message et tous les suivants
@@ -277,8 +496,7 @@ export const useChatbotStore = defineStore('chatbot', () => {
 
     messages.value.push(userMessage);
 
-    // Sauvegarder avant d'envoyer
-    saveConversationHistory();
+    saveConversationHistoryLocal();
 
     // Envoyer le nouveau message
     await sendMessage(newContent);
@@ -293,32 +511,38 @@ export const useChatbotStore = defineStore('chatbot', () => {
       await navigator.clipboard.writeText(message.content);
       return true;
     } catch (error) {
-      console.error('Failed to copy message:', error);
+      console.error('Impossible de copier le message:', error);
       return false;
     }
   };
 
-  // Sauvegarder la conversation
-  const saveConversationToPGSAPI = async () => {
-    const config = useRuntimeConfig();
-    const pgsBaseAPI = config.public.pgsBaseAPI;
+  // Effacer toutes les conversations de l'utilisateur
+  const deleteAllConversations = async () => {
+    const runtimeConfig = useRuntimeConfig();
+    const pgsBaseAPI = runtimeConfig.public.pgsBaseAPI;
 
-    // Vérifier la config et le nombre de messages
-    if (!pgsBaseAPI) return; // Pas d'API configurée
-    if (!messages.value || messages.value.length <= 2) return; // Moins de 3 messages, on ne sauvegarde pas
-
-    try {
-      await $fetch(`${pgsBaseAPI}/chatbot/conversations`, {
-        method: 'POST',
-        body: {
-          session_id: sessionId.value,
-          context_page: contextPage.value,
-          messages: messages.value,
-        },
-      });
-    } catch (error) {
-      console.warn('Failed to save conversation to PGS API:', error);
+    if (pgsBaseAPI) {
+      try {
+        await $fetch(`${pgsBaseAPI}/chatbot/delete-conversations`, {
+          method: 'DELETE',
+          body: {
+            session_id: sessionId.value,
+          },
+        });
+      } catch (error) {
+        console.error('Impossible de supprimer toutes les conversation depuis l\'API:', error);
+      }
     }
+
+    // Effacer le localStorage
+    const keys = Object.keys(localStorage);
+    keys.forEach(key => {
+      if (key.startsWith('noah_conversation_')) {
+        localStorage.removeItem(key);
+      }
+    });
+
+    resetConversation();
   };
 
   // Toggle chatbot
@@ -330,13 +554,18 @@ export const useChatbotStore = defineStore('chatbot', () => {
   const resetConversation = () => {
     messages.value = [];
     sessionId.value = '';
+    conversationId.value = null;
     contextPage.value = '';
+    currentPage.value = 1;
+    hasMoreMessages.value = false;
 
     // Effacer localStorage
     try {
-      localStorage.removeItem(`noah_conversation_${contextPage.value}`);
+      if (contextPage.value) {
+        localStorage.removeItem(`noah_conversation_${contextPage.value}`);
+      }
     } catch (error) {
-      console.error('Failed to clear localStorage:', error);
+      console.error('Impossible de nettoyer le localStorage:', error);
     }
   };
 
@@ -344,8 +573,12 @@ export const useChatbotStore = defineStore('chatbot', () => {
     messages,
     isOpen,
     isLoading,
+    isLoadingMore,
+    hasMoreMessages,
     sessionId,
+    conversationId,
     config,
+    termsAccepted,
     initConversation,
     sendMessage,
     regenerateMessage,
@@ -353,5 +586,10 @@ export const useChatbotStore = defineStore('chatbot', () => {
     copyMessage,
     toggleChatbot,
     resetConversation,
+    checkTermsAcceptance,
+    acceptTerms,
+    resetTermsAcceptance,
+    loadMoreMessages,
+    deleteAllConversations,
   };
 });

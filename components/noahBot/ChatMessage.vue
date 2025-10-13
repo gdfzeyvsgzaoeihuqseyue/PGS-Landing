@@ -27,6 +27,13 @@
               {{ message.agent === 'mistral' ? '⚡ Mimic' : '🌟 Genius' }}
             </span>
 
+            <!-- Streaming indicator -->
+            <span v-if="message.isStreaming"
+              class="px-2 py-0.5 bg-blue-100 text-blue-700 rounded-full text-xs flex items-center">
+              <span class="w-2 h-2 bg-blue-500 rounded-full animate-pulse mr-1"></span>
+              En cours...
+            </span>
+
             <!-- Indicateur de régénération -->
             <span v-if="message.metadata?.regeneration_count && message.metadata.regeneration_count > 0"
               class="px-2 py-0.5 bg-orange-100 text-orange-700 rounded-full text-xs">
@@ -54,11 +61,13 @@
           <!-- Reflexion -->
           <ThinkingSteps v-if="message.metadata?.thinking_steps" :steps="message.metadata.thinking_steps" />
 
-          <!-- Text Markdown -->
+          <!-- Text Markdown avec effet streaming -->
           <div v-if="message.role === 'user'" class="whitespace-pre-wrap break-words">
             {{ message.content }}
           </div>
-          <MarkdownRenderer v-else :content="message.content" />
+          <div v-else>
+            <MarkdownRenderer :content="displayedContent" />
+          </div>
 
           <!-- Web Search -->
           <div v-if="message.metadata?.web_search_results && message.metadata.web_search_results.length > 0"
@@ -103,6 +112,7 @@
 </template>
 
 <script setup lang="ts">
+import { ref, computed, watch, onMounted } from 'vue';
 import type { ChatMessage } from '@/types';
 import { IconUser, IconSearch } from '@tabler/icons-vue';
 import MarkdownRenderer from './MarkdownRenderer.vue';
@@ -118,10 +128,50 @@ const props = defineProps<{
   isLastUserMessage?: boolean;
   isLastAssistantMessage?: boolean;
 }>();
+
 const emit = defineEmits<{
   regenerate: [messageId: string];
   edit: [messageId: string, newContent: string];
 }>();
+
+// Streaming effect
+const displayedContent = ref('');
+const streamingIndex = ref(0);
+
+// Si le message est en streaming, afficher progressivement
+watch(() => props.message.isStreaming, (isStreaming) => {
+  if (isStreaming) {
+    displayedContent.value = '';
+    streamingIndex.value = 0;
+    streamMessage();
+  } else {
+    displayedContent.value = props.message.content;
+  }
+}, { immediate: true });
+
+const streamMessage = () => {
+  if (!props.message.isStreaming) {
+    displayedContent.value = props.message.content;
+    return;
+  }
+
+  const interval = setInterval(() => {
+    if (streamingIndex.value < props.message.content.length) {
+      displayedContent.value += props.message.content[streamingIndex.value];
+      streamingIndex.value++;
+    } else {
+      clearInterval(interval);
+    }
+  }, 20); // 20ms par caractère pour un effet fluide
+};
+
+onMounted(() => {
+  if (props.message.isStreaming) {
+    streamMessage();
+  } else {
+    displayedContent.value = props.message.content;
+  }
+});
 
 const formatTime = (timestamp: string) => {
   const date = new Date(timestamp);
