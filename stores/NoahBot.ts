@@ -54,13 +54,14 @@ export const useChatbotStore = defineStore('chatbot', () => {
       if (!sessionId.value) {
         sessionId.value = generateSessionId();
       }
+      if (!conversationId.value) {
+        await createConversationInAPI();
+      }
 
       await $fetch(`${pgsBaseAPI}/chatbot/accept-terms`, {
         method: 'POST',
         body: {
-          sessionId: sessionId.value,
-          accepted: true,
-          timestamp: new Date().toISOString(),
+          conversationId: conversationId.value,
         },
       });
 
@@ -68,7 +69,7 @@ export const useChatbotStore = defineStore('chatbot', () => {
       termsAccepted.value = true;
     } catch (error: any) {
       console.error('Failed to accept terms:', error);
-      
+
       // Stocker localement si l'API n'est pas disponible
       if (error.statusCode === 400 || error.statusCode === 404 || error.statusCode === 500) {
         console.warn('API PGS non disponible, stockage en local effectué');
@@ -217,16 +218,18 @@ export const useChatbotStore = defineStore('chatbot', () => {
       const response: any = await $fetch(`${pgsBaseAPI}/chatbot/create-conversation`, {
         method: 'POST',
         body: {
-          session_id: sessionId.value,
-          context_page: contextPage.value,
-          user_agent: navigator.userAgent,
+          sessionId: sessionId.value,
+          siteIdentifier: 'pgs',
+          contextPage: contextPage.value,
+          termsAccepted: termsAccepted.value,
         },
       });
 
-      conversationId.value = response.conversation.id;
-      return response.conversation;
+      conversationId.value = response.data.id;
+      return response.data;
     } catch (error) {
       console.error('Impossible de créer la conversation:', error);
+      throw error;
     }
   };
 
@@ -241,12 +244,13 @@ export const useChatbotStore = defineStore('chatbot', () => {
       await $fetch(`${pgsBaseAPI}/chatbot/create-message`, {
         method: 'POST',
         body: {
-          conversation_id: conversationId.value,
+          conversationId: conversationId.value,
           role: message.role,
           content: message.content,
           agent: message.agent,
           metadata: message.metadata,
           images: message.images,
+          messageTimestamp: message.timestamp,
         },
       });
     } catch (error) {

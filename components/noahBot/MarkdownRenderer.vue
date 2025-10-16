@@ -25,24 +25,26 @@ const configureMarked = () => {
 
   renderer.code = ({ text, lang }: { text: string; lang?: string }) => {
     const codeId = `code-${Math.random().toString(36).substr(2, 9)}`;
+    const displayLang = lang || 'text';
 
+    let highlightedCode = '';
     if (lang && hljs.getLanguage(lang)) {
       try {
-        const highlighted = hljs.highlight(text, { language: lang }).value;
-        return `
-          <div class="code-block-wrapper relative group" data-code-id="${codeId}">
-            <pre class="code-block-content"><code class="hljs language-${lang}">${highlighted}</code></pre>
-            <div class="code-block-actions"></div>
-          </div>
-        `;
+        highlightedCode = hljs.highlight(text, { language: lang }).value;
       } catch (err) {
-        console.error('Highlight error:', err);
+        console.error('Highlight error for language', lang, ':', err);
+        highlightedCode = hljs.highlightAuto(text).value;
       }
+    } else {
+      highlightedCode = hljs.highlightAuto(text).value;
     }
-    const highlighted = hljs.highlightAuto(text).value;
+
+    // Convertir le nom du langage pour une meilleure lisibilité
+    const formattedLang = displayLang.charAt(0).toLowerCase() + displayLang.slice(1);
+
     return `
       <div class="code-block-wrapper relative group" data-code-id="${codeId}">
-        <pre class="code-block-content"><code class="hljs">${highlighted}</code></pre>
+        <div class="code-language-label">${formattedLang}</div> <pre class="code-block-content"><code class="hljs language-${displayLang}">${highlightedCode}</code></pre>
         <div class="code-block-actions"></div>
       </div>
     `;
@@ -142,7 +144,7 @@ const attachCodeBlockActions = () => {
           const url = URL.createObjectURL(blob);
           const a = document.createElement('a');
           a.href = url;
-          a.download = `NOAHAI-Code-${Date.now()}.${fileExtension}`;
+          a.download = `noah-${fileExtension}-${Date.now()}.${fileExtension}`;
           document.body.appendChild(a);
           a.click();
           document.body.removeChild(a);
@@ -290,5 +292,35 @@ const sanitizedHtml = computed(() => {
 
 .markdown-content :deep(em) {
   @apply italic;
+}
+
+.markdown-content :deep(.code-language-label) {
+  @apply absolute top-2 left-2 bg-gray-700 text-white text-xs px-3 py-1 rounded;
+  z-index: 10;
+  font-family: 'Roboto Mono', monospace;
+}
+
+/* Ajustement pour le positionnement des boutons afin qu'ils ne se superposent pas au label */
+.markdown-content :deep(.code-block-actions) {
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding-top: 6px;
+  padding-right: 6px;
+  display: flex;
+  gap: 8px;
+  z-index: 11;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+/* Assurez-vous que les boutons apparaissent au survol du wrapper */
+.markdown-content :deep(.code-block-wrapper:hover .code-block-actions) {
+  opacity: 1;
+}
+
+/* Ajustement du padding-top pour le code-block-content pour laisser de la place au label */
+.markdown-content :deep(.code-block-content) {
+  padding-top: 35px;
 }
 </style>

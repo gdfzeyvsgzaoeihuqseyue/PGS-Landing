@@ -1,6 +1,6 @@
 <template>
-  <!-- Modal de consentement -->
-  <ConsentModal />
+  <!-- Modal de consentement avec référence -->
+  <ConsentModal ref="consentModalRef" />
 
   <!-- Modale du Chatbot -->
   <Transition name="modal-fade">
@@ -43,7 +43,8 @@
           <div class="bg-gray-50 px-4 py-2 border-b flex items-center justify-between text-sm">
             <span class="text-gray-600">Agent:</span>
             <select v-model="chatbotStore.config.agent"
-              class="px-3 py-1 border rounded-lg text-sm focus:ring-2 focus:ring-primary outline-none">
+              :disabled="!chatbotStore.termsAccepted"
+              class="px-3 py-1 border rounded-lg text-sm focus:ring-2 focus:ring-primary outline-none disabled:opacity-50 disabled:cursor-not-allowed">
               <option value="auto">Auto</option>
               <option value="mistral">Mimic</option>
               <option value="gemini">Genius</option>
@@ -88,8 +89,8 @@
               <p class="font-semibold mb-2">Bonjour! Comment puis-je vous aider?</p>
               <p class="text-sm">Posez-moi des questions sur PRO GESTION SOFT</p>
 
-              <!-- Suggestions dynamiques -->
-              <div class="mt-6 space-y-2">
+              <!-- Suggestions dynamiques (uniquement si termes acceptés) -->
+              <div v-if="chatbotStore.termsAccepted" class="mt-6 space-y-2">
                 <button v-for="(suggestion, index) in currentSuggestions" :key="index"
                   @click="sendQuickMessage(suggestion)"
                   class="w-full text-left px-4 py-2 bg-white rounded-lg hover:bg-gray-100 transition text-sm">
@@ -119,16 +120,16 @@
             </div>
           </div>
 
-          <!-- Input Area -->
-          <div class="p-4 bg-white border-t">
+          <!-- Input Area - Version AVEC conditions acceptées -->
+          <div v-if="chatbotStore.termsAccepted" class="p-4 bg-white border-t">
             <form @submit.prevent="handleSendMessage" class="flex items-end space-x-2">
               <textarea v-model="messageInput" ref="textareaRef" placeholder="Demander à NOAH..."
                 class="flex-1 px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary outline-none resize-none leading-relaxed max-h-[150px] overflow-y-auto"
-                :disabled="chatbotStore.isLoading || !chatbotStore.termsAccepted" rows="1" @keydown="handleKeyDown"
+                :disabled="chatbotStore.isLoading" rows="1" @keydown="handleKeyDown"
                 @input="autoResize"></textarea>
 
               <button type="submit"
-                :disabled="!messageInput.trim() || chatbotStore.isLoading || !chatbotStore.termsAccepted"
+                :disabled="!messageInput.trim() || chatbotStore.isLoading"
                 class="bg-primary text-white px-4 h-[42px] rounded-lg hover:bg-secondary transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center">
                 <IconSend class="w-5 h-5" />
               </button>
@@ -138,6 +139,27 @@
               <button @click="showResetConfirmation = true" class="hover:text-primary transition">
                 <IconRestore class="w-4 h-4" />
               </button>
+            </div>
+          </div>
+
+          <!-- Input Area - Version SANS conditions acceptées (AVERTISSEMENT) -->
+          <div v-else class="p-4 bg-orange-50 border-t border-orange-200">
+            <div class="flex items-start space-x-3">
+              <IconAlertCircle class="w-6 h-6 text-orange-600 flex-shrink-0 mt-0.5" />
+              <div class="flex-1">
+                <p class="text-sm text-orange-800 font-medium mb-2">
+                  Conditions d'utilisation requises
+                </p>
+                <p class="text-xs text-orange-700 mb-3">
+                  Vous devez accepter les conditions d'utilisation pour utiliser NOAH AI et commencer à discuter.
+                </p>
+                <button 
+                  @click="openConsentModal"
+                  class="px-4 py-2 bg-orange-600 text-white rounded-lg text-sm font-medium hover:bg-orange-700 transition shadow-sm flex items-center space-x-2">
+                  <IconShieldCheck class="w-4 h-4" />
+                  <span>Voir et accepter les conditions</span>
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -191,7 +213,7 @@ import { ref, nextTick, onMounted, watch } from 'vue';
 import { useChatbotStore } from '@/stores/NoahBot';
 import { getRandomSuggestions } from '@/utils/chatSuggestions';
 import { ChatMessage } from '@/components/noahBot'
-import { IconX, IconSparkles, IconSend, IconRestore, IconCheck, IconAlertTriangle, IconSettings } from '@tabler/icons-vue';
+import { IconX, IconSparkles, IconSend, IconRestore, IconCheck, IconAlertTriangle, IconSettings, IconAlertCircle, IconShieldCheck } from '@tabler/icons-vue';
 import ConsentModal from './ConsentModal.vue';
 import BotSettingsPanel from './BotSettingsPanel.vue';
 import { useSharedFiles } from '~/stores/sharedFiles';
@@ -208,6 +230,7 @@ const notificationMessage = ref('');
 const showResetConfirmation = ref(false);
 const showSettingsPanel = ref(false);
 const scrollContainer = ref<HTMLElement | null>(null);
+const consentModalRef = ref<InstanceType<typeof ConsentModal> | null>(null);
 
 const isLastUserMessage = (index: number) => {
   const messages = chatbotStore.messages;
@@ -227,6 +250,13 @@ const isLastAssistantMessage = (index: number) => {
     }
   }
   return false;
+};
+
+// Fonction pour ouvrir le modal de consentement
+const openConsentModal = () => {
+  if (consentModalRef.value) {
+    consentModalRef.value.open();
+  }
 };
 
 // Détecter le scroll vers le haut pour charger plus de messages
@@ -303,7 +333,7 @@ const autoResize = () => {
 };
 
 const handleSendMessage = async () => {
-  if (!messageInput.value.trim() || chatbotStore.isLoading) return;
+  if (!messageInput.value.trim() || chatbotStore.isLoading || !chatbotStore.termsAccepted) return;
 
   const message = messageInput.value;
   messageInput.value = '';
@@ -322,6 +352,7 @@ const handleSendMessage = async () => {
 };
 
 const sendQuickMessage = async (message: string) => {
+  if (!chatbotStore.termsAccepted) return;
   messageInput.value = message;
   await handleSendMessage();
 };

@@ -70,7 +70,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, watch } from 'vue';
 import { useChatbotStore } from '@/stores/NoahBot';
 import { IconShieldCheck, IconInfoCircle, IconDatabase, IconLock, IconAlertCircle } from '@tabler/icons-vue';
 
@@ -82,13 +82,20 @@ const emit = defineEmits<{
   refused: [];
 }>();
 
-onMounted(() => {
-  // Afficher la modal si les conditions n'ont pas été acceptées
-  const termsAccepted = chatbotStore.checkTermsAcceptance();
-  if (!termsAccepted) {
-    showModal.value = true;
+// Observer l'ouverture du chatbot pour afficher le modal si nécessaire
+watch(() => chatbotStore.isOpen, (isOpen) => {
+  if (isOpen) {
+    const termsAccepted = chatbotStore.checkTermsAcceptance();
+    if (!termsAccepted) {
+      showModal.value = true;
+    }
   }
 });
+
+// Fonction pour ouvrir manuellement le modal (depuis les paramètres)
+const open = () => {
+  showModal.value = true;
+};
 
 const handleAccept = async () => {
   try {
@@ -106,6 +113,11 @@ const handleRefuse = () => {
   chatbotStore.toggleChatbot();
   emit('refused');
 };
+
+// Exposer la méthode open pour l'appeler depuis le parent
+defineExpose({
+  open
+});
 </script>
 
 <style scoped>
