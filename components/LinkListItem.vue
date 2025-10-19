@@ -16,7 +16,7 @@
               {{ link.name }}
             </NuxtLink>
           </h3>
-          <span class="text-xs font-medium text-primary bg-primary/10 px-2 py-1 rounded-full ml-2">
+          <span class="text-xs font-medium bg-primary/10 text-primary px-2 py-1 rounded-full ml-2">
             {{ link.platform?.name }}
           </span>
         </div>
@@ -89,7 +89,7 @@ const copyUrl = async () => {
 
 const handleImageError = (event: Event, platformName: string) => {
   const target = event.target as HTMLImageElement;
-  target.src = `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(platformName)}`;
+  target.src = `https://api.dicebear.com/7.x/icons/svg?seed=${encodeURIComponent(platformName)}`;
   target.alt = `Logo de ${platformName} non disponible`;
 };
 </script>

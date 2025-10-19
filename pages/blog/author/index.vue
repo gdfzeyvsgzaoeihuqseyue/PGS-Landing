@@ -129,8 +129,10 @@
                 class="px-3 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50">
                 Précédent
               </button>
-              <button v-for="page in visiblePages" :key="page" @click="currentPage = page" :class="[page === currentPage ? 'bg-primary border-primary text-White' : 'bg-primary border-primary text-primary',
-                'px-4 py-2 border-t border-b text-sm font-medium']">
+              <button v-for="page in visiblePages" :key="page" @click="currentPage = page" :class="[
+                page === currentPage ? 'bg-blue-50 border-blue-500 text-blue-600' : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50',
+                'px-4 py-2 border-t border-b text-sm font-medium'
+              ]">
                 {{ page }}
               </button>
               <button @click="currentPage++" :disabled="currentPage === totalPages"
@@ -148,18 +150,15 @@
 <script setup lang="ts">
 import { ref, computed, watch, onMounted } from 'vue'
 import { useAuthorStore, useArticleStore } from '@/stores'
-import { IconArrowLeft, IconLoader, IconFilter, IconX } from '@tabler/icons-vue' // Import IconFilter and IconX
+import { IconArrowLeft, IconLoader, IconFilter, IconX } from '@tabler/icons-vue'
 
-// Stores
 const authorStore = useAuthorStore();
 const articleStore = useArticleStore();
-
-// --- Variables réactives ---
 const searchQuery = ref('')
 const sortAuthorsBy = ref('name_asc')
 const currentPage = ref(1)
 const itemsPerPage = 9
-const showSidebar = ref(false); // Ajout de l'état pour la visibilité de la sidebar
+const showSidebar = ref(false);
 
 // Fetch data on component mount
 onMounted(async () => {
@@ -170,7 +169,7 @@ onMounted(async () => {
 });
 
 // Nombre d’articles un auteur
-const getArticleCountForAuthor = (authorId: string) => { // ID est maintenant string
+const getArticleCountForAuthor = (authorId: string) => {
   return articleStore.articles.filter(article => article.author.id === authorId).length
 }
 
@@ -209,7 +208,7 @@ const filteredAndSortedAuthors = computed(() => {
 
 // Total articles par auteur
 const authorStatistics = computed(() => {
-  const statsMap: { [key: string]: number } = {} // ID est maintenant string
+  const statsMap: { [key: string]: number } = {}
 
   articleStore.articles.forEach(article => {
     statsMap[article.author.id] = (statsMap[article.author.id] || 0) + 1

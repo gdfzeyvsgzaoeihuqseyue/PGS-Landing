@@ -155,13 +155,11 @@ import { IconArrowLeft, IconLoader, IconFilter, IconX } from '@tabler/icons-vue'
 // Stores
 const categoryStore = useCategoryStore();
 const articleStore = useArticleStore();
-
-// État réactif
 const searchQuery = ref('')
 const sortCategoriesBy = ref('name_asc')
 const currentPage = ref(1)
 const itemsPerPage = 9
-const showSidebar = ref(false); // Ajout de l'état pour la visibilité de la sidebar
+const showSidebar = ref(false);
 
 // Fetch data on component mount
 onMounted(async () => {
@@ -172,7 +170,7 @@ onMounted(async () => {
 });
 
 // Articles pour une catégorie donnée
-const getArticleCountForCategory = (categoryId: string) => { // ID est maintenant string
+const getArticleCountForCategory = (categoryId: string) => {
   return articleStore.articles.filter(article => article.category.id === categoryId).length
 }
 
@@ -210,7 +208,7 @@ const filteredAndSortedCategories = computed(() => {
 
 // Statistiques par catégorie
 const categoryStatistics = computed(() => {
-  const statsMap: { [key: string]: number } = {} // ID est maintenant string
+  const statsMap: { [key: string]: number } = {}
 
   articleStore.articles.forEach(article => {
     statsMap[article.category.id] = (statsMap[article.category.id] || 0) + 1

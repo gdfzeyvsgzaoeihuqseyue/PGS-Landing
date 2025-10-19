@@ -6,7 +6,15 @@
         <img :src="solution.logo" :alt="solution.name" class="h-12 w-12 object-contain rounded-full"
           @error="(e) => handleImageError(e, solution.name)" />
       </div>
-      <h3 class="text-xl font-bold text-gray-900">{{ solution.name }}</h3>
+
+      <a :href="solution.disabled ? undefined : solution.ctaLink"
+        class="text-xl font-bold text-gray-900 transition hover:underline"
+        :class="solution.disabled ? 'cursor-not-allowed hover:no-underline' : 'cursor-pointer'" :title="solution.disabled
+          ? `${solution.name} est indisponible.`
+          : `Accéder à ${solution.name}`"
+        @click.prevent="!solution.disabled && $router.push(`/solutions/${solution.slug}`)">
+        {{ solution.name }}
+      </a>
     </div>
 
     <p class="text-sm text-gray-600 mb-6 leading-relaxed">
@@ -16,7 +24,6 @@
     <NuxtLink :to="`/solutions/${solution.slug}`"
       class="inline-flex items-center mx-auto px-4 py-2 border rounded-lg text-base font-medium hover:text-secondary hover:bg-gray-50"
       :class="solution.disabled ? 'text-warning cursor-help' : 'text-primary'"
-      :title="solution.disabled ? `${solution.name} est actuellement indisponible, cliquez pour en savoir plus.` : null"
       @click.prevent="solution.disabled ? null : $router.push(`/solutions/${solution.slug}`)">
       Savoir plus sur {{ solution.name }}
       <IconArrowRight class="w-6 h-6 ml-2" />
@@ -40,7 +47,7 @@ const solutionStore = useSolutionStore();
 // Erreurs de chargement d'image
 const handleImageError = (e: Event, name: string) => {
   const img = e.target as HTMLImageElement;
-  img.src = `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(name)}&radius=50`;
+  img.src = `https://api.dicebear.com/7.x/icons/svg?seed=${encodeURIComponent(name)}`;
   img.alt = `Logo de ${name} non disponible`;
 };
 

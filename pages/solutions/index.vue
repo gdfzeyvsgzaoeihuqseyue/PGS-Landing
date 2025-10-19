@@ -134,7 +134,7 @@
               </div>
 
               <div class="flex items-center mb-6 space-x-2">
-                <img :src="solution.logo" :alt="solution.name" class="h-[3em] w-auto scale-[1.5] mr-4"
+                <img :src="solution.logo" :alt="solution.name" class="h-[3em] w-auto scale-[1.5] mr-4 rounded-full"
                   @error="(e) => handleImageError(e, solution.name)" />
                 <div>
                   <h2 class="text-lg sm:text-xl font-bold">{{ solution.name }}</h2>
@@ -173,7 +173,7 @@ const solutionStore = useSolutionStore();
 
 const handleImageError = (e: Event, name: string) => {
   const img = e.target as HTMLImageElement;
-  img.src = `https://placehold.co/40x40/E0F2FE/0284C7?text=${encodeURIComponent(name)}`;
+  img.src = `https://api.dicebear.com/7.x/icons/svg?seed=${encodeURIComponent(name)}`;
   img.alt = `Logo de ${name} non disponible`;
 };
 

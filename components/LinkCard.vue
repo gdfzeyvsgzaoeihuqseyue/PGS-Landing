@@ -9,13 +9,13 @@
         <div class="flex items-center gap-2">
           <img :src="link.platform.logo" :alt="`Logo ${link.platform?.name}`" class="w-5 h-5 rounded-full"
             @error="handleImageError($event, link.platform?.name || 'Platform')" />
-          <span class="text-xs font-medium text-primary bg-primary/10 px-2 py-1 rounded-full">
+          <span class="text-xs font-medium bg-primary/10 text-primary px-2 py-1 rounded-full">
             {{ link.platform?.name }}
           </span>
         </div>
       </div>
 
-      <!-- Nom du lien -->
+      <!-- Lien -->
       <h3 class="text-lg font-semibold text-gray-900 mb-2 hover:text-primary transition-colors">
         <NuxtLink :to="`/wiki/${link.slug}`">
           {{ link.name }}
@@ -90,7 +90,7 @@ const copyUrl = async () => {
 
 const handleImageError = (event: Event, platformName: string) => {
   const target = event.target as HTMLImageElement;
-  target.src = `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(platformName)}`;
+  target.src = `https://api.dicebear.com/7.x/icons/svg?seed=${encodeURIComponent(platformName)}`;
   target.alt = `Logo de ${platformName} non disponible`;
 };
 </script>

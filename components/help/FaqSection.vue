@@ -22,10 +22,9 @@
         v-for="(item, index) in items" :key="item.id" @click="$emit('toggle', index)">
         <!-- Badge plateforme -->
         <div class="mb-2 flex justify-between items-center text-xs font-semibold">
-          <!-- Affichage logo + nom plateforme -->
           <div class="flex items-center gap-2">
-            <img :src="item.platform?.logo" :alt="`Logo ${item.platform.name}`" class="w-5 h-5 rounded-full" />
-            <span class="text-xs font-medium text-primary bg-primary/30 px-2 py-1 rounded-full">
+            <img :src="item.platform?.logo" :alt="`Logo ${item.platform.name}`" class="w-5 h-5 rounded-full" @error="handleImageError($event, item.platform?.name || 'Platform')" />
+            <span class="text-xs font-medium bg-primary/10 text-primary px-2 py-1 rounded-full">
               {{ item.platform.name }}
             </span>
           </div>
@@ -67,4 +66,10 @@ defineEmits<{
   toggle: [index: number];
   toggleShowAll: [];
 }>();
+
+const handleImageError = (event: Event, platformName: string) => {
+  const target = event.target as HTMLImageElement;
+  target.src = `https://api.dicebear.com/7.x/icons/svg?seed=${encodeURIComponent(platformName)}`;
+  target.alt = `Logo de ${platformName} non disponible`;
+};
 </script>

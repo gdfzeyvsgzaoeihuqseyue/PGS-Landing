@@ -53,11 +53,9 @@ import { IconFilter } from '@tabler/icons-vue';
 import { DocSection, HelpSidebar, FaqSection, TutoSection  } from '@/components/help';
 
 const solutionStore = useSolutionStore();
-
-// Reactive variable for items to scroll/display
 const itemsPerScroll = ref(3);
 
-// Function to update itemsPerScroll based on screen width
+// ItemsPerScroll selon l'écrah
 const updateItemsPerScroll = () => {
   if (window.innerWidth < 640) {
     itemsPerScroll.value = 1;
@@ -66,7 +64,7 @@ const updateItemsPerScroll = () => {
   }
 };
 
-// Fetch all solutions, docs, faqs, tutorials on component mount
+// Toutes les solutions
 onMounted(async () => {
   await Promise.all([
     solutionStore.fetchSolutions(undefined, undefined, true),
@@ -75,7 +73,6 @@ onMounted(async () => {
     solutionStore.fetchPlateformTutorials(undefined, undefined, true),
   ]);
 
-  // Set initial value and add resize listener
   updateItemsPerScroll();
   window.addEventListener('resize', updateItemsPerScroll);
 });
@@ -85,7 +82,7 @@ onUnmounted(() => {
   window.removeEventListener('resize', updateItemsPerScroll);
 });
 
-// --- Sidebar and Filters ---
+// Sidebar et filters
 const showSidebar = ref(false);
 const filters = ref({
   docs: { search: '', category: '' },
@@ -93,7 +90,7 @@ const filters = ref({
   tutorials: { search: '', category: '' },
 });
 
-// --- UTILS ---
+// Autres
 function shuffleArray<T>(array: T[]): T[] {
   const newArray = [...array];
   for (let i = newArray.length - 1; i > 0; i--) {
@@ -103,7 +100,7 @@ function shuffleArray<T>(array: T[]): T[] {
   return newArray;
 }
 
-// --- Statistics ---
+// Statistique
 const stats = computed(() => ({
   totalSolutions: solutionStore.solutions.length,
   totalDocs: solutionStore.allDocs.length,

@@ -25,7 +25,7 @@
         class="flex flex-col bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
         <div class="flex items-center mb-6">
           <div class="w-16 h-16 mr-4 flex items-center justify-center">
-            <img :src="item.solution.logo" :alt="item.solution.name" class="h-[3em] w-auto scale-[1.5]"
+            <img :src="item.solution.logo" :alt="item.solution.name" class="h-[3em] w-auto scale-[1.5] rounded-full"
               @error="handleImageError" />
           </div>
           <div class="flex-grow">
@@ -82,6 +82,6 @@ defineEmits<{
 const handleImageError = (event: Event) => {
   const target = event.target as HTMLImageElement;
   const name = target.alt || 'Logo non disponible';
-  target.src = `https://api.dicebear.com/7.x/avataaars/svg?seed=${name}`;
+  target.src = `https://api.dicebear.com/7.x/icons/svg?seed=${name}`;
 };
 </script>

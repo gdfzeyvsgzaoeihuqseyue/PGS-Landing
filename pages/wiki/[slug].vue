@@ -197,7 +197,7 @@ const shareLink = async () => {
 
 const handleImageError = (event: Event, platformName: string) => {
   const target = event.target as HTMLImageElement;
-  target.src = `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(platformName)}`;
+  target.src = `https://api.dicebear.com/7.x/icons/svg?seed=${encodeURIComponent(platformName)}`;
   target.alt = `Logo de ${platformName} non disponible`;
 };
 

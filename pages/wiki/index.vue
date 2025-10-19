@@ -25,7 +25,7 @@
           <!-- Contrôles d'affichage -->
           <div class="mb-6">
             <div class="mb-8">
-              <h3 class="text-sm font-semibold text-gray-900 mb-3">Affichage</h3>
+              <h3 class="text-sm font-semibold text-gray-900 mb-3">Statistique</h3>
               <div class="grid grid-cols-3 gap-4 text-center">
                 <div>
                   <p class="text-2xl font-bold">{{ filteredLinksCount }}</p>
@@ -281,9 +281,9 @@ const togglePlatformFilter = async (platformId: string) => {
     selectedPlatformId.value = null;
   } else {
     selectedPlatformId.value = platformId;
-    selectedLetter.value = null; // Deselect letter filter if platform is selected
+    selectedLetter.value = null;
   }
-  expandedGroups.value = {}; // Reset expanded groups
+  expandedGroups.value = {};
   await fetchData();
 };
 
@@ -309,18 +309,17 @@ const fetchData = async () => {
   const currentPlatform = selectedPlatformId.value;
 
   await solutionStore.fetchPlateformWikis(
-    1, // page (can be 1 as 'all' is true)
-    1000, // limit (can be a large number as 'all' is true)
+    1, 
+    1000,
     true, // tout
     currentLetter,
     currentPlatform,
-    false // loadMore is not needed here as we fetch all for the filter
+    false // loadMore pas necessaire
   );
 };
 
 const groupedLinks = computed(() => {
   let result: PlateformWiki[];
-  // Start with all fetched wikis
   let currentLinks = [...links.value];
 
   // Apply search query filter first
@@ -393,8 +392,8 @@ onMounted(async () => {
 
 // Watch for changes in filters or search query to re-fetch data and reset expanded groups
 watch([selectedLetter, selectedPlatformId, sortOrder, searchQuery], () => {
-  expandedGroups.value = {}; // Reset expanded groups when main filters change
-  fetchData(); // Re-fetch data when search query changes
+  expandedGroups.value = {};
+  fetchData();
 });
 
 // SEO

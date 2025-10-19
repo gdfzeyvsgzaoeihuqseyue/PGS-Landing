@@ -17,7 +17,7 @@
         <aside class="md:col-span-1 order-first md:order-none">
           <div class="bg-gray-50 p-6 rounded-lg shadow-md">
             <img :src="solutionStore.currentSolution?.logo" :alt="solutionStore.currentSolution?.name"
-              class="h-24 w-auto mx-auto mb-6 object-contain"
+              class="h-24 w-auto mx-auto mb-6 object-contain rounded-full"
               @error="(e) => handleImageError(e, solutionStore.currentSolution?.name || 'Solution', '100x100')" />
 
             <a :href="solutionStore.currentSolution?.ctaLink" :class="['block text-center py-3 px-6 rounded-md font-medium',
@@ -240,7 +240,7 @@ const formatDate = (dateString: string | undefined) => {
 // Image loading error handling
 const handleImageError = (e: Event, title: string, size: string) => {
   const img = e.target as HTMLImageElement;
-  img.src = `https://placehold.co/${size}/E0F2FE/0284C7?text=${encodeURIComponent(title)}`;
+  img.src = `https://api.dicebear.com/7.x/icons/svg?seed=${encodeURIComponent(title)}`;
   img.alt = `Image non disponible pour ${title}`;
 };
 

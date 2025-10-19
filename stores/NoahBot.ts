@@ -4,6 +4,9 @@ import type { ChatMessage, ChatbotConfig, ChatbotAPIResponse, ChatMessageMetadat
 import { usePageContext } from '@/composables/usePageContext';
 
 export const useChatbotStore = defineStore('chatbot', () => {
+  const apiConfig = useRuntimeConfig();
+  const API_BASE_URL = apiConfig.public.pgsBaseAPI;
+
   const messages = ref<ChatMessage[]>([]);
   const isOpen = ref(false);
   const isLoading = ref(false);
@@ -40,10 +43,7 @@ export const useChatbotStore = defineStore('chatbot', () => {
 
   // Accepter les conditions d'utilisation
   const acceptTerms = async () => {
-    const runtimeConfig = useRuntimeConfig();
-    const pgsBaseAPI = runtimeConfig.public.pgsBaseAPI;
-
-    if (!pgsBaseAPI) {
+    if (!API_BASE_URL) {
       console.warn('API PGS non configuré, stockage en localstorage uniquement');
       localStorage.setItem('noah_terms_accepted', 'true');
       termsAccepted.value = true;
@@ -58,7 +58,7 @@ export const useChatbotStore = defineStore('chatbot', () => {
         await createConversationInAPI();
       }
 
-      await $fetch(`${pgsBaseAPI}/chatbot/accept-terms`, {
+      await $fetch(`${API_BASE_URL}/chatbot/accept-terms`, {
         method: 'POST',
         body: {
           conversationId: conversationId.value,
@@ -84,10 +84,28 @@ export const useChatbotStore = defineStore('chatbot', () => {
   // Réinitialiser l'acceptation des conditions
   const resetTermsAcceptance = async () => {
     try {
+      // Si une conversation existe, réinitialiser via l'API
+      if (API_BASE_URL && conversationId.value) {
+        await $fetch(`${API_BASE_URL}/chatbot/terms/reset`, {
+          method: 'POST',
+          body: {
+            conversationId: conversationId.value,
+          },
+        });
+      }
+
+      // Réinitialiser localement
       localStorage.removeItem('noah_terms_accepted');
       termsAccepted.value = false;
+
+      // Réinitialiser la conversation locale
+      resetConversation();
     } catch (error) {
-      console.error('Impossible de rénitialiser les conditions:', error);
+      console.error('Impossible de réinitialiser les conditions:', error);
+      // Même en cas d'erreur API, réinitialiser localement
+      localStorage.removeItem('noah_terms_accepted');
+      termsAccepted.value = false;
+      resetConversation();
     }
   };
 
@@ -110,16 +128,13 @@ export const useChatbotStore = defineStore('chatbot', () => {
 
   // Charger la conversation depuis l'API
   const loadConversationFromAPI = async () => {
-    const runtimeConfig = useRuntimeConfig();
-    const pgsBaseAPI = runtimeConfig.public.pgsBaseAPI;
-
-    if (!pgsBaseAPI) {
+    if (!API_BASE_URL) {
       loadConversationHistoryLocal();
       return;
     }
 
     try {
-      const response: any = await $fetch(`${pgsBaseAPI}/chatbot/conversations`, {
+      const response: any = await $fetch(`${API_BASE_URL}/chatbot/conversations`, {
         method: 'GET',
         params: {
           session_id: sessionId.value,
@@ -146,16 +161,12 @@ export const useChatbotStore = defineStore('chatbot', () => {
   // Charger plus de messages
   const loadMoreMessages = async () => {
     if (isLoadingMore.value || !hasMoreMessages.value) return;
-
-    const runtimeConfig = useRuntimeConfig();
-    const pgsBaseAPI = runtimeConfig.public.pgsBaseAPI;
-
-    if (!pgsBaseAPI || !conversationId.value) return;
+    if (!API_BASE_URL || !conversationId.value) return;
 
     isLoadingMore.value = true;
 
     try {
-      const response: any = await $fetch(`${pgsBaseAPI}/chatbot/conversations`, {
+      const response: any = await $fetch(`${API_BASE_URL}/chatbot/conversations`, {
         method: 'GET',
         params: {
           conversation_id: conversationId.value,
@@ -209,13 +220,10 @@ export const useChatbotStore = defineStore('chatbot', () => {
 
   // Créer une conversation dans l'API
   const createConversationInAPI = async () => {
-    const runtimeConfig = useRuntimeConfig();
-    const pgsBaseAPI = runtimeConfig.public.pgsBaseAPI;
-
-    if (!pgsBaseAPI) return;
+    if (!API_BASE_URL) return;
 
     try {
-      const response: any = await $fetch(`${pgsBaseAPI}/chatbot/create-conversation`, {
+      const response: any = await $fetch(`${API_BASE_URL}/chatbot/create-conversation`, {
         method: 'POST',
         body: {
           sessionId: sessionId.value,
@@ -235,13 +243,10 @@ export const useChatbotStore = defineStore('chatbot', () => {
 
   // Créer un message dans l'API
   const createMessageInAPI = async (message: ChatMessage) => {
-    const runtimeConfig = useRuntimeConfig();
-    const pgsBaseAPI = runtimeConfig.public.pgsBaseAPI;
-
-    if (!pgsBaseAPI || !conversationId.value) return;
+    if (!API_BASE_URL || !conversationId.value) return;
 
     try {
-      await $fetch(`${pgsBaseAPI}/chatbot/create-message`, {
+      await $fetch(`${API_BASE_URL}/chatbot/create-message`, {
         method: 'POST',
         body: {
           conversationId: conversationId.value,
@@ -258,26 +263,18 @@ export const useChatbotStore = defineStore('chatbot', () => {
     }
   };
 
-  // Mettre à jour les statistiques
+  // Mettre à jour la conversation (les stats sont calculées automatiquement côté backend)
   const updateStatsInAPI = async (statsData: {
     total_messages: number;
     agent_used: string;
     response_time?: number;
     tokens_used?: number;
   }) => {
-    const runtimeConfig = useRuntimeConfig();
-    const pgsBaseAPI = runtimeConfig.public.pgsBaseAPI;
-
-    if (!pgsBaseAPI || !conversationId.value) return;
+    if (!API_BASE_URL || !conversationId.value) return;
 
     try {
-      await $fetch(`${pgsBaseAPI}/chatbot/update-stats`, {
-        method: 'POST',
-        body: {
-          conversation_id: conversationId.value,
-          ...statsData,
-        },
-      });
+      // car le backend recalcule automatiquement via le helper
+      console.log('Stats mis à jour');
     } catch (error) {
       console.warn('Impossible de mettre à jour les statistiques:', error);
     }
@@ -522,19 +519,14 @@ export const useChatbotStore = defineStore('chatbot', () => {
 
   // Effacer toutes les conversations de l'utilisateur
   const deleteAllConversations = async () => {
-    const runtimeConfig = useRuntimeConfig();
-    const pgsBaseAPI = runtimeConfig.public.pgsBaseAPI;
-
-    if (pgsBaseAPI) {
+    if (API_BASE_URL && conversationId.value) {
       try {
-        await $fetch(`${pgsBaseAPI}/chatbot/delete-conversations`, {
+        // Supprimer la conversation actuelle via l'endpoint correct
+        await $fetch(`${API_BASE_URL}/chatbot/conversations/${conversationId.value}`, {
           method: 'DELETE',
-          body: {
-            session_id: sessionId.value,
-          },
         });
       } catch (error) {
-        console.error('Impossible de supprimer toutes les conversation depuis l\'API:', error);
+        console.error('Impossible de supprimer la conversation depuis l\'API:', error);
       }
     }
 
