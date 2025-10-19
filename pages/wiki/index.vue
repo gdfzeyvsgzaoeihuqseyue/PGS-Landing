@@ -154,7 +154,7 @@
 
               <!-- Liste -->
               <div v-else class="space-y-4">
-                <LinkListItem v-for="link in linksGroup" :key="link.id" :link="link" />
+                <LinkList v-for="link in linksGroup" :key="link.id" :link="link" />
               </div>
 
               <!-- Bouton Voir plus/moins -->
@@ -184,8 +184,7 @@ import { ref, computed, onMounted, watch } from 'vue';
 import { storeToRefs } from 'pinia';
 import { IconGrid3x3, IconList, IconFilter, IconX, IconLoader } from '@tabler/icons-vue';
 import { useSolutionStore } from '@/stores/solutions';
-import LinkCard from '~/components/LinkCard.vue';
-import LinkListItem from '~/components/LinkListItem.vue';
+import { LinkCard, LinkList } from '@/components/wiki';
 import type { PlateformWiki, Solution } from '@/types';
 
 const solutionStore = useSolutionStore();

@@ -50,12 +50,12 @@
 import { ref, computed, onMounted, onUnmounted, watch } from 'vue';
 import { useSolutionStore } from '@/stores/solutions';
 import { IconFilter } from '@tabler/icons-vue';
-import { DocSection, HelpSidebar, FaqSection, TutoSection  } from '@/components/help';
+import { DocSection, HelpSidebar, FaqSection, TutoSection } from '@/components/help';
 
 const solutionStore = useSolutionStore();
 const itemsPerScroll = ref(3);
 
-// ItemsPerScroll selon l'écrah
+// ItemsPerScroll selon l'écran
 const updateItemsPerScroll = () => {
   if (window.innerWidth < 640) {
     itemsPerScroll.value = 1;

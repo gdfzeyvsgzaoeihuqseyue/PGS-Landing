@@ -1,8 +1,5 @@
 <template>
-  <aside 
-    class="lg:w-1/4" 
-    :class="{ 'hidden lg:block': !modelValue, 'block': modelValue }"
-  >
+  <aside class="lg:w-1/4" :class="{ 'hidden lg:block': !modelValue, 'block': modelValue }">
     <div class="bg-white rounded-xl shadow-md p-6 sticky top-6">
       <!-- En-tête mobile -->
       <div class="flex justify-between items-center mb-6 lg:hidden">
@@ -29,13 +26,8 @@
         <div v-if="showSearch">
           <h3 class="text-base sm:text-lg font-bold mb-3">{{ searchLabel }}</h3>
           <div class="relative">
-            <input 
-              :value="filters.search" 
-              @input="$emit('update:filters', { ...filters, search: $event.target.value })"
-              type="text" 
-              :placeholder="searchPlaceholder"
-              class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-primary focus:border-primary"
-            />
+            <input :value="filters.search" @input="handleSearchInput" type="text" :placeholder="searchPlaceholder"
+              class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-primary focus:border-primary" />
             <div class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
               <IconSearch class="w-5 h-5" />
             </div>
@@ -45,11 +37,7 @@
         <!-- Filtre par catégorie -->
         <div v-if="categories && categories.length > 0">
           <h3 class="text-base sm:text-lg font-bold mb-3">{{ categoryLabel }}</h3>
-          <select 
-            :value="filters.category" 
-            @change="$emit('update:filters', { ...filters, category: $event.target.value })"
-            class="w-full px-4 py-2 border rounded-lg"
-          >
+          <select :value="filters.category" @change="handleCategoryChange" class="w-full px-4 py-2 border rounded-lg">
             <option value="">{{ categoryAllLabel }}</option>
             <option v-for="category in categories" :key="category" :value="category">
               {{ category }}
@@ -60,11 +48,7 @@
         <!-- Sélecteur de tri -->
         <div v-if="sortOptions && sortOptions.length > 0">
           <h3 class="text-base sm:text-lg font-bold mb-3">{{ sortLabel }}</h3>
-          <select 
-            :value="filters.sortOrder" 
-            @change="$emit('update:filters', { ...filters, sortOrder: $event.target.value })"
-            class="w-full px-4 py-2 border rounded-lg"
-          >
+          <select :value="filters.sortOrder" @change="handleSortChange" class="w-full px-4 py-2 border rounded-lg">
             <option v-for="option in sortOptions" :key="option.value" :value="option.value">
               {{ option.label }}
             </option>
@@ -75,10 +59,8 @@
         <slot name="custom-filters" :filters="filters" />
 
         <!-- Bouton de réinitialisation -->
-        <button 
-          @click="$emit('reset')"
-          class="w-full px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition"
-        >
+        <button @click="$emit('reset')"
+          class="w-full px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition">
           {{ resetLabel }}
         </button>
       </div>
@@ -112,7 +94,7 @@ interface Props {
   showSearch?: boolean;
 }
 
-withDefaults(defineProps<Props>(), {
+const props = withDefaults(defineProps<Props>(), {
   title: 'Filtres',
   statsTitle: 'Statistiques',
   searchLabel: 'Rechercher',
@@ -124,11 +106,32 @@ withDefaults(defineProps<Props>(), {
   showSearch: true
 });
 
-defineEmits<{
+const emit = defineEmits<{
   'update:modelValue': [value: boolean];
   'update:filters': [filters: SidebarFilter];
   'reset': [];
 }>();
+
+const handleSearchInput = (event: Event) => {
+  const target = event.target as HTMLInputElement | null;
+  if (target) {
+    emit('update:filters', { ...props.filters, search: target.value });
+  }
+};
+
+const handleCategoryChange = (event: Event) => {
+  const target = event.target as HTMLSelectElement | null;
+  if (target) {
+    emit('update:filters', { ...props.filters, category: target.value });
+  }
+};
+
+const handleSortChange = (event: Event) => {
+  const target = event.target as HTMLSelectElement | null;
+  if (target) {
+    emit('update:filters', { ...props.filters, sortOrder: target.value });
+  }
+};
 
 const formatStatKey = (key: string): string => {
   return key

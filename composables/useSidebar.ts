@@ -21,7 +21,7 @@ export interface UseSidebarOptions<T> {
 }
 
 export interface UseSidebarReturn<T> {
-  // Sidebar state
+  // Etat
   showSidebar: Ref<boolean>;
   filters: Ref<SidebarFilter>;
   
@@ -31,14 +31,14 @@ export interface UseSidebarReturn<T> {
   totalPages: ComputedRef<number>;
   visiblePages: ComputedRef<number[]>;
   
-  // Filtered & paginated data
+  // Filtres
   filteredItems: ComputedRef<T[]>;
   paginatedItems: ComputedRef<T[]>;
   
-  // Statistics
+  // Statistiques
   stats: ComputedRef<SidebarStats>;
   
-  // Methods
+  // Methodes
   resetFilters: () => void;
   toggleSidebar: (value?: boolean) => void;
   goToPage: (page: number) => void;
@@ -58,7 +58,7 @@ export function useSidebar<T>(
     statsFn
   } = options;
 
-  // State
+  // Etats
   const showSidebar = ref(false);
   const filters = ref<SidebarFilter>({ ...initialFilters });
   const currentPage = ref(1);
