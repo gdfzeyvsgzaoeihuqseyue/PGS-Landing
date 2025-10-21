@@ -83,7 +83,7 @@
             <IconLoader class="animate-spin h-10 w-10 text-primary mx-auto" />
             <p class="mt-2 text-gray-600">Chargement des articles...</p>
           </div> -->
-          <LogoLoader v-if="articleStore.loading" />
+          <LogoLoader v-if="articleStore.loading" :show-text="true" size="lg" text="Chargement des articles..." />
           <div v-else-if="articleStore.error" class="text-center py-10">
             <p>Nous n'arrivons pas à afficher les articles</p>
           </div>
@@ -120,6 +120,7 @@ import { useArticleStore, useCategoryStore, useAuthorStore } from '@/stores';
 import { IconFilter, IconSearch, IconMoodConfuzed, IconLoader } from '@tabler/icons-vue';
 import { useSidebar } from '@/composables/useSidebar';
 import { AppPagination, AppSidebar } from '@/components/app';
+import { LogoLoader } from '@/components/utils';
 
 const articleStore = useArticleStore();
 const categoryStore = useCategoryStore();

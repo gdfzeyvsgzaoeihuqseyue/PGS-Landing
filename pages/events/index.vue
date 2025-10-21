@@ -43,13 +43,10 @@
           </button>
 
           <!-- Chargement / Erreur -->
-           <LogoLoader v-if="eventStore.loading" />
-
-
-          <!-- <div v-if="eventStore.loading" class="text-center py-10">
+          <div v-if="eventStore.loading" class="text-center py-10">
             <IconLoader class="animate-spin h-10 w-10 text-primary mx-auto" />
             <p class="mt-2 text-gray-600">Chargement des événements...</p>
-          </div> -->
+          </div>
           <div v-else-if="eventStore.error" class="text-center py-10">
             <p>Nous n'avons pas réussi à charger les événements</p>
           </div>

@@ -48,6 +48,7 @@
 <script setup lang="ts">
 import { NuxtLink } from '#components'
 import type { NavLink, NavSection } from '@/types';
+import { SocialCustomLink } from '@/components/utils';
 
 // Sections de navigation avec activation/désactivation
 const navSections: NavSection[] = [

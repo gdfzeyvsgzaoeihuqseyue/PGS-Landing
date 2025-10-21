@@ -1,9 +1,13 @@
 <template>
   <AppHeader />
-  <SiteNotificationManager /> 
+  <NotificationManager /> 
   <main>
     <slot />
   </main>
   <AppFooter />
-  <GlobalFeedbackButton />
+  <FeedbackButton />
 </template>
+
+<script setup lang="ts">
+import { NotificationManager, FeedbackButton } from '@/components/utils';
+</script>
