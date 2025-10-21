@@ -79,10 +79,11 @@
           </div>
 
           <!-- Chargement / Erreur -->
-          <div v-if="articleStore.loading" class="text-center py-10">
+          <!-- <div v-if="articleStore.loading" class="text-center py-10">
             <IconLoader class="animate-spin h-10 w-10 text-primary mx-auto" />
             <p class="mt-2 text-gray-600">Chargement des articles...</p>
-          </div>
+          </div> -->
+          <LogoLoader v-if="articleStore.loading" />
           <div v-else-if="articleStore.error" class="text-center py-10">
             <p>Nous n'arrivons pas à afficher les articles</p>
           </div>

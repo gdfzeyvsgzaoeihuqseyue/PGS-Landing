@@ -43,17 +43,20 @@
           </button>
 
           <!-- Chargement / Erreur -->
-          <div v-if="eventStore.loading" class="text-center py-10">
+           <LogoLoader v-if="eventStore.loading" />
+
+
+          <!-- <div v-if="eventStore.loading" class="text-center py-10">
             <IconLoader class="animate-spin h-10 w-10 text-primary mx-auto" />
             <p class="mt-2 text-gray-600">Chargement des événements...</p>
-          </div>
+          </div> -->
           <div v-else-if="eventStore.error" class="text-center py-10">
             <p>Nous n'avons pas réussi à charger les événements</p>
           </div>
 
           <!-- Événements en grille -->
           <div v-else-if="sidebar.paginatedItems.value.length > 0"
-            class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-6">
             <EventCard v-for="event in sidebar.paginatedItems.value" :key="event.id" :event="event" />
           </div>
 
@@ -169,7 +172,7 @@ const sidebar = useSidebar(computed(() => eventStore.events), {
     const past = events.filter(e => isPastEvent(e)).length;
 
     return {
-      'Total': events.length,
+      'Evénéments': events.length,
       'En ligne': online,
       'Hybride': hybride,
       'Présentiel': presential,
