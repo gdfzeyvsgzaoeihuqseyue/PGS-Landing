@@ -81,12 +81,11 @@
           africaines.
         </p>
       </div>
-
-      <div v-if="!solutionStore.loading && !solutionStore.error && solutionStore.solutions.length"
-        class="grid grid-cols-1 md:grid-cols-3 gap-8">
-        <SolutionCard />
+      
+      <div v-if="!solutionStore.loading && !solutionStore.error && solutionStore.solutions.length">
+        <SolutionListDetails />
       </div>
-
+      
       <div v-if="!solutionStore.loading && !solutionStore.error && solutionStore.solutions?.length"
         class="flex justify-center mt-8">
         <NuxtLink to="/solutions"
