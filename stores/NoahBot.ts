@@ -6,6 +6,7 @@ import { usePageContext } from '@/composables/usePageContext';
 export const useChatbotStore = defineStore('chatbot', () => {
   const apiConfig = useRuntimeConfig();
   const API_BASE_URL = apiConfig.public.pgsBaseAPI;
+  const SITE_IDENTIFIER = apiConfig.public.siteIdentifier;
 
   const messages = ref<ChatMessage[]>([]);
   const isOpen = ref(false);
@@ -58,7 +59,7 @@ export const useChatbotStore = defineStore('chatbot', () => {
         await createConversationInAPI();
       }
 
-      await $fetch(`${API_BASE_URL}/chatbot/accept-terms`, {
+      await $fetch(`${API_BASE_URL}/noah/terms/accept`, {
         method: 'POST',
         body: {
           conversationId: conversationId.value,
@@ -84,9 +85,8 @@ export const useChatbotStore = defineStore('chatbot', () => {
   // Réinitialiser l'acceptation des conditions
   const resetTermsAcceptance = async () => {
     try {
-      // Si une conversation existe, réinitialiser via l'API
       if (API_BASE_URL && conversationId.value) {
-        await $fetch(`${API_BASE_URL}/chatbot/terms/reset`, {
+        await $fetch(`${API_BASE_URL}/noah/terms/reset`, {
           method: 'POST',
           body: {
             conversationId: conversationId.value,
@@ -134,7 +134,7 @@ export const useChatbotStore = defineStore('chatbot', () => {
     }
 
     try {
-      const response: any = await $fetch(`${API_BASE_URL}/chatbot/conversations`, {
+      const response: any = await $fetch(`${API_BASE_URL}/noah/conversation`, {
         method: 'GET',
         params: {
           session_id: sessionId.value,
@@ -166,7 +166,7 @@ export const useChatbotStore = defineStore('chatbot', () => {
     isLoadingMore.value = true;
 
     try {
-      const response: any = await $fetch(`${API_BASE_URL}/chatbot/conversations`, {
+      const response: any = await $fetch(`${API_BASE_URL}/noah/conversation`, {
         method: 'GET',
         params: {
           conversation_id: conversationId.value,
@@ -223,11 +223,11 @@ export const useChatbotStore = defineStore('chatbot', () => {
     if (!API_BASE_URL) return;
 
     try {
-      const response: any = await $fetch(`${API_BASE_URL}/chatbot/create-conversation`, {
+      const response: any = await $fetch(`${API_BASE_URL}/noah/conversation`, {
         method: 'POST',
         body: {
           sessionId: sessionId.value,
-          siteIdentifier: 'pgs',
+          siteIdentifier: SITE_IDENTIFIER,
           contextPage: contextPage.value,
           termsAccepted: termsAccepted.value,
         },
@@ -246,7 +246,7 @@ export const useChatbotStore = defineStore('chatbot', () => {
     if (!API_BASE_URL || !conversationId.value) return;
 
     try {
-      await $fetch(`${API_BASE_URL}/chatbot/create-message`, {
+      await $fetch(`${API_BASE_URL}/noah/message`, {
         method: 'POST',
         body: {
           conversationId: conversationId.value,
@@ -263,7 +263,7 @@ export const useChatbotStore = defineStore('chatbot', () => {
     }
   };
 
-  // Mettre à jour la conversation (les stats sont calculées automatiquement côté backend)
+  // Mettre à jour la conversation
   const updateStatsInAPI = async (statsData: {
     total_messages: number;
     agent_used: string;
@@ -273,7 +273,6 @@ export const useChatbotStore = defineStore('chatbot', () => {
     if (!API_BASE_URL || !conversationId.value) return;
 
     try {
-      // car le backend recalcule automatiquement via le helper
       console.log('Stats mis à jour');
     } catch (error) {
       console.warn('Impossible de mettre à jour les statistiques:', error);
@@ -521,8 +520,7 @@ export const useChatbotStore = defineStore('chatbot', () => {
   const deleteAllConversations = async () => {
     if (API_BASE_URL && conversationId.value) {
       try {
-        // Supprimer la conversation actuelle via l'endpoint correct
-        await $fetch(`${API_BASE_URL}/chatbot/conversations/${conversationId.value}`, {
+        await $fetch(`${API_BASE_URL}/noah/conversation/${conversationId.value}`, {
           method: 'DELETE',
         });
       } catch (error) {

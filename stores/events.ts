@@ -1,12 +1,10 @@
 import { defineStore } from 'pinia';
+import { useApiFetch } from '~/utils/api';
 import { ref } from 'vue';
 import type { Event } from '@/types';
 import { useRuntimeConfig } from '#app';
 
 export const useEventStore = defineStore('events', () => {
-  const config = useRuntimeConfig();
-  const API_BASE_URL = config.public.pgsBaseAPI;
-
   const events = ref<Event[]>([]);
   const currentEvent = ref<Event | null>(null);
   const loading = ref(false);
@@ -35,7 +33,7 @@ export const useEventStore = defineStore('events', () => {
         const initialLimit = 100; 
 
         do {
-          const response = await $fetch<{
+          const response = await useApiFetch<{
             success: boolean;
             message: string;
             nb: number;
@@ -43,7 +41,7 @@ export const useEventStore = defineStore('events', () => {
             currentPage: number;
             totalPages: number;
             data: Event[];
-          }>(`${API_BASE_URL}/event`, {
+          }>(`/event`, {
             params: { page: currentPage, limit: initialLimit }
           });
 
@@ -61,7 +59,7 @@ export const useEventStore = defineStore('events', () => {
         };
 
       } else {
-        const response = await $fetch<{
+        const response = await useApiFetch<{
           success: boolean;
           message: string;
           nb: number;
@@ -69,7 +67,7 @@ export const useEventStore = defineStore('events', () => {
           currentPage: number;
           totalPages: number;
           data: Event[];
-        }>(`${API_BASE_URL}/event`, {
+        }>(`/event`, {
           params: { page, limit }
         });
 
@@ -98,11 +96,11 @@ export const useEventStore = defineStore('events', () => {
     error.value = null;
     currentEvent.value = null; 
     try {
-      const response = await $fetch<{
+      const response = await useApiFetch<{
         success: boolean;
         message: string;
         data: Event;
-      }>(`${API_BASE_URL}/event/${id}`);
+      }>(`/event/${id}`);
 
       currentEvent.value = response.data;
       return response.data;

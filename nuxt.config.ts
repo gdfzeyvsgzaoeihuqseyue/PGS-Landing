@@ -30,14 +30,14 @@ export default defineNuxtConfig({
   },
 
   runtimeConfig: {
-    mistralApiKey: process.env.MISTRAL_API_KEY,
-    geminiApiKey: process.env.GEMINI_API_KEY,
+    mistralApiKey: process.env.NOAH_MISTRAL_KEY,
+    geminiApiKey: process.env.NOAH_GEMINI_KEY,
     
     public: {
       pgsBaseAPI: process.env.PGS_API_URL,
       pgsSharedFiles: process.env.PGS_SHARED_FILES,
-      siteIdentifier: process.env.NUXT_PUBLIC_SITE_IDENTIFIER || 'pgs',
-      betaMode: process.env.NUXT_BETA_MODE === 'true',
+      siteIdentifier: process.env.SITE_IDENTIFIER || 'pgs',
+      betaMode: process.env.BETA_MODE === 'true',
     }
   },
 

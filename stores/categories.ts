@@ -1,12 +1,9 @@
 import { defineStore } from 'pinia';
+import { useApiFetch } from '~/utils/api';
 import { ref, computed } from 'vue';
 import type { Category } from '@/types';
-import { useRuntimeConfig } from '#app';
 
 export const useCategoryStore = defineStore('categories', () => {
-  const config = useRuntimeConfig();
-  const API_BASE_URL = config.public.pgsBaseAPI;
-
   const categories = ref<Category[]>([]);
   const loading = ref(false);
   const error = ref<string | null>(null);
@@ -16,7 +13,7 @@ export const useCategoryStore = defineStore('categories', () => {
     loading.value = true;
     error.value = null;
     try {
-      const response = await $fetch<{ data: Category[] }>(`${API_BASE_URL}/blog/category`, {
+      const response = await useApiFetch<{ data: Category[] }>(`/blog/category`, {
         params: { limit: 10 }
       });
       categories.value = response.data;

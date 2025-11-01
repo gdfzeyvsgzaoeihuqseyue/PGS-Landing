@@ -1,12 +1,9 @@
 import { defineStore } from 'pinia';
+import { useApiFetch } from '~/utils/api';
 import { ref, computed } from 'vue';
 import type { Article } from '@/types';
-import { useRuntimeConfig } from '#app';
 
 export const useArticleStore = defineStore('articles', () => {
-  const config = useRuntimeConfig();
-  const API_BASE_URL = config.public.pgsBaseAPI;
-
   const articles = ref<Article[]>([]);
   const currentArticle = ref<Article | null>(null);
   const loading = ref(false);
@@ -17,7 +14,7 @@ export const useArticleStore = defineStore('articles', () => {
     loading.value = true;
     error.value = null;
     try {
-      const response = await $fetch<{ data: Article[] }>(`${API_BASE_URL}/blog/article`, {
+      const response = await useApiFetch<{ data: Article[] }>('/blog/article', {
         params: { limit: 25 }
       });
       articles.value = response.data;
@@ -35,7 +32,7 @@ export const useArticleStore = defineStore('articles', () => {
     error.value = null;
     currentArticle.value = null;
     try {
-      const response = await $fetch<{ data: Article }>(`${API_BASE_URL}/blog/article/${identifier}`);
+      const response = await useApiFetch<{ data: Article }>(`/blog/article/${identifier}`);
       currentArticle.value = response.data;
       return response.data;
     } catch (err: any) {
