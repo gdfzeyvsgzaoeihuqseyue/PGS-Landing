@@ -20,12 +20,24 @@
               class="h-24 w-auto mx-auto mb-6 object-contain rounded-full"
               @error="(e) => handleImageError(e, solutionStore.currentSolution?.name || 'Solution', '100x100')" />
 
-            <a :href="solutionStore.currentSolution?.ctaLink" :class="['block text-center py-3 px-6 rounded-md font-medium',
-              solutionStore.currentSolution?.disabled ? 'bg-gray-200 text-gray-400 cursor-not-allowed' :
-                'bg-primary text-white hover:bg-secondary']" :aria-disabled="solutionStore.currentSolution?.disabled"
-              target="_blank" rel="noopener noreferrer">
-              {{ solutionStore.currentSolution?.ctaText }}
-            </a>
+            <div class="flex justify-center mb-6">
+              <template v-if="!solutionStore.currentSolution.disabled">
+                <a :href="solutionStore.currentSolution.ctaLink"
+                  class="inline-flex items-center justify-center text-center py-3 px-6 rounded-md font-medium bg-primary text-white hover:bg-secondary transition-colors duration-200"
+                  target="_blank" rel="noopener noreferrer">
+                  {{ solutionStore.currentSolution.ctaText || 'Accéder à la solution' }}
+                  <IconExternalLink class="w-5 h-5 ml-2" />
+                </a>
+              </template>
+              <template v-else>
+                <span
+                  class="inline-flex items-center justify-center text-center py-3 px-6 rounded-md font-medium bg-gray-200 text-gray-400 cursor-not-allowed"
+                  aria-disabled="true">
+                  {{ solutionStore.currentSolution.ctaText || 'Accéder à la solution' }}
+                  <IconUnlink class="w-5 h-5 ml-2" />
+                </span>
+              </template>
+            </div>
 
             <div class="mt-6 pt-6 border-t border-gray-200">
               <ul class="space-y-3">
@@ -208,7 +220,7 @@
 import { computed, ref, onMounted, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import { useSolutionStore } from '@/stores/solutions';
-import { IconArrowLeft, IconCheck, IconBook, IconVideo, IconLoader, IconArrowBack } from '@tabler/icons-vue';
+import { IconArrowLeft, IconExternalLink, IconUnlink, IconCheck, IconBook, IconVideo, IconLoader, IconArrowBack } from '@tabler/icons-vue';
 
 const route = useRoute();
 const slug = route.params.slug as string;

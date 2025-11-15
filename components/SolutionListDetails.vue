@@ -12,8 +12,7 @@
               : 'bg-white border-transparent hover:bg-primary-50 hover:shadow-md'
           ]">
             <div class="relative">
-              <img :src="solution.logo" :alt="solution.name"
-                class="h-14 w-14 object-contain rounded-full mb-3"
+              <img :src="solution.logo" :alt="solution.name" class="h-14 w-14 object-contain rounded-full mb-3"
                 @error="(e) => handleImageError(e, solution.name)" />
               <!-- Badge cercle -->
               <span class="absolute top-0 right-0 h-3 w-3 rounded-full border-2 border-white"
@@ -82,15 +81,22 @@
           </div>
 
           <div class="pt-4 border-t border-gray-200 flex flex-wrap items-center gap-3">
-            <a :href="selectedSolution?.ctaLink" :class="[
-              'inline-flex items-center px-6 py-3 rounded-md font-medium transition duration-300',
-              selectedSolution?.disabled
-                ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                : 'bg-primary text-white hover:bg-secondary shadow-lg hover:shadow-xl'
-            ]" :aria-disabled="selectedSolution?.disabled" target="_blank" rel="noopener noreferrer">
-              {{ selectedSolution?.ctaText || 'Accéder à la solution' }}
-              <IconExternalLink class="w-5 h-5 ml-2" />
-            </a>
+            <template v-if="selectedSolution && !selectedSolution.disabled">
+              <a :href="selectedSolution.ctaLink"
+                class="inline-flex items-center px-6 py-3 rounded-md font-medium transition duration-300 bg-primary text-white hover:bg-secondary shadow-lg hover:shadow-xl"
+                target="_blank" rel="noopener noreferrer">
+                {{ selectedSolution.ctaText || 'Accéder à la solution' }}
+                <IconExternalLink class="w-5 h-5 ml-2" />
+              </a>
+            </template>
+            <template v-else-if="selectedSolution && selectedSolution.disabled">
+              <span
+                class="inline-flex items-center px-6 py-3 rounded-md font-medium bg-gray-200 text-gray-400 cursor-not-allowed"
+                aria-disabled="true">
+                {{ selectedSolution.ctaText || 'Accéder à la solution' }}
+                <IconUnlink class="w-5 h-5 ml-2" />
+              </span>
+            </template>
             <NuxtLink :to="`/solutions/${selectedSolution?.slug}`"
               class="inline-flex items-center text-primary hover:text-secondary font-medium transition duration-200">
               Voir la fiche solution
@@ -109,7 +115,7 @@
 
 <script setup lang="ts">
 import { ref, watchEffect } from 'vue';
-import { IconArrowRight, IconExternalLink, IconCheck } from '@tabler/icons-vue';
+import { IconArrowRight, IconExternalLink, IconUnlink, IconCheck } from '@tabler/icons-vue';
 import { useSolutionStore } from '@/stores/solutions';
 import type { Solution } from '@/types';
 
@@ -134,7 +140,7 @@ watchEffect(async () => {
   const filtered = props.currentSolutionSlug
     ? solutionStore.solutions.filter(s => s.slug !== props.currentSolutionSlug)
     : solutionStore.solutions;
-  const shuffled = shuffleArray(filtered).slice(0, 6);
+  const shuffled = shuffleArray(filtered).slice(0, 4);
   randomSolutions.value = shuffled;
   if (!selectedSolution.value && shuffled.length) selectedSolution.value = shuffled[0];
 });
