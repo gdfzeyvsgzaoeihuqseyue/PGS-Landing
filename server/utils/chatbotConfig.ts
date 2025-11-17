@@ -88,7 +88,7 @@ export function buildSystemInstruction(pageContext?: any): string {
 Titre: ${pageContext.title}
 URL: ${pageContext.url}
 Contenu: ${pageContext.content}`;
-    console.log('📄 [Gemini] Contexte de page ajouté');
+    console.log('📄 [NOAH AI] Contexte de page ajouté');
   }
 
   return instruction;
