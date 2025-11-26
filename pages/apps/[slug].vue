@@ -207,10 +207,10 @@
       <p class="text-base sm:text-lg text-gray-600 mb-8">
         Désolé, la solution que vous recherchez n'existe pas ou a été supprimée.
       </p>
-      <NuxtLink to="/solutions"
+      <NuxtLink to="/apps"
         class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-primary hover:bg-secondary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition">
-        <IconArrowBack class="mr-2 -mr-1 h-5 w-5" />
-        Retour aux solutions
+        <IconArrowBack class="mr-2 h-5 w-5" />
+        Retour aux applications
       </NuxtLink>
     </div>
   </div>

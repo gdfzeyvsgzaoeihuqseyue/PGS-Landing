@@ -99,7 +99,7 @@ const showContactModal = ref(false);
 const isMenuOpen = ref(false);
 
 const navLinks = [
-  { to: '/solutions', text: 'Solutions' },
+  { to: '/apps', text: 'Applications' },
   { to: '/events', text: 'Événements' },
   { to: '/blog', text: 'Articles' },
   { to: '/about', text: 'À propos' },

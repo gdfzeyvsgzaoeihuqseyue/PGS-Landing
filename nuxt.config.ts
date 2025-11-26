@@ -64,5 +64,9 @@ export default defineNuxtConfig({
         { rel: 'canonical', href: 'https://progestionsoft.netlify.app' }
       ]
     }
-  }
+  },
+  typescript: {
+    strict: true,
+    typeCheck: true
+  },
 })

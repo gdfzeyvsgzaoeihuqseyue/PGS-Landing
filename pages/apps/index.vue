@@ -44,7 +44,7 @@
           <!-- Cartes de solutions -->
           <div v-else-if="sidebar.paginatedItems.value.length > 0" class="grid grid-cols-1 md:grid-cols-3 gap-8">
             <NuxtLink v-for="solution in sidebar.paginatedItems.value" :key="solution.id"
-              :to="`/solutions/${solution.slug}`" :class="[
+              :to="`/apps/${solution.slug}`" :class="[
                 'group relative bg-white rounded-xl shadow-lg overflow-hidden p-6 border-2 transition-all duration-300 hover:shadow-xl hover:transform hover:scale-105',
                 solution.disabled
                   ? 'border-dashed hover:border-warning cursor-progress'

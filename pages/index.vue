@@ -19,16 +19,16 @@
             Des solutions innovantes pour optimiser vos processus métier et accélérer votre croissance
           </p>
           <div class="flex flex-col sm:flex-row justify-center gap-6 animate-fade-in-delay-2">
-            <NuxtLink to="/solutions/suitops"
+            <NuxtLink to="/apps/suitops"
               class="group bg-white text-primary px-8 py-4 rounded-full font-medium hover:bg-gray-100 transition-all duration-300 transform hover:scale-105 shadow-xl hover:shadow-2xl flex items-center justify-center space-x-2">
               <IconRocket class="w-6 h-6 transition-transform duration-300 group-hover:translate-x-1" />
               <span>Découvrir SuitOps</span>
             </NuxtLink>
 
-            <NuxtLink to="/solutions"
+            <NuxtLink to="/apps"
               class="group bg-transparent text-white px-8 py-4 rounded-full font-medium border-2 border-white hover:bg-white hover:text-primary transition-all duration-300 transform hover:scale-105 shadow-xl hover:shadow-2xl flex items-center justify-center space-x-2">
               <IconEye class="w-6 h-6 transition-transform duration-300 group-hover:translate-x-1" />
-              <span>Voir nos solutions</span>
+              <span>Voir nos applications</span>
             </NuxtLink>
           </div>
         </div>
@@ -88,9 +88,9 @@
       
       <div v-if="!solutionStore.loading && !solutionStore.error && solutionStore.solutions?.length"
         class="flex justify-center mt-8">
-        <NuxtLink to="/solutions"
+        <NuxtLink to="/apps"
           class="bg-primary text-white px-6 py-3 rounded-full font-medium hover:bg-secondary transition-all duration-300">
-          Voir plus de solutions
+          Voir plus d'apps
         </NuxtLink>
       </div>
     </section>

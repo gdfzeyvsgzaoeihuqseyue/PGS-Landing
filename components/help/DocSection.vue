@@ -21,7 +21,7 @@
 
       <!-- Conteneur des cards de documentation -->
       <NuxtLink v-for="item in items" :key="item.solution.id"
-        :to="`/solutions/${item.solution.slug}`"
+        :to="`/apps/${item.solution.slug}`"
         class="flex flex-col bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
         <div class="flex items-center mb-6">
           <div class="w-16 h-16 mr-4 flex items-center justify-center">

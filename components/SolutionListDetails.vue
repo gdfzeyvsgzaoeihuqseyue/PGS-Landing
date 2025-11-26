@@ -97,7 +97,7 @@
                 <IconUnlink class="w-5 h-5 ml-2" />
               </span>
             </template>
-            <NuxtLink :to="`/solutions/${selectedSolution?.slug}`"
+            <NuxtLink :to="`/apps/${selectedSolution?.slug}`"
               class="inline-flex items-center text-primary hover:text-secondary font-medium transition duration-200">
               Voir la fiche solution
               <IconArrowRight class="w-5 h-5 ml-2" />

@@ -12,7 +12,7 @@
         :class="solution.disabled ? 'cursor-not-allowed hover:no-underline' : 'cursor-pointer'" :title="solution.disabled
           ? `${solution.name} est indisponible.`
           : `Accéder à ${solution.name}`"
-        @click.prevent="!solution.disabled && $router.push(`/solutions/${solution.slug}`)">
+        @click.prevent="!solution.disabled && $router.push(`/apps/${solution.slug}`)">
         {{ solution.name }}
       </a>
     </div>
@@ -21,10 +21,10 @@
       {{ solution.description }}
     </p>
 
-    <NuxtLink :to="`/solutions/${solution.slug}`"
+    <NuxtLink :to="`/apps/${solution.slug}`"
       class="inline-flex items-center mx-auto px-4 py-2 border rounded-lg text-base font-medium hover:text-secondary hover:bg-gray-50"
       :class="solution.disabled ? 'text-warning cursor-help' : 'text-primary'"
-      @click.prevent="solution.disabled ? null : $router.push(`/solutions/${solution.slug}`)">
+      @click.prevent="solution.disabled ? null : $router.push(`/apps/${solution.slug}`)">
       Savoir plus sur {{ solution.name }}
       <IconArrowRight class="w-6 h-6 ml-2" />
     </NuxtLink>
