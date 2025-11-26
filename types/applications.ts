@@ -19,6 +19,8 @@ export interface Solution {
   testimonies?: Testimony[];
   createdAt: string;
   updatedAt: string;
+  allowAuth: boolean;
+  authType: 'user' | 'learner' | 'all';
 }
 
 export interface PlatformInfo {
@@ -60,7 +62,7 @@ export interface PlateformTutorial {
   platform: PlatformInfo;
 }
 
-export interface PlateformWiki { 
+export interface PlateformWiki {
   id: string;
   name: string;
   description: string;
@@ -70,7 +72,7 @@ export interface PlateformWiki {
   createdAt: string;
   updatedAt: string;
   platform: PlatformInfo;
-  order?: number; 
+  order?: number;
 }
 
 export interface Partner {

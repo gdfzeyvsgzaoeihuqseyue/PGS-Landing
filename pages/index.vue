@@ -22,6 +22,12 @@
             <NuxtLink to="/apps/suitops"
               class="group bg-white text-primary px-8 py-4 rounded-full font-medium hover:bg-gray-100 transition-all duration-300 transform hover:scale-105 shadow-xl hover:shadow-2xl flex items-center justify-center space-x-2">
               <IconRocket class="w-6 h-6 transition-transform duration-300 group-hover:translate-x-1" />
+              <span>SuitOps 2</span>
+            </NuxtLink>
+
+            <NuxtLink to="/apps/suitops"
+              class="group bg-white text-primary px-8 py-4 rounded-full font-medium hover:bg-gray-100 transition-all duration-300 transform hover:scale-105 shadow-xl hover:shadow-2xl flex items-center justify-center space-x-2">
+              <IconRocket class="w-6 h-6 transition-transform duration-300 group-hover:translate-x-1" />
               <span>Découvrir SuitOps</span>
             </NuxtLink>
 

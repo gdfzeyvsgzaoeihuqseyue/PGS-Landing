@@ -50,6 +50,26 @@
                     {{ solutionStore.currentSolution.disabled ? 'Indisponible' : 'Disponible' }}
                   </span>
                 </li>
+                <li>
+                  <strong>Accès :</strong>
+                  <div class="inline-flex items-center ml-2 px-2 py-0.5 rounded-full bg-gray-100 border border-gray-200">
+                    <component :is="solutionStore.currentSolution.allowAuth ? IconLock : IconLockOpen2" 
+                      :class="solutionStore.currentSolution.allowAuth ? 'text-orange-500' : 'text-green-500'" 
+                      class="w-4 h-4 mr-1" />
+                    <span class="text-xs font-medium text-gray-700 mr-2">
+                      {{ solutionStore.currentSolution.allowAuth ? 'Restreint' : 'Libre' }}
+                    </span>
+                    
+                    <template v-if="solutionStore.currentSolution.allowAuth">
+                      <div class="w-px h-3 bg-gray-300 mx-1"></div>
+                      <component :is="solutionStore.currentSolution.authType === 'user' ? IconUser : solutionStore.currentSolution.authType === 'learner' ? IconSchool : IconUsersPlus" 
+                        class="w-4 h-4 text-blue-500 mr-1" />
+                      <span class="text-xs font-medium text-gray-700 capitalize">
+                        {{ solutionStore.currentSolution.authType === 'all' ? 'Tous' : solutionStore.currentSolution.authType === 'learner' ? 'Apprenants' : 'Utilisateurs' }}
+                      </span>
+                    </template>
+                  </div>
+                </li>
                 <li><strong>Dernière mise à jour :</strong> {{ formatDate(solutionStore.currentSolution?.updatedAt) }}
                 </li>
               </ul>
@@ -220,7 +240,7 @@
 import { computed, ref, onMounted, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import { useSolutionStore } from '@/stores/solutions';
-import { IconArrowLeft, IconExternalLink, IconUnlink, IconCheck, IconBook, IconVideo, IconLoader, IconArrowBack } from '@tabler/icons-vue';
+import { IconArrowLeft, IconExternalLink, IconUnlink, IconCheck, IconBook, IconVideo, IconLoader, IconArrowBack, IconLock, IconLockOpen2, IconUser, IconSchool, IconUsersPlus } from '@tabler/icons-vue';
 
 const route = useRoute();
 const slug = route.params.slug as string;

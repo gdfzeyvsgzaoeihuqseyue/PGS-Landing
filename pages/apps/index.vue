@@ -51,14 +51,26 @@
                   : 'border-transparent hover:border-primary'
               ]"
               :title="solution.disabled ? `${solution.name} est actuellement indisponible, cliquez pour en savoir plus.` : null">
-              <!-- Indicateur de statut -->
-              <div v-if="!solution.disabled"
-                class="absolute top-4 right-4 px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
-                Actif
-              </div>
-              <div v-else
-                class="absolute top-4 right-4 px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800">
-                Inactif
+              <div class="absolute top-4 right-4 flex flex-col items-end gap-2">
+                <!-- Indicateur de statut -->
+                <div v-if="!solution.disabled"
+                  class="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
+                  Actif
+                </div>
+                <div v-else
+                  class="px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800">
+                  Inactif
+                </div>
+
+                <!-- Indicateur d'auth -->
+                <div class="flex items-center gap-1 px-2 py-1 text-xs font-semibold rounded-full bg-white border border-gray-200 shadow-sm">
+                  <component :is="solution.allowAuth ? IconLock : IconLockOpen2" 
+                    :class="solution.allowAuth ? 'text-orange-500' : 'text-green-500'" 
+                    class="w-3.5 h-3.5" />
+                  <component v-if="solution.allowAuth" 
+                    :is="solution.authType === 'user' ? IconUser : solution.authType === 'learner' ? IconSchool : IconUsersPlus" 
+                    class="w-3.5 h-3.5 text-blue-500" />
+                </div>
               </div>
 
               <div class="flex items-center mb-6 space-x-2">
@@ -99,7 +111,7 @@
 
 <script setup lang="ts">
 import { computed, onMounted } from 'vue';
-import { IconFilter, IconLoader } from '@tabler/icons-vue';
+import { IconFilter, IconLoader, IconLock, IconLockOpen2, IconUser, IconSchool, IconUsersPlus } from '@tabler/icons-vue';
 import { useSolutionStore } from '@/stores/solutions';
 import { useSidebar } from '@/composables/useSidebar';
 import { AppPagination, AppSidebar } from '@/components/app';

@@ -59,6 +59,27 @@
                 {{ selectedSolution?.category || 'Non spécifiée' }}
               </p>
             </div>
+            <div class="p-3 bg-gray-50 rounded-lg sm:col-span-2">
+              <p class="text-sm font-medium text-gray-600">Accès</p>
+              <div class="flex items-center mt-1 space-x-3">
+                <div class="flex items-center px-2 py-1 rounded bg-white border border-gray-200 shadow-sm">
+                  <component :is="selectedSolution?.allowAuth ? IconLock : IconLockOpen2" 
+                    :class="selectedSolution?.allowAuth ? 'text-orange-500' : 'text-green-500'" 
+                    class="w-5 h-5 mr-2" />
+                  <span class="text-sm font-medium text-gray-700">
+                    {{ selectedSolution?.allowAuth ? 'Restreint' : 'Libre' }}
+                  </span>
+                </div>
+
+                <div v-if="selectedSolution?.allowAuth" class="flex items-center px-2 py-1 rounded bg-white border border-gray-200 shadow-sm">
+                  <component :is="selectedSolution?.authType === 'user' ? IconUser : selectedSolution?.authType === 'learner' ? IconSchool : IconUsersPlus" 
+                    class="w-5 h-5 text-blue-500 mr-2" />
+                  <span class="text-sm font-medium text-gray-700 capitalize">
+                    {{ selectedSolution?.authType === 'all' ? 'Tous' : selectedSolution?.authType === 'learner' ? 'Apprenants' : 'Utilisateurs' }}
+                  </span>
+                </div>
+              </div>
+            </div>
           </div>
 
           <div>
@@ -115,7 +136,7 @@
 
 <script setup lang="ts">
 import { ref, watchEffect } from 'vue';
-import { IconArrowRight, IconExternalLink, IconUnlink, IconCheck } from '@tabler/icons-vue';
+import { IconArrowRight, IconExternalLink, IconUnlink, IconCheck, IconLock, IconLockOpen2, IconUser, IconSchool, IconUsersPlus } from '@tabler/icons-vue';
 import { useSolutionStore } from '@/stores/solutions';
 import type { Solution } from '@/types';
 
