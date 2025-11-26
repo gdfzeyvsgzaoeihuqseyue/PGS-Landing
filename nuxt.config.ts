@@ -36,8 +36,11 @@ export default defineNuxtConfig({
     public: {
       pgsBaseAPI: process.env.PGS_API_URL,
       pgsSharedFiles: process.env.PGS_SHARED_FILES,
-      siteIdentifier: process.env.SITE_IDENTIFIER || 'pgs',
       betaMode: process.env.BETA_MODE === 'true',
+      siteIdentifier: process.env.SITE_IDENTIFIER,
+      serviceId: process.env.SERVICE_ID,
+      ssoUrl: process.env.SSO_URL,
+      serviceDomain: process.env.SERVICE_DOMAIN,
     }
   },
 
