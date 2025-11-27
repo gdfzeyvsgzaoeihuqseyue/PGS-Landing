@@ -7,7 +7,7 @@
     <div class="relative h-48 bg-gradient-to-br from-primary/10 to-secondary/10 overflow-hidden">
       <div class="absolute inset-0 bg-black/20"></div>
       <img :src="solution.logoDesk || solution.logo" :alt="solution.name"
-        class="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+        class="absolute inset-0 w-full h-full object-contain p-4 group-hover:scale-110 transition-transform duration-500"
         @error="(e) => handleImageError(e, solution.name)" />
 
       <!-- Badge status -->
@@ -27,7 +27,7 @@
         {{ solution.name }}
       </h3>
       <p class="text-sm text-blue-600 font-medium mb-3">
-        {{ solution.category || 'Solution digitale' }}
+        {{ solution.category }}
       </p>
       <p class="text-gray-600 line-clamp-3 mb-4">
         {{ solution.description }}
