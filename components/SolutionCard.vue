@@ -1,33 +1,60 @@
 <template>
   <div v-for="solution in randomSolutions" :key="solution.id"
-    :class="['group bg-white rounded-xl shadow-lg overflow-hidden p-6 border-2 transition-all duration-300 hover:shadow-xl hover:transform hover:scale-105', solution.disabled ? 'border-dashed hover:border-warning' : 'border-transparent hover:border-primary']">
-    <div class="flex items-center mb-4">
-      <div class="mr-2">
-        <img :src="solution.logo" :alt="solution.name" class="h-12 w-12 object-contain rounded-full"
-          @error="(e) => handleImageError(e, solution.name)" />
-      </div>
+    class="group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden cursor-pointer transform hover:-translate-y-2"
+    @click="!solution.disabled && $router.push(`/apps/${solution.slug}`)">
 
-      <a :href="solution.disabled ? undefined : solution.ctaLink"
-        class="text-xl font-bold text-gray-900 transition hover:underline"
-        :class="solution.disabled ? 'cursor-not-allowed hover:no-underline' : 'cursor-pointer'" :title="solution.disabled
-          ? `${solution.name} est indisponible.`
-          : `Accéder à ${solution.name}`"
-        @click.prevent="!solution.disabled && $router.push(`/apps/${solution.slug}`)">
-        {{ solution.name }}
-      </a>
+    <!-- Image header -->
+    <div class="relative h-48 bg-gradient-to-br from-primary/10 to-secondary/10 overflow-hidden">
+      <div class="absolute inset-0 bg-black/20"></div>
+      <img :src="solution.logoDesk || solution.logo" :alt="solution.name"
+        class="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+        @error="(e) => handleImageError(e, solution.name)" />
+
+      <!-- Badge status -->
+      <div class="absolute top-4 right-4">
+        <span :class="[
+          'px-3 py-1 rounded-full text-xs font-semibold backdrop-blur-sm',
+          solution.disabled ? 'bg-red-500/90 text-white' : 'bg-green-500/90 text-white'
+        ]">
+          {{ solution.disabled ? 'Bientôt' : 'Disponible' }}
+        </span>
+      </div>
     </div>
 
-    <p class="text-sm text-gray-600 mb-6 leading-relaxed">
-      {{ solution.description }}
-    </p>
+    <!-- Content -->
+    <div class="p-6">
+      <h3 class="text-2xl font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
+        {{ solution.name }}
+      </h3>
+      <p class="text-sm text-blue-600 font-medium mb-3">
+        {{ solution.category || 'Solution digitale' }}
+      </p>
+      <p class="text-gray-600 line-clamp-3 mb-4">
+        {{ solution.description }}
+      </p>
 
-    <NuxtLink :to="`/apps/${solution.slug}`"
-      class="inline-flex items-center mx-auto px-4 py-2 border rounded-lg text-base font-medium hover:text-secondary hover:bg-gray-50"
-      :class="solution.disabled ? 'text-warning cursor-help' : 'text-primary'"
-      @click.prevent="solution.disabled ? null : $router.push(`/apps/${solution.slug}`)">
-      Savoir plus sur {{ solution.name }}
-      <IconArrowRight class="w-6 h-6 ml-2" />
-    </NuxtLink>
+      <!-- Features preview -->
+      <div v-if="solution.features && solution.features.length" class="mb-4">
+        <div class="flex flex-wrap gap-2">
+          <span v-for="(feature, idx) in solution.features.slice(0, 2)" :key="idx"
+            class="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded-full">
+            {{ feature }}
+          </span>
+          <span v-if="solution.features.length > 2" class="text-xs text-gray-500 px-2 py-1">
+            +{{ solution.features.length - 2 }} autres
+          </span>
+        </div>
+      </div>
+
+      <!-- CTA -->
+      <div class="flex items-center justify-between pt-4 border-t border-gray-100">
+        <span class="text-blue-600 font-semibold group-hover:text-blue-700">
+          {{ solution.disabled ? 'Bientôt disponible' : 'En savoir plus' }}
+        </span>
+        <IconArrowRight v-if="!solution.disabled"
+          class="w-5 h-5 text-blue-600 group-hover:translate-x-2 transition-transform duration-300" />
+      </div>
+    </div>
   </div>
 </template>
 
