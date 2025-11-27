@@ -28,6 +28,57 @@
             Nous contacter
           </button>
 
+          <!-- Auth Section -->
+          <div class="hidden sm:relative sm:flex sm:items-center">
+            <template v-if="authStore.isLoggedIn">
+              <button @click="toggleUserMenu"
+                class="flex items-center space-x-2 text-gray-700 hover:text-primary focus:outline-none transition-colors">
+                <div
+                  class="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center font-bold text-sm">
+                  {{ userInitials }}
+                </div>
+                <span class="font-medium">Salut {{ authStore.user?.firstName }}</span>
+                <IconChevronDown class="w-4 h-4 transition-transform duration-200"
+                  :class="{ 'rotate-180': isUserMenuOpen }" />
+              </button>
+
+              <!-- Dropdown Menu -->
+              <div v-if="isUserMenuOpen"
+                class="absolute right-0 top-full mt-2 w-56 bg-white rounded-lg shadow-xl border border-gray-100 py-2 z-50 animate-fade-in-up">
+                <a href="https://pgs-user.netlify.app/me/profile"
+                  class="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-50 hover:text-primary transition-colors">
+                  <IconUser class="w-4 h-4 mr-3" />
+                  Gérer mon profil
+                </a>
+                <a href="https://pgs-user.netlify.app/me/services"
+                  class="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-50 hover:text-primary transition-colors">
+                  <IconApps class="w-4 h-4 mr-3" />
+                  Mes services
+                </a>
+                <a href="https://pgs-user.netlify.app/me/sessions"
+                  class="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-50 hover:text-primary transition-colors">
+                  <IconHistory class="w-4 h-4 mr-3" />
+                  Mes sessions
+                </a>
+                <div class="border-t border-gray-100 my-1"></div>
+                <button @click="handleLogout"
+                  class="w-full flex items-center px-4 py-2 text-red-600 hover:bg-red-50 transition-colors">
+                  <IconLogout class="w-4 h-4 mr-3" />
+                  Se déconnecter
+                </button>
+              </div>
+
+              <!-- Overlay to close menu when clicking outside -->
+              <div v-if="isUserMenuOpen" @click="isUserMenuOpen = false"
+                class="fixed inset-0 z-40 bg-transparent cursor-default"></div>
+            </template>
+
+            <SSOButton v-else action="login" tag="a" :showIcon="false"
+              class="hidden sm:flex bg-white text-primary border border-primary px-4 py-2 rounded-md hover:bg-gray-50 transition-colors text-base font-medium ml-2">
+              Se connecter
+            </SSOButton>
+          </div>
+
           <!-- Bouton hamburger mobile -->
           <button @click="isMenuOpen = !isMenuOpen"
             class="sm:hidden p-2 rounded-md text-gray-700 hover:text-primary focus:outline-none" aria-label="Menu">
@@ -50,6 +101,51 @@
             class="w-full text-left sm:hidden bg-primary text-white px-4 py-2 rounded-md hover:bg-secondary transition-colors text-base mt-2">
             Nous contacter
           </button>
+
+          <!-- Mobile Auth -->
+          <div class="pt-4 border-t border-gray-100 mt-2">
+            <template v-if="authStore.isLoggedIn">
+              <div class="px-4 py-2 flex items-center space-x-3 mb-2">
+                <div
+                  class="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center font-bold text-sm">
+                  {{ userInitials }}
+                </div>
+                <span class="font-medium text-gray-900">Salut {{ authStore.user?.firstName }}</span>
+              </div>
+              <a href="https://pgs-user.netlify.app/me/profile"
+                class="block px-4 py-2 text-base font-medium text-gray-600 hover:text-primary hover:bg-gray-50">
+                <div class="flex items-center">
+                  <IconUser class="w-4 h-4 mr-3" />
+                  Gérer mon profil
+                </div>
+              </a>
+              <a href="https://pgs-user.netlify.app/me/services"
+                class="block px-4 py-2 text-base font-medium text-gray-600 hover:text-primary hover:bg-gray-50">
+                <div class="flex items-center">
+                  <IconApps class="w-4 h-4 mr-3" />
+                  Mes services
+                </div>
+              </a>
+              <a href="https://pgs-user.netlify.app/me/sessions"
+                class="block px-4 py-2 text-base font-medium text-gray-600 hover:text-primary hover:bg-gray-50">
+                <div class="flex items-center">
+                  <IconHistory class="w-4 h-4 mr-3" />
+                  Mes sessions
+                </div>
+              </a>
+              <button @click="handleLogout"
+                class="w-full text-left block px-4 py-2 text-base font-medium text-red-600 hover:bg-red-50">
+                <div class="flex items-center">
+                  <IconLogout class="w-4 h-4 mr-3" />
+                  Se déconnecter
+                </div>
+              </button>
+            </template>
+            <SSOButton v-else action="login" tag="a" :showIcon="false"
+              class="w-full text-center block bg-white text-primary border border-primary px-4 py-2 rounded-md hover:bg-gray-50 transition-colors text-base font-medium mt-2">
+              Se connecter
+            </SSOButton>
+          </div>
         </div>
       </div>
     </nav>
@@ -89,14 +185,35 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
-import { IconFilePencil, IconMail, IconMenuDeep, IconPhone, IconX } from '@tabler/icons-vue';
+import { ref, computed } from 'vue';
+import { IconFilePencil, IconMail, IconMenuDeep, IconPhone, IconX, IconUser, IconApps, IconHistory, IconLogout, IconChevronDown } from '@tabler/icons-vue';
 import { useSharedFiles } from '~/stores/sharedFiles';
+import { useAuthStore } from '~/stores/auth';
 
 const sharedFiles = useSharedFiles();
+const authStore = useAuthStore();
 
 const showContactModal = ref(false);
 const isMenuOpen = ref(false);
+const isUserMenuOpen = ref(false);
+
+const userInitials = computed(() => {
+  if (!authStore.user) return '';
+  const first = authStore.user.firstName?.charAt(0) || '';
+  const last = authStore.user.lastName?.charAt(0) || '';
+  return `${first}${last}`.toUpperCase();
+});
+
+const toggleUserMenu = () => {
+  isUserMenuOpen.value = !isUserMenuOpen.value;
+};
+
+const handleLogout = async () => {
+  await authStore.logout();
+  isUserMenuOpen.value = false;
+  isMenuOpen.value = false;
+  window.location.reload();
+};
 
 const navLinks = [
   { to: '/apps', text: 'Applications' },
@@ -107,7 +224,7 @@ const navLinks = [
 
 const openContactModal = () => {
   showContactModal.value = true;
-  isMenuOpen.value = false; 
+  isMenuOpen.value = false;
 };
 
 const closeContactModal = () => {
