@@ -19,17 +19,17 @@
             Des solutions innovantes pour optimiser vos processus métier et accélérer votre croissance
           </p>
           <div class="flex flex-col sm:flex-row justify-center gap-6 animate-fade-in-delay-2">
-            <NuxtLink to="/apps/suitops"
-              class="group bg-white text-primary px-8 py-4 rounded-full font-medium hover:bg-gray-100 transition-all duration-300 transform hover:scale-105 shadow-xl hover:shadow-2xl flex items-center justify-center space-x-2">
-              <IconRocket class="w-6 h-6 transition-transform duration-300 group-hover:translate-x-1" />
-              <span>SuitOps 2</span>
-            </NuxtLink>
+            <div v-if="authStore.isLoggedIn"
+              class="bg-white text-primary px-8 py-4 rounded-full font-medium shadow-xl flex items-center justify-center space-x-2">
+              <span class="text-xl">👋</span>
+              <span>Salut {{ authStore.user?.firstName }}</span>
+            </div>
 
-            <NuxtLink to="/apps/suitops"
+            <SSOButton v-else action="login" tag="a" :showIcon="false"
               class="group bg-white text-primary px-8 py-4 rounded-full font-medium hover:bg-gray-100 transition-all duration-300 transform hover:scale-105 shadow-xl hover:shadow-2xl flex items-center justify-center space-x-2">
-              <IconRocket class="w-6 h-6 transition-transform duration-300 group-hover:translate-x-1" />
-              <span>Découvrir SuitOps</span>
-            </NuxtLink>
+              <IconLogin class="w-6 h-6 transition-transform duration-300 group-hover:translate-x-1" />
+              <span>Se connecter</span>
+            </SSOButton>
 
             <NuxtLink to="/apps"
               class="group bg-transparent text-white px-8 py-4 rounded-full font-medium border-2 border-white hover:bg-white hover:text-primary transition-all duration-300 transform hover:scale-105 shadow-xl hover:shadow-2xl flex items-center justify-center space-x-2">
@@ -77,7 +77,8 @@
     </section> -->
 
     <!-- Solution -->
-    <section v-if="!solutionStore.loading && !solutionStore.error && solutionStore.solutions.length > 0" class="py-16 bg-gray-50 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section v-if="!solutionStore.loading && !solutionStore.error && solutionStore.solutions.length > 0"
+      class="py-16 bg-gray-50 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="max-w-3xl mx-0 md:ml-auto text-center lg:text-right mb-8">
         <h2 class="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent text-3xl font-extrabold">
           Votre partenaire technologique de confiance
@@ -87,11 +88,11 @@
           africaines.
         </p>
       </div>
-      
+
       <div v-if="!solutionStore.loading && !solutionStore.error && solutionStore.solutions.length">
         <SolutionListDetails />
       </div>
-      
+
       <div v-if="!solutionStore.loading && !solutionStore.error && solutionStore.solutions?.length"
         class="flex justify-center mt-8">
         <NuxtLink to="/apps"
@@ -196,15 +197,18 @@
 </template>
 
 <script setup>
-import { IconRocket, IconEye, IconUsers, IconFileText, IconAward, IconLoader } from '@tabler/icons-vue';
+import { IconLogin, IconEye, IconUsers, IconFileText, IconAward } from '@tabler/icons-vue';
 import { useSharedFiles } from '~/stores/sharedFiles';
 import { useSolutionStore } from '~/stores/solutions';
+import { useAuthStore } from '~/stores/auth';
 
 const sharedFiles = useSharedFiles();
 const solutionStore = useSolutionStore();
+const authStore = useAuthStore();
 
 onMounted(() => {
   solutionStore.fetchSolutions(undefined, undefined, true);
+  authStore.initAuth();
 });
 
 useHead({
