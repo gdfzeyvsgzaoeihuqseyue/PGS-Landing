@@ -45,20 +45,10 @@
               <!-- Dropdown Menu -->
               <div v-if="isUserMenuOpen"
                 class="absolute right-0 top-full mt-2 w-56 bg-white rounded-lg shadow-xl border border-gray-100 py-2 z-50 animate-fade-in-up">
-                <a href="https://pgs-user.netlify.app/me/profile"
+                <a v-for="(link, index) in userLinks" :key="index" :href="link.href"
                   class="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-50 hover:text-primary transition-colors">
-                  <IconUser class="w-4 h-4 mr-3" />
-                  Gérer mon profil
-                </a>
-                <a href="https://pgs-user.netlify.app/me/services"
-                  class="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-50 hover:text-primary transition-colors">
-                  <IconApps class="w-4 h-4 mr-3" />
-                  Mes services
-                </a>
-                <a href="https://pgs-user.netlify.app/me/sessions"
-                  class="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-50 hover:text-primary transition-colors">
-                  <IconHistory class="w-4 h-4 mr-3" />
-                  Mes sessions
+                  <component :is="link.icon" class="w-4 h-4 mr-3" />
+                  {{ link.text }}
                 </a>
                 <div class="border-t border-gray-100 my-1"></div>
                 <button @click="handleLogout"
@@ -112,25 +102,11 @@
                 </div>
                 <span class="font-medium text-gray-900">Salut {{ authStore.user?.firstName }}</span>
               </div>
-              <a href="https://pgs-user.netlify.app/me/profile"
+              <a v-for="(link, index) in userLinks" :key="index" :href="link.href"
                 class="block px-4 py-2 text-base font-medium text-gray-600 hover:text-primary hover:bg-gray-50">
                 <div class="flex items-center">
-                  <IconUser class="w-4 h-4 mr-3" />
-                  Gérer mon profil
-                </div>
-              </a>
-              <a href="https://pgs-user.netlify.app/me/services"
-                class="block px-4 py-2 text-base font-medium text-gray-600 hover:text-primary hover:bg-gray-50">
-                <div class="flex items-center">
-                  <IconApps class="w-4 h-4 mr-3" />
-                  Mes services
-                </div>
-              </a>
-              <a href="https://pgs-user.netlify.app/me/sessions"
-                class="block px-4 py-2 text-base font-medium text-gray-600 hover:text-primary hover:bg-gray-50">
-                <div class="flex items-center">
-                  <IconHistory class="w-4 h-4 mr-3" />
-                  Mes sessions
+                  <component :is="link.icon" class="w-4 h-4 mr-3" />
+                  {{ link.text }}
                 </div>
               </a>
               <button @click="handleLogout"
@@ -220,6 +196,12 @@ const navLinks = [
   { to: '/events', text: 'Événements' },
   { to: '/blog', text: 'Articles' },
   { to: '/about', text: 'À propos' },
+];
+
+const userLinks = [
+  { text: 'Gérer mon profil', href: 'https://pgs-user.netlify.app/me/profile', icon: IconUser },
+  { text: 'Mes services', href: 'https://pgs-user.netlify.app/me/services', icon: IconApps },
+  { text: 'Mes sessions', href: 'https://pgs-user.netlify.app/me/sessions', icon: IconHistory },
 ];
 
 const openContactModal = () => {
