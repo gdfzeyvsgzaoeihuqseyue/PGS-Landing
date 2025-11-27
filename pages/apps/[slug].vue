@@ -205,6 +205,10 @@
         </div>
       </div>
     </section>
+    
+    <div>
+      <SolutionInteractive />
+    </div>
   </main>
   <div v-else-if="solutionStore.loading" class="text-center py-20">
     <IconLoader class="animate-spin h-10 w-10 text-primary mx-auto" />
