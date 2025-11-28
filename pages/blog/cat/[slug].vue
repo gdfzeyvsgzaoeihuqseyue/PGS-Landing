@@ -1,7 +1,16 @@
 <template>
   <main class="min-h-screen bg-gray-50">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <template v-if="category">
+      <!-- Chargement en cours -->
+      <div v-if="!categoryStore.initialized || !articleStore.initialized.articles || !authorStore.initialized"
+        class="text-center py-20">
+        <IconLoader class="animate-spin h-10 w-10 text-primary mx-auto" />
+        <p class="mt-2 text-gray-600">Chargement...</p>
+      </div>
+
+      <!-- Contenu principal -->
+      <template
+        v-else-if="categoryStore.initialized && articleStore.initialized.articles && authorStore.initialized && category">
         <!-- En-tête -->
         <header
           class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center mb-12 mt-8 flex flex-col sm:flex-row sm:items-center sm:justify-between">
@@ -14,7 +23,7 @@
           </div>
 
           <!-- Boutons -->
-          <div class="mt-4 sm:mt-0"> <!-- Ajout de marge pour l'empilement sur mobile -->
+          <div class="mt-4 sm:mt-0">
             <button @click="$router.back()"
               class="my-2 sm:my-6 flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-gray-700 bg-white hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition">
               <IconArrowLeft class="h-5 w-5 mr-2" />
@@ -78,7 +87,8 @@
                     <li v-for="authId in uniqueAuthorIdsOfCategory" :key="authId">
                       <label class="flex items-center space-x-2 cursor-pointer">
                         <input type="checkbox" v-model="selectedAuthorIds" :value="authId" class="rounded text-primary">
-                        <span>{{ authorStore.getAuthorById(authId)?.name || 'Inconnu' }} ({{ getArticleCountForAuthor(authId) }})</span>
+                        <span>{{ authorStore.getAuthorById(authId)?.name || 'Inconnu' }} ({{
+                          getArticleCountForAuthor(authId) }})</span>
                       </label>
                     </li>
                   </ul>
@@ -111,16 +121,14 @@
 
           <main class="lg:w-3/4">
             <!-- Bouton sidebar mobile -->
-            <button @click="showSidebar = true" v-if="!showSidebar" class="lg:hidden mb-6 flex items-center text-primary">
+            <button @click="showSidebar = true" v-if="!showSidebar"
+              class="lg:hidden mb-6 flex items-center text-primary">
               <IconFilter class="h-5 w-5 mr-2" />
               Filtres et statistiques
             </button>
 
             <!-- Chargement / Erreur -->
-            <div v-if="categoryStore.loading || articleStore.loading || authorStore.loading" class="text-center py-10">
-              <IconLoader class="animate-spin h-10 w-10 text-primary mx-auto" />
-              <p class="mt-2 text-gray-600">Chargement des articles...</p>
-            </div>
+            <LogoLoader v-if="categoryStore.loading || articleStore.loading || authorStore.loading" :show-text="true" size="lg" text="Chargement des articles de cette catégorie..." />
             <div v-else-if="categoryStore.error || articleStore.error || authorStore.error" class="text-center py-10">
               <p>Nous n'avons pas réussi à charger les articles de cette catégorie</p>
             </div>
@@ -145,7 +153,7 @@
 
             <!-- Pagination -->
             <div v-if="filteredArticles.length > itemsPerPage" class="mt-8 flex justify-center">
-              <nav class="inline-flex flex-wrap rounded-md shadow"> <!-- Ajout de flex-wrap -->
+              <nav class="inline-flex flex-wrap rounded-md shadow">
                 <button @click="currentPage--" :disabled="currentPage === 1"
                   class="px-3 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50">
                   Précédent
@@ -186,6 +194,7 @@ import { useRoute } from 'vue-router';
 import { useArticleStore, useCategoryStore, useAuthorStore } from '@/stores';
 import type { Category as CategoryType } from '@/types';
 import { IconArrowBack, IconArrowLeft, IconX, IconFilter, IconSearch, IconMoodConfuzed, IconLoader } from '@tabler/icons-vue';
+import { LogoLoader } from '@/components/utils';
 
 // Stores
 const articleStore = useArticleStore();
@@ -195,10 +204,9 @@ const authorStore = useAuthorStore();
 // Variables réactives
 const route = useRoute();
 const categorySlug = route.params.slug as string;
-
 const showSidebar = ref(false);
 const searchQuery = ref('');
-const selectedAuthorIds = ref<string[]>([]); // IDs sont maintenant des strings
+const selectedAuthorIds = ref<string[]>([]);
 const sortBy = ref('newest');
 const dateRange = ref({
   start: '',
@@ -208,7 +216,7 @@ const dateRange = ref({
 const currentPage = ref(1);
 const itemsPerPage = 6;
 
-// Fetch data on component mount
+// Fetch data
 onMounted(async () => {
   await Promise.all([
     categoryStore.fetchCategories(),
@@ -229,7 +237,7 @@ const initialCategoryArticles = computed(() => {
 
 // Auteurs uniques des articles de cette catégorie
 const uniqueAuthorIdsOfCategory = computed(() => {
-  const authorIdsSet = new Set<string>(); // IDs sont maintenant des strings
+  const authorIdsSet = new Set<string>();
   initialCategoryArticles.value.forEach(article => authorIdsSet.add(article.author.id));
   return Array.from(authorIdsSet).sort((a, b) => {
     const nameA = authorStore.getAuthorById(a)?.name || '';
@@ -282,7 +290,7 @@ const filteredArticles = computed(() => {
 
 // Vues totales pour les articles de cette catégorie
 const totalCategoryViews = computed(() =>
-  initialCategoryArticles.value.reduce((sum, article) => sum + (article.views || 0), 0) 
+  initialCategoryArticles.value.reduce((sum, article) => sum + (article.views || 0), 0)
 );
 
 const getArticleCountForAuthor = (authorId: string) => {

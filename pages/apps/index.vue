@@ -33,18 +33,15 @@
           </button>
 
           <!-- Chargement / Erreur -->
-          <div v-if="solutionStore.loading" class="text-center py-10">
-            <IconLoader class="animate-spin h-10 w-10 text-primary mx-auto" />
-            <p class="mt-2 text-gray-600">Chargement des solutions...</p>
-          </div>
+          <LogoLoader v-if="solutionStore.loading" :show-text="true" size="lg" text="Chargement des applications..." />
           <div v-else-if="solutionStore.error" class="text-center py-10">
             <p>Nous n'avons pas réussi à charger les solutions</p>
           </div>
 
           <!-- Cartes de solutions -->
           <div v-else-if="sidebar.paginatedItems.value.length > 0" class="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <NuxtLink v-for="solution in sidebar.paginatedItems.value" :key="solution.id"
-              :to="`/apps/${solution.slug}`" :class="[
+            <NuxtLink v-for="solution in sidebar.paginatedItems.value" :key="solution.id" :to="`/apps/${solution.slug}`"
+              :class="[
                 'group relative bg-white rounded-xl shadow-lg overflow-hidden p-6 border-2 transition-all duration-300 hover:shadow-xl hover:transform hover:scale-105',
                 solution.disabled
                   ? 'border-dashed hover:border-warning cursor-progress'
@@ -57,18 +54,17 @@
                   class="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
                   Actif
                 </div>
-                <div v-else
-                  class="px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800">
+                <div v-else class="px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800">
                   Inactif
                 </div>
 
                 <!-- Indicateur d'auth -->
-                <div class="flex items-center gap-1 px-2 py-1 text-xs font-semibold rounded-full bg-white border border-gray-200 shadow-sm">
-                  <component :is="solution.allowAuth ? IconLock : IconLockOpen2" 
-                    :class="solution.allowAuth ? 'text-orange-500' : 'text-green-500'" 
-                    class="w-3.5 h-3.5" />
-                  <component v-if="solution.allowAuth" 
-                    :is="solution.authType === 'user' ? IconUser : solution.authType === 'learner' ? IconSchool : IconUsersPlus" 
+                <div
+                  class="flex items-center gap-1 px-2 py-1 text-xs font-semibold rounded-full bg-white border border-gray-200 shadow-sm">
+                  <component :is="solution.allowAuth ? IconLock : IconLockOpen2"
+                    :class="solution.allowAuth ? 'text-orange-500' : 'text-green-500'" class="w-3.5 h-3.5" />
+                  <component v-if="solution.allowAuth"
+                    :is="solution.authType === 'user' ? IconUser : solution.authType === 'learner' ? IconSchool : IconUsersPlus"
                     class="w-3.5 h-3.5 text-blue-500" />
                 </div>
               </div>
@@ -111,10 +107,11 @@
 
 <script setup lang="ts">
 import { computed, onMounted } from 'vue';
-import { IconFilter, IconLoader, IconLock, IconLockOpen2, IconUser, IconSchool, IconUsersPlus } from '@tabler/icons-vue';
+import { IconFilter, IconLock, IconLockOpen2, IconUser, IconSchool, IconUsersPlus } from '@tabler/icons-vue';
 import { useSolutionStore } from '@/stores/solutions';
 import { useSidebar } from '@/composables/useSidebar';
 import { AppPagination, AppSidebar } from '@/components/app';
+import { LogoLoader } from '@/components/utils';
 
 const solutionStore = useSolutionStore();
 

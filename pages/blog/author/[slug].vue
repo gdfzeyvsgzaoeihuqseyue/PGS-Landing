@@ -1,7 +1,14 @@
 <template>
   <main class="min-h-screen bg-gray-50">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <template v-if="author">
+      <!-- Chargement en cours -->
+      <div v-if="!authorStore.initialized || !articleStore.initialized.articles" class="text-center py-20">
+        <IconLoader class="animate-spin h-10 w-10 text-primary mx-auto" />
+        <p class="mt-2 text-gray-600">Chargement...</p>
+      </div>
+
+      <!-- Contenu principal -->
+      <template v-else-if="authorStore.initialized && articleStore.initialized.articles && author">
         <!-- En-tête -->
         <header
           class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center mb-12 mt-8 flex flex-col sm:flex-row sm:items-center sm:justify-between">
@@ -89,7 +96,8 @@
                   <ul class="space-y-2">
                     <li v-for="catName in uniqueCategoriesOfAuthor" :key="catName">
                       <label class="flex items-center space-x-2 cursor-pointer">
-                        <input type="checkbox" v-model="selectedCategories" :value="catName" class="rounded text-primary">
+                        <input type="checkbox" v-model="selectedCategories" :value="catName"
+                          class="rounded text-primary">
                         <span>{{ catName }} ({{ getArticleCountForCategory(catName) }})</span>
                       </label>
                     </li>
@@ -123,16 +131,14 @@
 
           <main class="lg:w-3/4">
             <!-- Bouton sidebar mobile -->
-            <button @click="showSidebar = true" v-if="!showSidebar" class="lg:hidden mb-6 flex items-center text-primary">
+            <button @click="showSidebar = true" v-if="!showSidebar"
+              class="lg:hidden mb-6 flex items-center text-primary">
               <IconFilter class="h-5 w-5 mr-2" />
               Filtres et statistiques
             </button>
 
             <!-- Chargement / Erreur -->
-            <div v-if="authorStore.loading || articleStore.loading" class="text-center py-10">
-              <IconLoader class="animate-spin h-10 w-10 text-primary mx-auto" />
-              <p class="mt-2 text-gray-600">Chargement des articles...</p>
-            </div>
+             <LogoLoader v-if="authorStore.loading || articleStore.loading" :show-text="true" size="lg" text="Chargement des articles de cet auteur..." />
             <div v-else-if="authorStore.error || articleStore.error" class="text-center py-10 text-red-500">
               <p>Nous n'avons pas réussi à charger les articles de cet autheur</p>
             </div>
@@ -183,7 +189,7 @@
         </p>
         <NuxtLink to="/blog"
           class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-primary hover:bg-secondary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition">
-          <IconArrowBack class="mr-2 -mr-1 h-5 w-5" />
+          <IconArrowBack class="mr-2 h-5 w-5" />
           Voir toutes les actualités
         </NuxtLink>
       </div>
@@ -197,6 +203,7 @@ import { useRoute } from 'vue-router';
 import { useArticleStore, useAuthorStore } from '@/stores';
 import type { Author as AuthorType } from '@/types';
 import { IconArrowBack, IconArrowLeft, IconX, IconFilter, IconSearch, IconMoodConfuzed, IconBrandTwitter, IconBrandLinkedin, IconLoader } from '@tabler/icons-vue';
+import { LogoLoader } from '@/components/utils';
 
 // Stores
 const articleStore = useArticleStore();
@@ -205,10 +212,9 @@ const authorStore = useAuthorStore();
 // Variables réactives
 const route = useRoute();
 const authorSlug = route.params.slug as string;
-
 const showSidebar = ref(false);
 const searchQuery = ref('');
-const selectedCategories = ref<string[]>([]); 
+const selectedCategories = ref<string[]>([]);
 const sortBy = ref('newest');
 const dateRange = ref({
   start: '',
@@ -218,7 +224,7 @@ const dateRange = ref({
 const currentPage = ref(1);
 const itemsPerPage = 6;
 
-// Fetch data on component mount
+// Fetch data
 onMounted(async () => {
   await Promise.all([
     authorStore.fetchAuthors(),
@@ -287,7 +293,7 @@ const filteredArticles = computed(() => {
     filtered.sort((a, b) => b.views - a.views);
   } else if (sortBy.value === 'oldest') {
     filtered.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
-  } else { 
+  } else {
     filtered.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
   }
 

@@ -1,5 +1,4 @@
 import { defineStore } from 'pinia';
-import { useApiFetch } from '~/utils/api';
 import { ref, computed } from 'vue';
 import type { Category } from '@/types';
 
@@ -7,20 +6,30 @@ export const useCategoryStore = defineStore('categories', () => {
   const categories = ref<Category[]>([]);
   const loading = ref(false);
   const error = ref<string | null>(null);
+  const initialized = ref(false);
 
   // Trouver toutes les catégories 
   async function fetchCategories() {
     loading.value = true;
     error.value = null;
     try {
-      const response = await useApiFetch<{ data: Category[] }>(`/blog/category`, {
+      const { apiFetch } = useApi();
+      const { data: response, error: fetchError } = await apiFetch<{ data: Category[] }>(`/blog/category`, {
         params: { limit: 10 }
       });
-      categories.value = response.data;
+
+      if (fetchError.value) {
+        throw new Error(fetchError.value.message || 'Erreur lors du chargement');
+      }
+
+      if (response.value) {
+        categories.value = response.value.data;
+      }
     } catch (err: any) {
       error.value = 'Erreur lors du chargement des catégories: ' + (err.data?.message || err.message);
       console.error(error.value, err);
     } finally {
+      initialized.value = true;
       loading.value = false;
     }
   }
@@ -39,6 +48,7 @@ export const useCategoryStore = defineStore('categories', () => {
     categories,
     loading,
     error,
+    initialized,
     fetchCategories,
     getCategoryById,
     getCategoryBySlug,

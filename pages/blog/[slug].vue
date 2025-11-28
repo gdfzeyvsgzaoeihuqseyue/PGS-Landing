@@ -8,18 +8,20 @@
         Retour
       </button>
 
-      <template v-if="articleStore.loading">
-        <div class="text-center py-10">
-          <IconLoader class="animate-spin h-10 w-10 text-primary mx-auto" />
-          <p class="mt-2 text-gray-600">Chargement de l'article...</p>
-        </div>
+      <!-- Chargement en cours -->
+      <template v-if="!articleStore.initialized.currentArticle || articleStore.loading">
+        <LogoLoader :show-text="true" size="lg" text="Chargement de l'article..." />
       </template>
-      <template v-else-if="articleStore.error">
+
+      <!-- Erreur lors du chargement -->
+      <template v-else-if="articleStore.initialized.currentArticle && articleStore.error">
         <div class="text-center py-10">
           <p>Désolé, nous n'avons pas réussi à charger cet article</p>
         </div>
       </template>
-      <template v-else-if="article">
+
+      <!-- Contenu de l'article -->
+      <template v-else-if="articleStore.initialized.currentArticle && article">
         <!-- Contenu de l'article -->
         <article class="bg-white rounded-xl shadow-md overflow-hidden">
           <!-- Image d'en-tête de l'article -->
@@ -137,7 +139,8 @@
 import { ref, computed, onMounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useArticleStore, useAuthorStore } from '@/stores'
-import { IconArrowLeft, IconArrowBack, IconHeart, IconMessageDots, IconLoader, IconShare } from '@tabler/icons-vue'
+import { IconArrowLeft, IconArrowBack, IconHeart, IconMessageDots, IconShare } from '@tabler/icons-vue'
+import { LogoLoader } from '@/components/utils';
 
 const route = useRoute()
 const slug = route.params.slug as string

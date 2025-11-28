@@ -1,12 +1,8 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
 import type { Solution, PlateformDoc, PlateformFaq, PlateformTutorial, PlateformWiki, Partner, Testimony } from '@/types';
-import { useRuntimeConfig } from '#app';
 
 export const useSolutionStore = defineStore('solutions', () => {
-  const config = useRuntimeConfig();
-  const API_BASE_URL = config.public.pgsBaseAPI;
-
   const solutions = ref<Solution[]>([]);
   const currentSolution = ref<Solution | null>(null);
   const allDocs = ref<PlateformDoc[]>([]);
@@ -24,9 +20,14 @@ export const useSolutionStore = defineStore('solutions', () => {
     currentSolution: false,
   });
 
+  const initializedStates = ref({
+    solutions: false,
+    currentSolution: false,
+  });
+
   const loading = ref(false);
   const error = ref<string | null>(null);
-  
+
   const pagination = ref({
     currentPage: 1,
     totalPages: 1,
@@ -60,13 +61,20 @@ export const useSolutionStore = defineStore('solutions', () => {
 
   async function fetchCounts() {
     try {
-      const response = await $fetch<{
+      const { apiFetch } = useApi();
+      const { data: response, error: fetchError } = await apiFetch<{
         countsByLetter: Record<string, number>;
         countsByPlatform: Record<string, { id: string | null; count: number }>;
-      }>(`${API_BASE_URL}/solution/wiki/counts`);
+      }>(`/solution/wiki/counts`, {});
 
-      counts.value.byLetter = response.countsByLetter;
-      counts.value.byPlatform = response.countsByPlatform;
+      if (fetchError.value) {
+        throw new Error(fetchError.value.message || 'Erreur lors du chargement');
+      }
+
+      if (response.value) {
+        counts.value.byLetter = response.value.countsByLetter;
+        counts.value.byPlatform = response.value.countsByPlatform;
+      }
     } catch (err: any) {
       console.error('Erreur lors de la récupération des décomptes:', err);
       error.value = 'Erreur lors du chargement des décomptes: ' + (err.data?.message || err.message);
@@ -85,7 +93,8 @@ export const useSolutionStore = defineStore('solutions', () => {
         const initialLimit = 100;
 
         do {
-          const response = await $fetch<{
+          const { apiFetch } = useApi();
+          const { data: response, error: fetchError } = await apiFetch<{
             success: boolean;
             message: string;
             nb: number;
@@ -93,12 +102,18 @@ export const useSolutionStore = defineStore('solutions', () => {
             currentPage: number;
             totalPages: number;
             data: Solution[];
-          }>(`${API_BASE_URL}/solution/platform`, {
+          }>(`/solution/platform`, {
             params: { page: currentPage, limit: initialLimit }
           });
 
-          allFetchedSolutions = allFetchedSolutions.concat(response.data);
-          totalPages = response.totalPages;
+          if (fetchError.value) {
+            throw new Error(fetchError.value.message || 'Erreur lors du chargement');
+          }
+
+          if (response.value) {
+            allFetchedSolutions = allFetchedSolutions.concat(response.value.data);
+            totalPages = response.value.totalPages;
+          }
           currentPage++;
         } while (currentPage <= totalPages);
 
@@ -111,7 +126,8 @@ export const useSolutionStore = defineStore('solutions', () => {
         };
 
       } else {
-        const response = await $fetch<{
+        const { apiFetch } = useApi();
+        const { data: response, error: fetchError } = await apiFetch<{
           success: boolean;
           message: string;
           nb: number;
@@ -119,22 +135,29 @@ export const useSolutionStore = defineStore('solutions', () => {
           currentPage: number;
           totalPages: number;
           data: Solution[];
-        }>(`${API_BASE_URL}/solution/platform`, {
+        }>(`/solution/platform`, {
           params: { page, limit }
         });
 
-        solutions.value = response.data;
-        pagination.value = {
-          currentPage: response.currentPage,
-          totalPages: response.totalPages,
-          totalSolutions: response.nb,
-          limit: limit,
-        };
+        if (fetchError.value) {
+          throw new Error(fetchError.value.message || 'Erreur lors du chargement');
+        }
+
+        if (response.value) {
+          solutions.value = response.value.data;
+          pagination.value = {
+            currentPage: response.value.currentPage,
+            totalPages: response.value.totalPages,
+            totalSolutions: response.value.nb,
+            limit: limit,
+          };
+        }
       }
     } catch (err: any) {
       error.value = 'Erreur lors du chargement des solutions: ' + (err.data?.message || err.message);
       console.error(error.value, err);
     } finally {
+      initializedStates.value.solutions = true;
       loadingStates.value.solutions = false;
       loading.value = false;
     }
@@ -146,23 +169,32 @@ export const useSolutionStore = defineStore('solutions', () => {
     error.value = null;
     currentSolution.value = null;
     try {
-      const response = await $fetch<{
+      const { apiFetch } = useApi();
+      const { data: response, error: fetchError } = await apiFetch<{
         success: boolean;
         message: string;
         data: Solution;
-      }>(`${API_BASE_URL}/solution/platform/${identifier}`, {
+      }>(`/solution/platform/${identifier}`, {
         params: {
           populate: 'partners,testimonies,docs,faq,tutorials,wiki'
         }
       });
 
-      currentSolution.value = response.data;
-      return response.data;
+      if (fetchError.value) {
+        throw new Error(fetchError.value.message || 'Erreur lors du chargement');
+      }
+
+      if (response.value) {
+        currentSolution.value = response.value.data;
+        return response.value.data;
+      }
+      return null;
     } catch (err: any) {
       error.value = 'Erreur lors du chargement de la solution: ' + (err.data?.message || err.message);
       console.error(error.value, err);
       return null;
     } finally {
+      initializedStates.value.currentSolution = true;
       loadingStates.value.currentSolution = false;
       loading.value = false;
     }
@@ -176,7 +208,8 @@ export const useSolutionStore = defineStore('solutions', () => {
         await fetchSolutions(undefined, undefined, true);
       }
 
-      const response = await $fetch<{
+      const { apiFetch } = useApi();
+      const { data: response, error: fetchError } = await apiFetch<{
         success: boolean;
         message: string;
         nb: number;
@@ -184,12 +217,18 @@ export const useSolutionStore = defineStore('solutions', () => {
         currentPage: number;
         totalPages: number;
         data: PlateformDoc[];
-      }>(`${API_BASE_URL}/solution/doc`, {
+      }>(`/solution/doc`, {
         params: { page, limit: all ? 100 : limit }
       });
 
+      if (fetchError.value) {
+        throw new Error(fetchError.value.message || 'Erreur lors du chargement');
+      }
+
       // Enrichir avec les logos
-      allDocs.value = enrichPlatformWithLogos(response.data);
+      if (response.value) {
+        allDocs.value = enrichPlatformWithLogos(response.value.data);
+      }
     } catch (err: any) {
       error.value = 'Erreur lors du chargement des documents: ' + (err.data?.message || err.message);
       console.error(error.value, err);
@@ -206,7 +245,8 @@ export const useSolutionStore = defineStore('solutions', () => {
         await fetchSolutions(undefined, undefined, true);
       }
 
-      const response = await $fetch<{
+      const { apiFetch } = useApi();
+      const { data: response, error: fetchError } = await apiFetch<{
         success: boolean;
         message: string;
         nb: number;
@@ -214,12 +254,18 @@ export const useSolutionStore = defineStore('solutions', () => {
         currentPage: number;
         totalPages: number;
         data: PlateformFaq[];
-      }>(`${API_BASE_URL}/solution/faq`, {
+      }>(`/solution/faq`, {
         params: { page, limit: all ? 100 : limit }
       });
 
+      if (fetchError.value) {
+        throw new Error(fetchError.value.message || 'Erreur lors du chargement');
+      }
+
       // Enrichir avec les logos
-      allFaqs.value = enrichPlatformWithLogos(response.data);
+      if (response.value) {
+        allFaqs.value = enrichPlatformWithLogos(response.value.data);
+      }
     } catch (err: any) {
       error.value = 'Erreur lors du chargement des FAQs: ' + (err.data?.message || err.message);
       console.error(error.value, err);
@@ -237,7 +283,8 @@ export const useSolutionStore = defineStore('solutions', () => {
         await fetchSolutions(undefined, undefined, true);
       }
 
-      const response = await $fetch<{
+      const { apiFetch } = useApi();
+      const { data: response, error: fetchError } = await apiFetch<{
         success: boolean;
         message: string;
         nb: number;
@@ -245,11 +292,17 @@ export const useSolutionStore = defineStore('solutions', () => {
         currentPage: number;
         totalPages: number;
         data: PlateformTutorial[];
-      }>(`${API_BASE_URL}/solution/tutorial`, {
+      }>(`/solution/tutorial`, {
         params: { page, limit: all ? 100 : limit }
       });
 
-      allTutorials.value = enrichPlatformWithLogos(response.data);
+      if (fetchError.value) {
+        throw new Error(fetchError.value.message || 'Erreur lors du chargement');
+      }
+
+      if (response.value) {
+        allTutorials.value = enrichPlatformWithLogos(response.value.data);
+      }
     } catch (err: any) {
       error.value = 'Erreur lors du chargement des tutoriels: ' + (err.data?.message || err.message);
       console.error(error.value, err);
@@ -275,7 +328,8 @@ export const useSolutionStore = defineStore('solutions', () => {
         params.platformId = platformId;
       }
 
-      const response = await $fetch<{
+      const { apiFetch } = useApi();
+      const { data: response, error: fetchError } = await apiFetch<{
         success: boolean;
         message: string;
         nb: number;
@@ -283,24 +337,30 @@ export const useSolutionStore = defineStore('solutions', () => {
         currentPage: number;
         totalPages: number;
         data: PlateformWiki[];
-      }>(`${API_BASE_URL}/solution/wiki`, {
+      }>(`/solution/wiki`, {
         params: params
       });
 
-      const enrichedData = enrichPlatformWithLogos(response.data);
-
-      if (loadMore) {
-        allWikis.value = [...allWikis.value, ...enrichedData];
-      } else {
-        allWikis.value = enrichedData;
+      if (fetchError.value) {
+        throw new Error(fetchError.value.message || 'Erreur lors du chargement');
       }
-      
-      pagination.value = {
-        currentPage: response.currentPage,
-        totalPages: response.totalPages,
-        totalSolutions: response.nb,
-        limit: limit,
-      };
+
+      if (response.value) {
+        const enrichedData = enrichPlatformWithLogos(response.value.data);
+
+        if (loadMore) {
+          allWikis.value = [...allWikis.value, ...enrichedData];
+        } else {
+          allWikis.value = enrichedData;
+        }
+
+        pagination.value = {
+          currentPage: response.value.currentPage,
+          totalPages: response.value.totalPages,
+          totalSolutions: response.value.nb,
+          limit: limit,
+        };
+      }
 
     } catch (err: any) {
       error.value = 'Erreur lors du chargement des wikis: ' + (err.data?.message || err.message);
@@ -320,6 +380,7 @@ export const useSolutionStore = defineStore('solutions', () => {
     allWikis,
     loading,
     loadingStates,
+    initializedStates,
     error,
     pagination,
     counts,

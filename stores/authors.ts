@@ -1,5 +1,4 @@
 import { defineStore } from 'pinia';
-import { useApiFetch } from '~/utils/api';
 import { ref, computed } from 'vue';
 import type { Author } from '@/types';
 
@@ -7,20 +6,30 @@ export const useAuthorStore = defineStore('authors', () => {
   const authors = ref<Author[]>([]);
   const loading = ref(false);
   const error = ref<string | null>(null);
+  const initialized = ref(false);
 
   // Récupère tous les auteurs
   async function fetchAuthors() {
     loading.value = true;
     error.value = null;
     try {
-      const response = await useApiFetch<{ data: Author[] }>(`/blog/author`, {
+      const { apiFetch } = useApi();
+      const { data: response, error: fetchError } = await apiFetch<{ data: Author[] }>(`/blog/author`, {
         params: { limit: 10 }
       });
-      authors.value = response.data;
+
+      if (fetchError.value) {
+        throw new Error(fetchError.value.message || 'Erreur lors du chargement');
+      }
+
+      if (response.value) {
+        authors.value = response.value.data;
+      }
     } catch (err: any) {
       error.value = 'Erreur lors du chargement des auteurs: ' + (err.data?.message || err.message);
       console.error(error.value, err);
     } finally {
+      initialized.value = true;
       loading.value = false;
     }
   }
@@ -39,6 +48,7 @@ export const useAuthorStore = defineStore('authors', () => {
     authors,
     loading,
     error,
+    initialized,
     fetchAuthors,
     getAuthorById,
     getAuthorBySlug,

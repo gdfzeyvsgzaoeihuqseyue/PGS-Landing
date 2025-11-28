@@ -13,7 +13,7 @@
       </div>
 
       <!-- Bouton de retour -->
-      <div class="mt-4 sm:mt-0"> <!-- Ajout de marge pour l'empilement sur mobile -->
+      <div class="mt-4 sm:mt-0">
         <button @click="$router.back()"
           class="my-2 sm:my-6 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-gray-700 bg-white hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition">
           <IconArrowLeft class="h-5 w-5 mr-2" />
@@ -94,10 +94,7 @@
           </button>
 
           <!-- Chargement / Erreur -->
-          <div v-if="categoryStore.loading || articleStore.loading" class="text-center py-10">
-            <IconLoader class="animate-spin h-10 w-10 text-primary mx-auto" />
-            <p class="mt-2 text-gray-600">Chargement des catégories...</p>
-          </div>
+          <LogoLoader v-if="categoryStore.loading || articleStore.loading" :show-text="true" size="lg" text="Chargement des catégories..." />
           <div v-else-if="categoryStore.error || articleStore.error" class="text-center py-10">
             <p>Nous n'avons pas réussi à charger les articles de cette catégorie</p>
           </div>
@@ -150,7 +147,8 @@
 <script setup lang="ts">
 import { ref, computed, watch, onMounted } from 'vue'
 import { useCategoryStore, useArticleStore } from '@/stores'
-import { IconArrowLeft, IconLoader, IconFilter, IconX } from '@tabler/icons-vue'
+import { IconArrowLeft, IconFilter, IconX } from '@tabler/icons-vue'
+import { LogoLoader } from '@/components/utils';
 
 // Stores
 const categoryStore = useCategoryStore();
@@ -161,7 +159,7 @@ const currentPage = ref(1)
 const itemsPerPage = 9
 const showSidebar = ref(false);
 
-// Fetch data on component mount
+// Fetch data
 onMounted(async () => {
   await Promise.all([
     categoryStore.fetchCategories(),

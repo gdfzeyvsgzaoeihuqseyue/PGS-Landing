@@ -1,5 +1,4 @@
 import { defineStore } from 'pinia';
-import { useApiFetch } from '~/utils/api';
 import { ref, computed } from 'vue';
 import type { Article } from '@/types';
 
@@ -9,19 +8,33 @@ export const useArticleStore = defineStore('articles', () => {
   const loading = ref(false);
   const error = ref<string | null>(null);
 
+  const initialized = ref({
+    articles: false,
+    currentArticle: false,
+  });
+
   // Récupère tous les articles 
   async function fetchArticles() {
     loading.value = true;
     error.value = null;
     try {
-      const response = await useApiFetch<{ data: Article[] }>('/blog/article', {
+      const { apiFetch } = useApi();
+      const { data: response, error: fetchError } = await apiFetch<{ data: Article[] }>('/blog/article', {
         params: { limit: 25 }
       });
-      articles.value = response.data;
+
+      if (fetchError.value) {
+        throw new Error(fetchError.value.message || 'Erreur lors du chargement');
+      }
+
+      if (response.value) {
+        articles.value = response.value.data;
+      }
     } catch (err: any) {
       error.value = 'Erreur lors du chargement des articles: ' + (err.data?.message || err.message);
       console.error(error.value, err);
     } finally {
+      initialized.value.articles = true;
       loading.value = false;
     }
   }
@@ -32,14 +45,24 @@ export const useArticleStore = defineStore('articles', () => {
     error.value = null;
     currentArticle.value = null;
     try {
-      const response = await useApiFetch<{ data: Article }>(`/blog/article/${identifier}`);
-      currentArticle.value = response.data;
-      return response.data;
+      const { apiFetch } = useApi();
+      const { data: response, error: fetchError } = await apiFetch<{ data: Article }>(`/blog/article/${identifier}`, {});
+
+      if (fetchError.value) {
+        throw new Error(fetchError.value.message || 'Erreur lors du chargement');
+      }
+
+      if (response.value) {
+        currentArticle.value = response.value.data;
+        return response.value.data;
+      }
+      return null;
     } catch (err: any) {
       error.value = 'Erreur lors du chargement de l\'article: ' + (err.data?.message || err.message);
       console.error(error.value, err);
       return null;
     } finally {
+      initialized.value.currentArticle = true;
       loading.value = false;
     }
   }
@@ -131,6 +154,7 @@ export const useArticleStore = defineStore('articles', () => {
     currentArticle,
     loading,
     error,
+    initialized,
     fetchArticles,
     fetchArticleBySlug,
     getFilteredAndSortedArticles,

@@ -91,10 +91,7 @@
           </button>
 
           <!-- Chargement / Erreur -->
-          <div v-if="authorStore.loading || articleStore.loading" class="text-center py-10">
-            <IconLoader class="animate-spin h-10 w-10 text-primary mx-auto" />
-            <p class="mt-2 text-gray-600">Chargement des auteurs...</p>
-          </div>
+          <LogoLoader v-if="authorStore.loading || articleStore.loading" :show-text="true" size="lg" text="Chargement des auteurs..." />
           <div v-else-if="authorStore.error || articleStore.error" class="text-center py-10">
             <p>Nous n'avons pas réussi à charger les articles de cet autheur</p>
           </div>
@@ -150,7 +147,8 @@
 <script setup lang="ts">
 import { ref, computed, watch, onMounted } from 'vue'
 import { useAuthorStore, useArticleStore } from '@/stores'
-import { IconArrowLeft, IconLoader, IconFilter, IconX } from '@tabler/icons-vue'
+import { IconArrowLeft, IconFilter, IconX } from '@tabler/icons-vue'
+import { LogoLoader } from '@/components/utils';
 
 const authorStore = useAuthorStore();
 const articleStore = useArticleStore();
