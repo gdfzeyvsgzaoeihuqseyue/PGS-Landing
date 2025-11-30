@@ -1,5 +1,5 @@
 <template>
-  <component :is="tag" :href="tag === 'a' ? ssoUrl : undefined" :class="buttonClass"
+  <component :is="tag" :href="tag === 'a' ? ssoAuthUrl : undefined" :class="buttonClass"
     class="inline-flex items-center justify-center space-x-2 transition-all cursor-pointer"
     @click="tag === 'button' ? handleClick : undefined">
     <IconShieldCheck v-if="showIcon && iconPosition === 'left'" class="w-5 h-5" />
@@ -16,7 +16,6 @@
 import { IconArrowRight, IconShieldCheck } from '@tabler/icons-vue'
 
 interface Props {
-  serviceId?: string
   action?: 'login' | 'register'
   returnUrl?: string
   buttonClass?: string
@@ -40,15 +39,15 @@ const defaultText = computed(() => {
     : 'S\'inscrire avec PGS'
 })
 
-const { getSSOUrl } = useSSO()
+const { getSSOAuthUrl } = useSSOAuth()
 
-const ssoUrl = computed(() => {
-  return getSSOUrl(props.action, props.returnUrl)
+const ssoAuthUrl = computed(() => {
+  return getSSOAuthUrl(props.returnUrl)
 })
 
 const handleClick = () => {
   if (props.tag === 'button') {
-    window.location.href = ssoUrl.value
+    window.location.href = ssoAuthUrl.value
   }
 }
 </script>

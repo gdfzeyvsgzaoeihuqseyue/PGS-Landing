@@ -63,10 +63,10 @@
                 class="fixed inset-0 z-40 bg-transparent cursor-default"></div>
             </template>
 
-            <SSOButton v-else action="login" tag="a" :showIcon="false"
+            <SSOAuthButton v-else action="login" tag="a" :showIcon="false"
               class="hidden sm:flex bg-white text-primary border border-primary px-4 py-2 rounded-md hover:bg-gray-50 transition-colors text-base font-medium ml-2">
               Se connecter
-            </SSOButton>
+            </SSOAuthButton>
           </div>
 
           <!-- Bouton hamburger mobile -->
@@ -117,10 +117,10 @@
                 </div>
               </button>
             </template>
-            <SSOButton v-else action="login" tag="a" :showIcon="false"
+            <SSOAuthButton v-else action="login" tag="a" :showIcon="false"
               class="w-full text-center block bg-white text-primary border border-primary px-4 py-2 rounded-md hover:bg-gray-50 transition-colors text-base font-medium mt-2">
               Se connecter
-            </SSOButton>
+            </SSOAuthButton>
           </div>
         </div>
       </div>

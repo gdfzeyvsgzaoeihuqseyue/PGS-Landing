@@ -64,7 +64,7 @@
               </div>
             </div>
 
-            <SSOButton v-else action="login" tag="a" :showIcon="false" class="group relative">
+            <SSOAuthButton v-else action="login" tag="a" :showIcon="false" class="group relative">
               <div
                 class="absolute -inset-1 bg-gradient-to-r from-yellow-400 to-yellow-600 rounded-full blur opacity-25 group-hover:opacity-100 transition duration-1000">
               </div>
@@ -73,7 +73,7 @@
                 <IconLogin class="w-5 h-5" />
                 <span>Se connecter</span>
               </div>
-            </SSOButton>
+            </SSOAuthButton>
 
             <NuxtLink to="/apps"
               class="group relative px-8 py-4 rounded-full font-semibold text-white border-2 border-white/50 backdrop-blur-sm hover:bg-white/10 transition-all duration-300 flex items-center space-x-2 shadow-lg">
