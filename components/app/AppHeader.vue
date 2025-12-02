@@ -23,6 +23,8 @@
 
         <!-- Partie droite avec bouton contact et hamburger sur mobile -->
         <div class="flex items-center space-x-4">
+          <PGSAppSwitcher container-id="header-app-switcher" :on-app-click="handleAppClick" />
+
           <button @click="openContactModal"
             class="hidden sm:block bg-primary text-white px-4 py-2 rounded-md hover:bg-secondary transition-colors text-base">
             Nous contacter
@@ -94,6 +96,8 @@
 
           <!-- Mobile Auth -->
           <div class="pt-4 border-t border-gray-100 mt-2">
+            <PGSAppSwitcher container-id="header-app-switcher" :on-app-click="handleAppClick" />
+            
             <template v-if="authStore.isLoggedIn">
               <div class="px-4 py-2 flex items-center space-x-3 mb-2">
                 <div
