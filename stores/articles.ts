@@ -19,7 +19,7 @@ export const useArticleStore = defineStore('articles', () => {
     error.value = null;
     try {
       const { apiFetch } = useApi();
-      const { data: response, error: fetchError } = await apiFetch<{ data: Article[] }>('/blog/article', {
+      const { data: response, error: fetchError } = await apiFetch<{ data: Article[] }>('/public/blog/get-article', {
         params: { limit: 25 }
       });
 
@@ -46,7 +46,7 @@ export const useArticleStore = defineStore('articles', () => {
     currentArticle.value = null;
     try {
       const { apiFetch } = useApi();
-      const { data: response, error: fetchError } = await apiFetch<{ data: Article }>(`/blog/article/${identifier}`, {});
+      const { data: response, error: fetchError } = await apiFetch<{ data: Article }>(`/public/blog/get-article/${identifier}`, {});
 
       if (fetchError.value) {
         throw new Error(fetchError.value.message || 'Erreur lors du chargement');

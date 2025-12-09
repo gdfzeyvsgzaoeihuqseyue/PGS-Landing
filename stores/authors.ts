@@ -14,7 +14,7 @@ export const useAuthorStore = defineStore('authors', () => {
     error.value = null;
     try {
       const { apiFetch } = useApi();
-      const { data: response, error: fetchError } = await apiFetch<{ data: Author[] }>(`/blog/author`, {
+      const { data: response, error: fetchError } = await apiFetch<{ data: Author[] }>(`/public/blog/get-author`, {
         params: { limit: 10 }
       });
 

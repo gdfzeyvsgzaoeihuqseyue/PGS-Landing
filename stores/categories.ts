@@ -14,7 +14,7 @@ export const useCategoryStore = defineStore('categories', () => {
     error.value = null;
     try {
       const { apiFetch } = useApi();
-      const { data: response, error: fetchError } = await apiFetch<{ data: Category[] }>(`/blog/category`, {
+      const { data: response, error: fetchError } = await apiFetch<{ data: Category[] }>(`/public/blog/get-category`, {
         params: { limit: 10 }
       });
 
