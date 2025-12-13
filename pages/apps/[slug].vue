@@ -131,22 +131,59 @@
               </ul>
             </template>
 
+
             <template
               v-if="solutionStore.currentSolution.faqTopics && solutionStore.currentSolution.faqTopics.length > 0">
               <div class="flex items-center mb-4 gap-4">
                 <h3 class="text-2xl font-bold">FAQ</h3>
-                ( {{ solutionStore.currentSolution.faqTopics.length }} FAQs )
+                ( {{ totalFaqCount }} FAQs dans {{ solutionStore.currentSolution.faqTopics.length }} sujets )
               </div>
 
               <div v-if="solutionStore.currentSolution.faqTopics.length > 2" class="gap-4 mb-8">
                 <input type="search" v-model="faqSearchQuery" placeholder="Rechercher une question..."
                   class="w-full p-2 border border-gray-300 rounded-md" />
               </div>
-              <div v-for="(item, index) in filteredFaqs" :key="index" class="mb-4 last:mb-0">
-                <h4 class="font-semibold">{{ item.question }}</h4>
-                <p class="text-sm">{{ item.answer }}</p>
+
+              <!-- Topics et leurs FAQs -->
+              <div class="space-y-4">
+                <div v-for="(topic, topicIndex) in filteredTopics" :key="topic.id"
+                  class="border border-gray-200 rounded-lg overflow-hidden">
+
+                  <!-- En-tête du topic -->
+                  <button @click="toggleTopic(topicIndex)"
+                    class="w-full p-4 bg-gray-50 hover:bg-gray-100 transition-colors flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                      <IconFolder
+                        :class="['w-6 h-6', openTopics.includes(topicIndex) ? 'text-primary' : 'text-gray-400']" />
+                      <div class="text-left">
+                        <h4 class="font-semibold text-lg">{{ topic.name }}</h4>
+                        <p v-if="topic.description" class="text-sm text-gray-600">{{ topic.description }}</p>
+                      </div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                      <span class="text-sm text-gray-500 bg-white px-2 py-1 rounded-full">
+                        {{ topic.faqs?.length || 0 }} question{{ (topic.faqs?.length || 0) > 1 ? 's' : '' }}
+                      </span>
+                      <IconChevronDown
+                        :class="['w-5 h-5 transition-transform', openTopics.includes(topicIndex) ? 'rotate-180' : '']" />
+                    </div>
+                  </button>
+
+                  <!-- FAQs du topic -->
+                  <div v-show="openTopics.includes(topicIndex)" class="p-4 bg-white space-y-3">
+                    <div v-for="(faq, faqIndex) in topic.faqs" :key="faq.id"
+                      class="border-b border-gray-100 last:border-0 pb-3 last:pb-0">
+                      <h5 class="font-semibold text-gray-900">{{ faq.question }}</h5>
+                      <p class="text-sm text-gray-700 mt-2">{{ faq.answer }}</p>
+                    </div>
+                    <p v-if="!topic.faqs || topic.faqs.length === 0" class="text-sm text-gray-500 italic">
+                      Aucune FAQ disponible pour ce sujet.
+                    </p>
+                  </div>
+                </div>
               </div>
-              <p v-if="filteredFaqs.length === 0 && faqSearchQuery" class="text-sm text-gray-500">
+
+              <p v-if="filteredTopics.length === 0 && faqSearchQuery" class="text-sm text-gray-500 mt-4">
                 Aucune FAQ trouvée pour votre recherche.
               </p>
             </template>
@@ -251,7 +288,7 @@
 import { computed, ref, onMounted, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import { useSolutionStore } from '@/stores/solutions';
-import { IconArrowLeft, IconExternalLink, IconUnlink, IconCheck, IconBook, IconVideo, IconLoader, IconArrowBack, IconLock, IconLockOpen2, IconUser, IconSchool, IconUsersPlus } from '@tabler/icons-vue';
+import { IconArrowLeft, IconExternalLink, IconUnlink, IconCheck, IconBook, IconVideo, IconLoader, IconArrowBack, IconLock, IconLockOpen2, IconUser, IconSchool, IconUsersPlus, IconFolder, IconChevronDown } from '@tabler/icons-vue';
 import { LogoLoader } from '@/components/utils';
 
 const route = useRoute();
@@ -262,6 +299,7 @@ const faqSearchQuery = ref('');
 const docSearchQuery = ref('');
 const tutorialSearchQuery = ref('');
 const wikiSearchQuery = ref('');
+const openTopics = ref<number[]>([]);
 
 // Charger les solutions
 onMounted(async () => {
@@ -288,23 +326,47 @@ const handleImageError = (e: Event, title: string, size: string) => {
   img.alt = `Image non disponible pour ${title}`;
 };
 
-// Filtered FAQs
-const filteredFaqs = computed(() => {
+// FAQ Topics - Maintenant avec hiérarchie
+const totalFaqCount = computed(() => {
+  if (!solutionStore.currentSolution?.faqTopics) return 0;
+  return solutionStore.currentSolution.faqTopics.reduce((total, topic) => {
+    return total + (topic.faqs?.length || 0);
+  }, 0);
+});
+
+const filteredTopics = computed(() => {
   if (!solutionStore.currentSolution?.faqTopics) return [];
 
-  const faqs = solutionStore.currentSolution.faqTopics;
   const query = faqSearchQuery.value.toLowerCase();
 
-  if (query) {
-    return faqs.filter(
-      (item) =>
-        item.question.toLowerCase().includes(query) ||
-        item.answer.toLowerCase().includes(query)
-    );
-  } else {
-    return faqs.slice(0, 2);
+  if (!query) {
+    return solutionStore.currentSolution.faqTopics;
   }
+
+  // Filtrer les topics qui ont des FAQs correspondantes
+  return solutionStore.currentSolution.faqTopics
+    .map(topic => {
+      const filteredFaqs = topic.faqs?.filter(faq =>
+        faq.question.toLowerCase().includes(query) ||
+        faq.answer.toLowerCase().includes(query)
+      );
+
+      return {
+        ...topic,
+        faqs: filteredFaqs
+      };
+    })
+    .filter(topic => (topic.faqs?.length || 0) > 0 || topic.name.toLowerCase().includes(query));
 });
+
+const toggleTopic = (index: number) => {
+  const idx = openTopics.value.indexOf(index);
+  if (idx > -1) {
+    openTopics.value.splice(idx, 1);
+  } else {
+    openTopics.value.push(index);
+  }
+};
 
 // Filtered Docs
 const filteredDocs = computed(() => {

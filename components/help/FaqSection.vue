@@ -20,12 +20,20 @@
     <div v-else-if="items.length > 0" class="grid grid-cols-1 md:grid-cols-2 gap-8">
       <div class="bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer"
         v-for="(item, index) in items" :key="item.id" @click="$emit('toggle', index)">
-        <!-- Badge plateforme -->
+        <!-- Badge plateforme et topic -->
         <div class="mb-2 flex justify-between items-center text-xs font-semibold">
-          <div class="flex items-center gap-2">
-            <img :src="item.platform?.logo" :alt="`Logo ${item.platform.name}`" class="w-5 h-5 rounded-full" @error="handleImageError($event, item.platform?.name || 'Platform')" />
-            <span class="text-xs font-medium bg-primary/10 text-primary px-2 py-1 rounded-full">
-              {{ item.platform.name }}
+          <div class="flex items-center gap-2 flex-wrap">
+            <div class="flex items-center gap-1">
+              <img :src="item.platform?.logo" :alt="`Logo ${item.platform.name}`" class="w-5 h-5 rounded-full"
+                @error="handleImageError($event, item.platform?.name || 'Platform')" />
+              <span class="text-xs font-medium bg-primary/10 text-primary px-2 py-1 rounded-full">
+                {{ item.platform.name }}
+              </span>
+            </div>
+            <span v-if="item.topic"
+              class="text-xs font-medium bg-blue-50 text-blue-600 px-2 py-1 rounded-full flex items-center gap-1">
+              <IconFolder class="w-3 h-3" />
+              {{ item.topic.name }}
             </span>
           </div>
         </div>
@@ -50,7 +58,7 @@
 </template>
 
 <script setup lang="ts">
-import { IconChevronDown, IconLoader } from '@tabler/icons-vue';
+import { IconChevronDown, IconLoader, IconFolder } from '@tabler/icons-vue';
 
 defineProps<{
   items: any[];

@@ -12,7 +12,7 @@ export interface Solution {
   ctaLink: string;
   features?: string[];
   docs?: { name: string; link: string }[];
-  faqTopics?: PlateformFaq[];
+  faqTopics?: FaqTopic[];
   tutorials?: { title: string; description: string; time: string; link: string; thumbnail?: string; }[];
   wiki?: PlateformWiki[];
   partners?: Partner[];
@@ -41,12 +41,36 @@ export interface PlateformDoc {
   platform: PlatformInfo;
 }
 
-export interface PlateformFaq {
+export interface FaqTopic {
+  id: string;
+  name: string;
+  slug: string;
+  description?: string;
+  status: 'active' | 'inactive';
+  platform: PlatformInfo;
+  faqs?: Faq[];
+  faqCount?: number;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface Faq {
   id: string;
   question: string;
   answer: string;
-  createdAt: string;
-  updatedAt: string;
+  status: 'active' | 'inactive';
+  isUseful: number;
+  isUseless: number;
+  topic?: {
+    id: string;
+    name: string;
+    slug: string;
+  };
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface PlateformFaq extends Faq {
   platform: PlatformInfo;
 }
 
