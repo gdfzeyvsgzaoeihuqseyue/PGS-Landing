@@ -63,19 +63,21 @@
               <p class="text-sm font-medium text-gray-600">Accès</p>
               <div class="flex items-center mt-1 space-x-3">
                 <div class="flex items-center px-2 py-1 rounded bg-white border border-gray-200 shadow-sm">
-                  <component :is="selectedSolution?.allowAuth ? IconLock : IconLockOpen2" 
-                    :class="selectedSolution?.allowAuth ? 'text-orange-500' : 'text-green-500'" 
-                    class="w-5 h-5 mr-2" />
+                  <component :is="selectedSolution?.allowAuth ? IconLock : IconLockOpen2"
+                    :class="selectedSolution?.allowAuth ? 'text-orange-500' : 'text-green-500'" class="w-5 h-5 mr-2" />
                   <span class="text-sm font-medium text-gray-700">
                     {{ selectedSolution?.allowAuth ? 'Restreint' : 'Libre' }}
                   </span>
                 </div>
 
-                <div v-if="selectedSolution?.allowAuth" class="flex items-center px-2 py-1 rounded bg-white border border-gray-200 shadow-sm">
-                  <component :is="selectedSolution?.authType === 'user' ? IconUser : selectedSolution?.authType === 'learner' ? IconSchool : IconUsersPlus" 
+                <div v-if="selectedSolution?.allowAuth"
+                  class="flex items-center px-2 py-1 rounded bg-white border border-gray-200 shadow-sm">
+                  <component
+                    :is="selectedSolution?.authType === 'user' ? IconUser : selectedSolution?.authType === 'learner' ? IconSchool : IconUsersPlus"
                     class="w-5 h-5 text-blue-500 mr-2" />
                   <span class="text-sm font-medium text-gray-700 capitalize">
-                    {{ selectedSolution?.authType === 'all' ? 'Tous' : selectedSolution?.authType === 'learner' ? 'Apprenants' : 'Utilisateurs' }}
+                    {{ selectedSolution?.authType === 'all' ? 'Tous' : selectedSolution?.authType === 'learner' ?
+                      'Apprenants' : 'Utilisateurs' }}
                   </span>
                 </div>
               </div>
@@ -155,7 +157,7 @@ const shuffleArray = (array: Solution[]): Solution[] => {
 };
 
 watchEffect(async () => {
-  if (!solutionStore.solutions.length && !solutionStore.loading) {
+  if (!solutionStore.initializedStates.solutions && !solutionStore.loadingStates.solutions) {
     await solutionStore.fetchSolutions(undefined, undefined, true);
   }
   const filtered = props.currentSolutionSlug

@@ -176,7 +176,7 @@ export const useSolutionStore = defineStore('solutions', () => {
         data: Solution;
       }>(`/solution/platform/${identifier}`, {
         params: {
-          populate: 'partners,testimonies,docs,faq,tutorials,wiki'
+          populate: 'partners,testimonies,docs,faqTopics,tutorials,wiki'
         }
       });
 

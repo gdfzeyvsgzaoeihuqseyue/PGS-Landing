@@ -12,7 +12,7 @@ export interface Solution {
   ctaLink: string;
   features?: string[];
   docs?: { name: string; link: string }[];
-  faq?: { question: string; answer: string }[];
+  faqTopics?: PlateformFaq[];
   tutorials?: { title: string; description: string; time: string; link: string; thumbnail?: string; }[];
   wiki?: PlateformWiki[];
   partners?: Partner[];

@@ -131,13 +131,14 @@
               </ul>
             </template>
 
-            <template v-if="solutionStore.currentSolution.faq && solutionStore.currentSolution.faq.length > 0">
+            <template
+              v-if="solutionStore.currentSolution.faqTopics && solutionStore.currentSolution.faqTopics.length > 0">
               <div class="flex items-center mb-4 gap-4">
                 <h3 class="text-2xl font-bold">FAQ</h3>
-                ( {{ solutionStore.currentSolution.faq.length }} FAQs )
+                ( {{ solutionStore.currentSolution.faqTopics.length }} FAQs )
               </div>
 
-              <div v-if="solutionStore.currentSolution.faq.length > 2" class="gap-4 mb-8">
+              <div v-if="solutionStore.currentSolution.faqTopics.length > 2" class="gap-4 mb-8">
                 <input type="search" v-model="faqSearchQuery" placeholder="Rechercher une question..."
                   class="w-full p-2 border border-gray-300 rounded-md" />
               </div>
@@ -289,9 +290,9 @@ const handleImageError = (e: Event, title: string, size: string) => {
 
 // Filtered FAQs
 const filteredFaqs = computed(() => {
-  if (!solutionStore.currentSolution?.faq) return [];
+  if (!solutionStore.currentSolution?.faqTopics) return [];
 
-  const faqs = solutionStore.currentSolution.faq;
+  const faqs = solutionStore.currentSolution.faqTopics;
   const query = faqSearchQuery.value.toLowerCase();
 
   if (query) {

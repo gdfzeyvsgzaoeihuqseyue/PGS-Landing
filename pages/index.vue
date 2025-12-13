@@ -125,7 +125,8 @@
     </section>
 
     <!-- Solution -->
-    <section v-if="!solutionStore.loading && !solutionStore.error && solutionStore.solutions.length > 0"
+    <section
+      v-if="solutionStore.initializedStates.solutions && !solutionStore.error && solutionStore.solutions.length > 0"
       class="py-16 bg-gray-50 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="text-center mb-8">
         <span class="inline-block px-4 py-2 bg-blue-100 text-blue-700 rounded-full text-sm font-semibold mb-4">
@@ -139,7 +140,7 @@
         </p>
       </div>
 
-      <div v-if="!solutionStore.loading && !solutionStore.error && solutionStore.solutions.length">
+      <div v-if="solutionStore.initializedStates.solutions && !solutionStore.error && solutionStore.solutions.length">
         <SolutionListDetails />
 
         <NuxtLink to="/apps"
