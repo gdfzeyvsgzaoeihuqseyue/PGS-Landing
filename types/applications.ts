@@ -58,7 +58,7 @@ export interface Faq {
   id: string;
   question: string;
   answer: string;
-  status: 'active' | 'inactive';
+  status?: 'active' | 'inactive';
   isUseful: number;
   isUseless: number;
   topic?: {

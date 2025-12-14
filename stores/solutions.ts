@@ -170,13 +170,15 @@ export const useSolutionStore = defineStore('solutions', () => {
     currentSolution.value = null;
     try {
       const { apiFetch } = useApi();
+
+      // 1. Récupérer la solution de base
       const { data: response, error: fetchError } = await apiFetch<{
         success: boolean;
         message: string;
         data: Solution;
       }>(`/solution/platform/${identifier}`, {
         params: {
-          populate: 'partners,testimonies,docs,faqTopics,tutorials,wiki'
+          populate: 'partners,testimonies,docs,tutorials,wiki'
         }
       });
 
@@ -185,8 +187,34 @@ export const useSolutionStore = defineStore('solutions', () => {
       }
 
       if (response.value) {
-        currentSolution.value = response.value.data;
-        return response.value.data;
+        const solution = response.value.data;
+
+        // 2. Récupérer les topics FAQ avec leurs FAQs imbriquées
+        try {
+          const { data: topicsResponse, error: topicsError } = await apiFetch<{
+            success: boolean;
+            message: string;
+            platform: any;
+            nb: number;
+            data: any[];
+          }>(`/solution/get-topics-platform`, {
+            params: {
+              platformSlug: solution.slug,
+              includeFaqs: true,
+              status: 'active'
+            }
+          });
+
+          if (!topicsError.value && topicsResponse.value) {
+            solution.faqTopics = topicsResponse.value.data;
+          }
+        } catch (topicsErr) {
+          console.warn('Impossible de charger les topics FAQ:', topicsErr);
+          solution.faqTopics = [];
+        }
+
+        currentSolution.value = solution;
+        return solution;
       }
       return null;
     } catch (err: any) {

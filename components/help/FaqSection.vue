@@ -31,7 +31,7 @@
               </span>
             </div>
             <span v-if="item.topic"
-              class="text-xs font-medium bg-blue-50 text-blue-600 px-2 py-1 rounded-full flex items-center gap-1">
+              class="text-xs font-medium bg-secondary/10 text-secondary px-2 py-1 rounded-full flex items-center gap-1">
               <IconFolder class="w-3 h-3" />
               {{ item.topic.name }}
             </span>
