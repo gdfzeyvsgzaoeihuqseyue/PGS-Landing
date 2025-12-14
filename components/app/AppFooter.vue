@@ -55,7 +55,7 @@ const navSections: NavSection[] = [
   {
     title: "Ressources",
     links: [
-      { name: "Applications", to: "/apps", disabled: true },
+      { name: "Questions Fréquentes", to: "/faq" },
       { name: "Aide", to: "/help", disabled: true },
       { name: "Wikilinks", to: "/wiki", disabled: true }
     ]

@@ -262,6 +262,9 @@
       <Partners />
     </section>
 
+    <!-- Section FAQ Aléatoire -->
+    <FaqRandom />
+
     <!-- Section Communauté -->
     <section class="py-20 bg-gradient-to-br from-blue-600 via-blue-700 to-blue-800 text-white relative overflow-hidden">
       <div class="absolute inset-0 bg-grid-pattern opacity-10"></div>
