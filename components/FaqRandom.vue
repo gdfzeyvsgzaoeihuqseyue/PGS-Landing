@@ -132,6 +132,13 @@ const shuffleArray = <T,>(array: T[]): T[] => {
 onMounted(async () => {
   try {
     const { apiFetch } = useApi();
+    const { useSolutionStore } = await import('@/stores/solutions');
+    const solutionStore = useSolutionStore();
+
+    // S'assurer que les solutions sont chargées pour avoir les logos
+    if (!solutionStore.solutions.length) {
+      await solutionStore.fetchSolutions(undefined, undefined, true);
+    }
 
     // Récupérer tous les topics avec leurs FAQs
     const { data: response, error: fetchError } = await apiFetch<{
@@ -148,8 +155,25 @@ onMounted(async () => {
     });
 
     if (!fetchError.value && response.value?.data) {
+      // Enrichir les topics avec les logos des plateformes
+      const enrichedTopics = response.value.data.map(topic => {
+        const fullPlatform = solutionStore.solutions.find(s => s.id === topic.platform?.id);
+        if (fullPlatform) {
+          return {
+            ...topic,
+            platform: {
+              ...topic.platform,
+              logo: fullPlatform.logo,
+              logoDesk: fullPlatform.logoDesk,
+              category: fullPlatform.category,
+            }
+          };
+        }
+        return topic;
+      });
+
       // Filtrer uniquement les topics qui ont des FAQs
-      const topicsWithFaqs = response.value.data.filter(topic =>
+      const topicsWithFaqs = enrichedTopics.filter(topic =>
         topic.faqs && topic.faqs.length > 0
       );
 

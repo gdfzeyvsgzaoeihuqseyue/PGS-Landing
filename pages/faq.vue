@@ -255,6 +255,13 @@ const getCountForTopic = (topicId: string) => {
 onMounted(async () => {
   try {
     const { apiFetch } = useApi();
+    const { useSolutionStore } = await import('@/stores/solutions');
+    const solutionStore = useSolutionStore();
+
+    // S'assurer que les solutions sont chargées pour avoir les logos
+    if (!solutionStore.solutions.length) {
+      await solutionStore.fetchSolutions(undefined, undefined, true);
+    }
 
     const { data: response, error: fetchError } = await apiFetch<{
       success: boolean;
@@ -274,7 +281,23 @@ onMounted(async () => {
     }
 
     if (response.value?.data) {
-      allTopics.value = response.value.data;
+      // Enrichir les topics avec les logos des plateformes
+      allTopics.value = response.value.data.map(topic => {
+        const fullPlatform = solutionStore.solutions.find(s => s.id === topic.platform?.id);
+        if (fullPlatform) {
+          return {
+            ...topic,
+            platform: {
+              ...topic.platform,
+              logo: fullPlatform.logo,
+              logoDesk: fullPlatform.logoDesk,
+              category: fullPlatform.category,
+            }
+          };
+        }
+        return topic;
+      });
+
       // Ouvrir le premier topic par défaut
       if (allTopics.value.length > 0) {
         openTopics.value.push(allTopics.value[0].id);
