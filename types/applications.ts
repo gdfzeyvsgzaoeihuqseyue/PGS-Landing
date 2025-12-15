@@ -1,3 +1,5 @@
+import type { Faq, FaqTopic, PlateformFaq } from './faq';
+
 export interface Solution {
   id: string;
   slug: string;
@@ -41,38 +43,9 @@ export interface PlateformDoc {
   platform: PlatformInfo;
 }
 
-export interface FaqTopic {
-  id: string;
-  name: string;
-  slug: string;
-  description?: string;
-  status: 'active' | 'inactive';
-  platform: PlatformInfo;
-  faqs?: Faq[];
-  faqCount?: number;
-  createdAt?: string;
-  updatedAt?: string;
-}
+// Re-export FAQ types for backward compatibility
+export type { Faq, FaqTopic, PlateformFaq };
 
-export interface Faq {
-  id: string;
-  question: string;
-  answer: string;
-  status?: 'active' | 'inactive';
-  isUseful: number;
-  isUseless: number;
-  topic?: {
-    id: string;
-    name: string;
-    slug: string;
-  };
-  createdAt?: string;
-  updatedAt?: string;
-}
-
-export interface PlateformFaq extends Faq {
-  platform: PlatformInfo;
-}
 
 export interface PlateformTutorial {
   id: string;

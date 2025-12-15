@@ -43,8 +43,8 @@
           </button>
 
           <!-- Chargement / Erreur -->
-          <LogoLoader v-if="loading" :show-text="true" size="lg" text="Chargement des FAQs..." />
-          <div v-else-if="error" class="text-center py-10">
+          <LogoLoader v-if="faqStore.loading" :show-text="true" size="lg" text="Chargement des FAQs..." />
+          <div v-else-if="faqStore.error" class="text-center py-10">
             <p>Nous n'avons pas réussi à charger les FAQs</p>
           </div>
 
@@ -98,16 +98,35 @@
                   </button>
                   <div v-show="openFaqs.includes(topic.id + '-' + faqIndex)" class="px-4 pb-4 pt-2">
                     <p class="text-gray-700 leading-relaxed pl-9">{{ faq.answer }}</p>
-                    <!-- Votes -->
-                    <div class="flex items-center gap-4 mt-4 pl-9 text-sm">
-                      <div class="flex items-center gap-1 text-green-600">
-                        <IconThumbUp class="w-4 h-4" />
-                        <span>{{ faq.isUseful }}</span>
+                    <!-- Votes interactifs -->
+                    <div class="flex items-center gap-4 mt-4 pl-9">
+                      <div class="flex items-center gap-2">
+                        <span class="text-sm text-gray-600">Cette réponse vous a-t-elle été utile ?</span>
                       </div>
-                      <div class="flex items-center gap-1 text-red-600">
-                        <IconThumbDown class="w-4 h-4" />
-                        <span>{{ faq.isUseless }}</span>
-                      </div>
+                      <button @click="handleVoteUseful(faq.id)"
+                        :disabled="faqStore.hasUserVoted(faq.id) || votingFaq === faq.id" :class="[
+                          'flex items-center gap-1 px-3 py-1.5 rounded-lg border transition-all',
+                          faqStore.getUserVote(faq.id) === 'useful'
+                            ? 'bg-green-50 border-green-500 text-green-700'
+                            : 'border-gray-300 text-gray-600 hover:bg-green-50 hover:border-green-500 hover:text-green-700',
+                          (faqStore.hasUserVoted(faq.id) || votingFaq === faq.id) && 'opacity-50 cursor-not-allowed'
+                        ]">
+                        <IconThumbUp :class="['w-4 h-4', votingFaq === faq.id && 'animate-pulse']" />
+                        <span class="font-medium">{{ faq.isUseful }}</span>
+                        <span v-if="faqStore.getUserVote(faq.id) === 'useful'" class="text-xs ml-1">(Voté)</span>
+                      </button>
+                      <button @click="handleVoteUseless(faq.id)"
+                        :disabled="faqStore.hasUserVoted(faq.id) || votingFaq === faq.id" :class="[
+                          'flex items-center gap-1 px-3 py-1.5 rounded-lg border transition-all',
+                          faqStore.getUserVote(faq.id) === 'useless'
+                            ? 'bg-red-50 border-red-500 text-red-700'
+                            : 'border-gray-300 text-gray-600 hover:bg-red-50 hover:border-red-500 hover:text-red-700',
+                          (faqStore.hasUserVoted(faq.id) || votingFaq === faq.id) && 'opacity-50 cursor-not-allowed'
+                        ]">
+                        <IconThumbDown :class="['w-4 h-4', votingFaq === faq.id && 'animate-pulse']" />
+                        <span class="font-medium">{{ faq.isUseless }}</span>
+                        <span v-if="faqStore.getUserVote(faq.id) === 'useless'" class="text-xs ml-1">(Voté)</span>
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -145,14 +164,14 @@ import { IconFilter, IconFolder, IconChevronDown, IconHelpCircle, IconThumbUp, I
 import { useSidebar } from '@/composables/useSidebar';
 import { AppPagination, AppSidebar } from '@/components/app';
 import { LogoLoader } from '@/components/utils';
+import { useFaqStore } from '@/stores/faq';
 import type { FaqTopic } from '@/types';
 
-const loading = ref(true);
-const error = ref<string | null>(null);
-const allTopics = ref<FaqTopic[]>([]);
+const faqStore = useFaqStore();
 const selectedTopic = ref('');
 const openTopics = ref<string[]>([]);
 const openFaqs = ref<string[]>([]);
+const votingFaq = ref<string | null>(null);
 
 const toggleTopic = (topicId: string) => {
   const idx = openTopics.value.indexOf(topicId);
@@ -177,8 +196,39 @@ const handleImageError = (e: Event, name: string) => {
   img.src = `https://api.dicebear.com/7.x/icons/svg?seed=${encodeURIComponent(name)}`;
 };
 
-// Initialisation du sidebar
-const sidebar = useSidebar(computed(() => allTopics.value), {
+// Vote handlers
+const handleVoteUseful = async (faqId: string) => {
+  if (votingFaq.value || faqStore.hasUserVoted(faqId)) return;
+
+  votingFaq.value = faqId;
+  try {
+    await faqStore.voteUseful(faqId);
+    // Show success with a toast or similar (optional)
+  } catch (err: any) {
+    console.error('Vote error:', err);
+    alert(err.message || 'Erreur lors du vote');
+  } finally {
+    votingFaq.value = null;
+  }
+};
+
+const handleVoteUseless = async (faqId: string) => {
+  if (votingFaq.value || faqStore.hasUserVoted(faqId)) return;
+
+  votingFaq.value = faqId;
+  try {
+    await faqStore.voteUseless(faqId);
+    // Show success with a toast or similar (optional)
+  } catch (err: any) {
+    console.error('Vote error:', err);
+    alert(err.message || 'Erreur lors du vote');
+  } finally {
+    votingFaq.value = null;
+  }
+};
+
+// Initialisation du sidebar avec les topics du store
+const sidebar = useSidebar(computed(() => faqStore.topics), {
   initialFilters: {
     search: '',
     category: '',
@@ -237,77 +287,35 @@ const sortOptions = [
 ];
 
 const uniquePlatforms = computed(() => {
-  return [...new Set(allTopics.value.map(topic => topic.platform?.name).filter(Boolean))];
+  return faqStore.uniquePlatforms;
 });
 
 const uniqueTopics = computed(() => {
-  return allTopics.value.map(topic => ({
+  return faqStore.topics.map(topic => ({
     id: topic.id,
     name: topic.name
   }));
 });
 
 const getCountForTopic = (topicId: string) => {
-  const topic = allTopics.value.find(t => t.id === topicId);
+  const topic = faqStore.getTopicById(topicId);
   return topic?.faqCount || topic?.faqs?.length || 0;
 };
 
 onMounted(async () => {
   try {
-    const { apiFetch } = useApi();
-    const { useSolutionStore } = await import('@/stores/solutions');
-    const solutionStore = useSolutionStore();
+    // Charger les votes de l'utilisateur depuis le localStorage
+    faqStore.loadUserVotesFromStorage();
 
-    // S'assurer que les solutions sont chargées pour avoir les logos
-    if (!solutionStore.solutions.length) {
-      await solutionStore.fetchSolutions(undefined, undefined, true);
-    }
+    // Charger tous les topics avec leurs FAQs
+    await faqStore.fetchTopics({ status: 'active' });
 
-    const { data: response, error: fetchError } = await apiFetch<{
-      success: boolean;
-      message: string;
-      nb: number;
-      data: FaqTopic[];
-    }>('/solution/faq-topic', {
-      params: {
-        includeFaqs: true,
-        status: 'active',
-        limit: 100
-      }
-    });
-
-    if (fetchError.value) {
-      throw new Error(fetchError.value.message || 'Erreur lors du chargement');
-    }
-
-    if (response.value?.data) {
-      // Enrichir les topics avec les logos des plateformes
-      allTopics.value = response.value.data.map(topic => {
-        const fullPlatform = solutionStore.solutions.find(s => s.id === topic.platform?.id);
-        if (fullPlatform) {
-          return {
-            ...topic,
-            platform: {
-              ...topic.platform,
-              logo: fullPlatform.logo,
-              logoDesk: fullPlatform.logoDesk,
-              category: fullPlatform.category,
-            }
-          };
-        }
-        return topic;
-      });
-
-      // Ouvrir le premier topic par défaut
-      if (allTopics.value.length > 0) {
-        openTopics.value.push(allTopics.value[0].id);
-      }
+    // Ouvrir le premier topic par défaut
+    if (faqStore.topics.length > 0) {
+      openTopics.value.push(faqStore.topics[0].id);
     }
   } catch (err: any) {
-    error.value = 'Erreur lors du chargement des FAQs: ' + (err.message || 'Erreur inconnue');
-    console.error(error.value, err);
-  } finally {
-    loading.value = false;
+    console.error('Erreur lors du chargement des FAQs:', err);
   }
 });
 

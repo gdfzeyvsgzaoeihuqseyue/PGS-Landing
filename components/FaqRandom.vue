@@ -15,7 +15,7 @@
       </div>
 
       <!-- Chargement -->
-      <div v-if="loading" class="text-center py-10">
+      <div v-if="faqStore.loading" class="text-center py-10">
         <IconLoader class="animate-spin h-10 w-10 text-primary mx-auto" />
         <p class="mt-2 text-gray-600">Chargement des FAQs...</p>
       </div>
@@ -61,16 +61,35 @@
             </button>
             <div v-show="openIndices.includes(index)" class="px-4 pb-4 pt-2">
               <p class="text-gray-700 leading-relaxed pl-9">{{ faq.answer }}</p>
-              <!-- Votes -->
-              <div class="flex items-center gap-4 mt-4 pl-9 text-sm">
-                <div class="flex items-center gap-1 text-green-600">
-                  <IconThumbUp class="w-4 h-4" />
-                  <span>{{ faq.isUseful }}</span>
+              <!-- Votes interactifs -->
+              <div class="flex items-center gap-4 mt-4 pl-9">
+                <div class="flex items-center gap-2">
+                  <span class="text-sm text-gray-600">Cette réponse vous a-t-elle été utile ?</span>
                 </div>
-                <div class="flex items-center gap-1 text-red-600">
-                  <IconThumbDown class="w-4 h-4" />
-                  <span>{{ faq.isUseless }}</span>
-                </div>
+                <button @click="handleVoteUseful(faq.id)"
+                  :disabled="faqStore.hasUserVoted(faq.id) || votingFaq === faq.id" :class="[
+                    'flex items-center gap-1 px-3 py-1.5 rounded-lg border transition-all',
+                    faqStore.getUserVote(faq.id) === 'useful'
+                      ? 'bg-green-50 border-green-500 text-green-700'
+                      : 'border-gray-300 text-gray-600 hover:bg-green-50 hover:border-green-500 hover:text-green-700',
+                    (faqStore.hasUserVoted(faq.id) || votingFaq === faq.id) && 'opacity-50 cursor-not-allowed'
+                  ]">
+                  <IconThumbUp :class="['w-4 h-4', votingFaq === faq.id && 'animate-pulse']" />
+                  <span class="font-medium">{{ faq.isUseful }}</span>
+                  <span v-if="faqStore.getUserVote(faq.id) === 'useful'" class="text-xs ml-1">(Voté)</span>
+                </button>
+                <button @click="handleVoteUseless(faq.id)"
+                  :disabled="faqStore.hasUserVoted(faq.id) || votingFaq === faq.id" :class="[
+                    'flex items-center gap-1 px-3 py-1.5 rounded-lg border transition-all',
+                    faqStore.getUserVote(faq.id) === 'useless'
+                      ? 'bg-red-50 border-red-500 text-red-700'
+                      : 'border-gray-300 text-gray-600 hover:bg-red-50 hover:border-red-500 hover:text-red-700',
+                    (faqStore.hasUserVoted(faq.id) || votingFaq === faq.id) && 'opacity-50 cursor-not-allowed'
+                  ]">
+                  <IconThumbDown :class="['w-4 h-4', votingFaq === faq.id && 'animate-pulse']" />
+                  <span class="font-medium">{{ faq.isUseless }}</span>
+                  <span v-if="faqStore.getUserVote(faq.id) === 'useless'" class="text-xs ml-1">(Voté)</span>
+                </button>
               </div>
             </div>
           </div>
@@ -96,14 +115,16 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted } from 'vue';
 import { IconLoader, IconFolder, IconQuestionMark, IconChevronDown, IconHelpCircle, IconThumbUp, IconThumbDown, IconArrowRight, IconMoodEmpty } from '@tabler/icons-vue';
+import { useFaqStore } from '@/stores/faq';
 import type { FaqTopic, Faq } from '@/types';
 
-const loading = ref(true);
+const faqStore = useFaqStore();
 const randomTopic = ref<FaqTopic | null>(null);
 const randomFaqs = ref<Faq[]>([]);
 const openIndices = ref<number[]>([]);
+const votingFaq = ref<string | null>(null);
 
 const toggleFaq = (index: number) => {
   const idx = openIndices.value.indexOf(index);
@@ -119,80 +140,67 @@ const handleImageError = (e: Event) => {
   img.src = 'https://api.dicebear.com/7.x/icons/svg?seed=default';
 };
 
-// Fonction pour mélanger un tableau
-const shuffleArray = <T,>(array: T[]): T[] => {
-  const shuffled = [...array];
-  for (let i = shuffled.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+// Vote handlers
+const handleVoteUseful = async (faqId: string) => {
+  if (votingFaq.value || faqStore.hasUserVoted(faqId)) return;
+
+  votingFaq.value = faqId;
+  try {
+    await faqStore.voteUseful(faqId);
+    // Mettre à jour localement les FAQs affichées
+    updateLocalFaqVotes(faqId);
+  } catch (err: any) {
+    console.error('Vote error:', err);
+    alert(err.message || 'Erreur lors du vote');
+  } finally {
+    votingFaq.value = null;
   }
-  return shuffled;
+};
+
+const handleVoteUseless = async (faqId: string) => {
+  if (votingFaq.value || faqStore.hasUserVoted(faqId)) return;
+
+  votingFaq.value = faqId;
+  try {
+    await faqStore.voteUseless(faqId);
+    // Mettre à jour localement les FAQs affichées
+    updateLocalFaqVotes(faqId);
+  } catch (err: any) {
+    console.error('Vote error:', err);
+    alert(err.message || 'Erreur lors du vote');
+  } finally {
+    votingFaq.value = null;
+  }
+};
+
+// Mettre à jour les votes localement pour les FAQs affichées
+const updateLocalFaqVotes = (faqId: string) => {
+  const updatedFaq = faqStore.getFaqById(faqId);
+  if (updatedFaq) {
+    randomFaqs.value = randomFaqs.value.map(faq =>
+      faq.id === faqId ? updatedFaq : faq
+    );
+  }
 };
 
 onMounted(async () => {
   try {
-    const { apiFetch } = useApi();
-    const { useSolutionStore } = await import('@/stores/solutions');
-    const solutionStore = useSolutionStore();
+    // Charger les votes de l'utilisateur
+    faqStore.loadUserVotesFromStorage();
 
-    // S'assurer que les solutions sont chargées pour avoir les logos
-    if (!solutionStore.solutions.length) {
-      await solutionStore.fetchSolutions(undefined, undefined, true);
+    // Si les topics ne sont pas encore chargés, les charger
+    if (faqStore.topics.length === 0) {
+      await faqStore.fetchTopics({ status: 'active' });
     }
 
-    // Récupérer tous les topics avec leurs FAQs
-    const { data: response, error: fetchError } = await apiFetch<{
-      success: boolean;
-      message: string;
-      nb: number;
-      data: FaqTopic[];
-    }>('/solution/faq-topic', {
-      params: {
-        includeFaqs: true,
-        status: 'active',
-        limit: 100
-      }
-    });
-
-    if (!fetchError.value && response.value?.data) {
-      // Enrichir les topics avec les logos des plateformes
-      const enrichedTopics = response.value.data.map(topic => {
-        const fullPlatform = solutionStore.solutions.find(s => s.id === topic.platform?.id);
-        if (fullPlatform) {
-          return {
-            ...topic,
-            platform: {
-              ...topic.platform,
-              logo: fullPlatform.logo,
-              logoDesk: fullPlatform.logoDesk,
-              category: fullPlatform.category,
-            }
-          };
-        }
-        return topic;
-      });
-
-      // Filtrer uniquement les topics qui ont des FAQs
-      const topicsWithFaqs = enrichedTopics.filter(topic =>
-        topic.faqs && topic.faqs.length > 0
-      );
-
-      if (topicsWithFaqs.length > 0) {
-        // Sélectionner un topic aléatoire
-        const shuffled = shuffleArray(topicsWithFaqs);
-        randomTopic.value = shuffled[0];
-
-        // Sélectionner 4 FAQs aléatoires de ce topic
-        if (randomTopic.value.faqs) {
-          const shuffledFaqs = shuffleArray(randomTopic.value.faqs);
-          randomFaqs.value = shuffledFaqs.slice(0, 4);
-        }
-      }
+    // Récupérer un topic aléatoire avec ses FAQs
+    const randomData = faqStore.getRandomTopic();
+    if (randomData) {
+      randomTopic.value = randomData.topic;
+      randomFaqs.value = randomData.faqs;
     }
   } catch (err) {
     console.error('Erreur lors du chargement des FAQs:', err);
-  } finally {
-    loading.value = false;
   }
 });
 </script>

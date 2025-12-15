@@ -1,6 +1,7 @@
 export * from './applications'
 export * from './blog'
 export * from './events'
+export * from './faq'
 export * from './nav'
 export * from './NoahBot'
 export * from './preference'
