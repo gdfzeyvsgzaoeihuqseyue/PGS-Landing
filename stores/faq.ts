@@ -107,7 +107,7 @@ export const useFaqStore = defineStore('faq', {
           message: string;
           nb: number;
           data: FaqTopic[];
-        }>('/solution/faq-topic', { params });
+        }>('/public/solution/faq-topic', { params });
 
         if (fetchError.value) {
           throw new Error(fetchError.value.message || 'Erreur lors du chargement');

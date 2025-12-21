@@ -39,10 +39,6 @@ useHead({
     { name: 'twitter:title', content: 'Pro Gestion Soft - Solutions numériques pour les PME africaines' },
     { name: 'twitter:description', content: 'Découvrez l’écosystème PGS : des outils innovants pour digitaliser votre entreprise.' },
     { name: 'twitter:image', content: heroImagePath },
-  ],
-  link: [
-    { rel: 'icon', type: 'image/png', href: '/favicon.ico' },
-    { rel: 'canonical', href: baseUrl }
   ]
 });
 </script>

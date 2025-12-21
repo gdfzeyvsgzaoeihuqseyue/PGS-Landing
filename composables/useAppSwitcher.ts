@@ -98,7 +98,7 @@ export const useAppSwitcher = () => {
 
       if (AppSwitcher && typeof AppSwitcher === 'function') {
         const defaultApiUrl = config.public.pgsBaseAPI
-          ? `${config.public.pgsBaseAPI}/solution/platform`
+          ? `${config.public.pgsBaseAPI}/public/solution/platform`
           : undefined
 
         console.log('Initializing AppSwitcher with API:', options.apiUrl || defaultApiUrl)

@@ -58,7 +58,7 @@ export const useTestimonyStore = defineStore('testimonies', () => {
             currentPage: number;
             totalPages: number;
             data: Testimony[];
-          }>(`${API_BASE_URL}/solution/testimony`, {
+          }>(`${API_BASE_URL}/public/solution/testimony`, {
             params: { ...params, page: currentPage, limit: initialLimit }
           });
 
@@ -78,7 +78,7 @@ export const useTestimonyStore = defineStore('testimonies', () => {
           currentPage: number;
           totalPages: number;
           data: Testimony[];
-        }>(`${API_BASE_URL}/solution/testimony`, {
+        }>(`${API_BASE_URL}/public/solution/testimony`, {
           params: params
         });
 
@@ -124,7 +124,7 @@ export const useTestimonyStore = defineStore('testimonies', () => {
         platformId: testimonyData.platformId,
       };
 
-      const response = await $fetch(`${API_BASE_URL}/solution/testimony`, {
+      const response = await $fetch(`${API_BASE_URL}/public/solution/testimony`, {
         method: 'POST',
         body: payload,
       });

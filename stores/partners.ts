@@ -45,7 +45,7 @@ export const usePartnerStore = defineStore('partners', () => {
             currentPage: number;
             totalPages: number;
             data: Partner[];
-          }>(`${API_BASE_URL}/solution/partner`, {
+          }>(`${API_BASE_URL}/public/solution/partner`, {
             params: { page: currentPage, limit: initialLimit }
           });
 
@@ -65,7 +65,7 @@ export const usePartnerStore = defineStore('partners', () => {
           currentPage: number;
           totalPages: number;
           data: Partner[];
-        }>(`${API_BASE_URL}/solution/partner`, {
+        }>(`${API_BASE_URL}/public/solution/partner`, {
           params: { page, limit }
         });
 
@@ -74,8 +74,8 @@ export const usePartnerStore = defineStore('partners', () => {
     } catch (err: any) {
       error.value = 'Erreur lors du chargement des partenaires: ' + (err.data?.message || err.message);
       console.error(error.value, err);
-      loading.value = false; // S'assurer que loading est false même en cas d'erreur
-      throw err; // Re-throw pour propager l'erreur si nécessaire
+      loading.value = false;
+      throw err;
     } finally {
       loading.value = false;
       console.log('Fetch partners finished. Loading set to false.');
